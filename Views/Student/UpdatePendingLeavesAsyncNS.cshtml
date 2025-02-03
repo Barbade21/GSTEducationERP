@@ -1,0 +1,322 @@
+﻿@model GSTEducationERPLibrary.Student.Student
+
+
+@using (Html.BeginForm("UpdatePendingLeavesAsyncNS", "Student", FormMethod.Post, new { enctype = "multipart/form_data", id = "UpdateLeaveFormStudent" }))
+
+{
+    @Html.AntiForgeryToken()
+}
+@Html.HiddenFor(model => model.CandidateCode)
+<div class="form-horizontal">
+
+
+
+    <html>
+    <head>
+        <script src="~/Content/plugins/jquery/jquery.min.js"></script>
+        <script src="~/Content/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+        <!-- BS Stepper -->
+
+
+
+        <link href="~/Content/plugins/select2/css/select2.min.css" rel="stylesheet" />
+        <link href="~/Content/plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css" rel="stylesheet" />
+        <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.min.js" defer></script>
+        <!-- Bootstrap CSS -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+        <!-- Select2 CSS -->
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2-bootstrap4.min.css">
+        <script src="~/Content/Admin/js/Icon.js"></script>
+
+        <!-- Bootstrap 4 -->
+        <script src="~/Content/plugins/moment/moment.min.js"></script>
+        <!-- Tempusdominus Bootstrap 4 -->
+        <script src="~/Content/plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js"></script>
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet" />
+
+        <style>
+            #ApplyLeaveId {
+                background-color: #3b5999;
+                color: white;
+            }
+
+            .highlight-label {
+                font-weight: bold;
+                color: #007bff; /* Change this color to your preference */
+            }
+
+            .heading-color {
+                color: #3b5999; /* Color for the heading */
+            }
+
+            .btn-hover-effect:hover {
+                background-color: #218838; /* Button color on hover */
+                color: red; /* Text color on hover */
+            }
+
+            .btn-zoom-effect {
+                transition: transform 0.3s ease; /* Smooth transition */
+            }
+
+                .btn-zoom-effect:hover {
+                    transform: scale(1.1); /* Zoom in on hover */
+                }
+
+            .red-asterisk {
+                color: red;
+            }
+
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <h3 class="modal-title" style="color:lightgreen; font-size:xx-large"></h3>
+            <button type="button" class="close" id="Buttoncolor" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            <h2 class="mt-4 heading-color">Update Pending Leave</h2>
+
+            <div class="card mt-4">
+                <div class="card-body">
+                    @using (Html.BeginForm("UpdatePendingLeavesAsyncNS", "Student", FormMethod.Post, new { @class = "form-horizontal" }))
+                    {
+                        @Html.AntiForgeryToken()
+                        @Html.HiddenFor(model => model.ApplyLeaveId)
+
+                        <!-- First Row: Apply Date and Upload Document -->
+                        <div class="form-group row">
+                            <div class="col-md-6">
+                                <label class="control-label col-md-6 highlight-label">
+                                    @Html.LabelFor(model => model.StartDate)
+                                    <span class="required-asterisk red-asterisk">*</span>
+                                </label>
+                                <div class="col-md-8">
+                                    @*@Html.EditorFor(model => model.StartDate, new { htmlAttributes = new { @class = "form-control", @id = "StartDate" } })*@
+                                    @Html.EditorFor(model => model.StartDate, new { htmlAttributes = new { @class = "form-control datepicker col-md-12", min = DateTime.Now.ToString("yyyy-MM-dd"), required = "required", id = "StartDate" } })
+                                    @Html.ValidationMessageFor(model => model.StartDate, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="control-label col-md-6 highlight-label">
+                                    @Html.LabelFor(model => model.EndDate)
+                                    <span class="required-asterisk red-asterisk">*</span>
+                                </label>
+                                <div class="col-md-8">
+                                    @*@Html.EditorFor(model => model.EndDate, new { htmlAttributes = new { @class = "form-control", @id = "EndDate" } })*@
+                                    @Html.EditorFor(model => model.EndDate, new { htmlAttributes = new { @class = "form-control datepicker col-md-12", min = DateTime.Now.ToString("yyyy-MM-dd"), required = "required", id = "EndDate" } })
+                                    @Html.ValidationMessageFor(model => model.EndDate, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <br />
+
+                        <!-- Second Row: Start Date and End Date -->
+
+                        <div class="form-group row">
+
+
+
+                            <div class="col-md-6">
+                                @Html.LabelFor(model => model.ApplyDate, new { @class = "control-label highlight-label" })
+                                @Html.EditorFor(model => model.ApplyDate, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+                                @Html.ValidationMessageFor(model => model.ApplyDate, "", new { @class = "text-danger" })
+                            </div>
+
+                            <div class="col-md-6">
+                                @Html.LabelFor(model => model.NoOfDays, htmlAttributes: new { @class = "control-label col-md-6 highlight-label" })
+                                <div class="col-md-8">
+                                    @Html.EditorFor(model => model.NoOfDays, new { htmlAttributes = new { @class = "form-control", @id = "NoOfDays", @readonly = "readonly" } })
+                                    @Html.ValidationMessageFor(model => model.NoOfDays, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+
+                        </div>
+
+
+                        <br />
+
+                        <!-- Third Row: Reason -->
+                        <div class="form-group row">
+                            @Html.LabelFor(model => model.Reason, new { @class = "control-label col-md-2 highlight-label" })
+                            <div class="col-md-10">
+                                @Html.EditorFor(model => model.Reason, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.Reason, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        <br />
+
+                        <div class="form-group row">
+                            <div class="col-md-12 text-center">
+                                <input type="submit" value="Update" id="ApplyLeaveId" class="btn btn-primary btn-zoom-effect" />
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+
+        <script>
+            $(document).ready(function () {
+
+               var startDate = '@Model.StartDate.ToString("yyyy-MM-dd")';
+                $('#StartDate').val(startDate);
+                var EndDate = '@Model.EndDate.ToString("yyyy-MM-dd")';
+                $('#EndDate').val(EndDate);
+                var ApplyDate = '@Model.ApplyDate.ToString("yyyy-MM-dd")';
+                $('#ApplyDate').val(ApplyDate);
+
+                console.log(date);
+                var today = new Date();
+                // Format the date as "yyyy-mm-dd"
+                var formattedToday = today.toISOString().split('T')[0];
+
+                $('#StartDate').attr('min', formattedToday);
+
+                // Update the minimum date for EndDate when StartDate changes
+                $('#StartDate').on('change', function () {
+                    var selectedStartDate = $(this).val();
+                    $('#EndDate').attr('min', selectedStartDate);
+                });
+            });
+        </script>
+
+        @*<script type="text/javascript">
+
+
+        function applyLeave(event) {
+                    console.log("Before validation");
+
+                    // Prevent default form submission
+                    event.preventDefault();
+
+
+            var formData = new FormData($('#UpdateLeaveFormStudent')[0]);
+                    $.ajax({
+                        type: 'POST',
+                        url: '@Url.Action("UpdatePendingLeavesAsyncNS", "Student")',
+                        data: formData,
+                        contentType: false,
+                        processData: false,
+
+                        success: function (data) {
+
+                            displayToast('Leave Updated ..!', 'success');
+                            $('#Eleaveform')[0].reset();
+                            $('.custom-file-label').html('Choose File'); // Reset the file input label text
+                            // Wait for the toast to be shown before redirecting
+                            setTimeout(function () {
+                                window.location.href = '/Student/UpdatePendingLeavesAsyncNS'; // Replace '/home' with the URL you want to redirect to
+                            }, 2000); // Adjust the timeout value as needed
+                            $('#UpdateLeaveFormStudent').hide();
+                                            },
+                        error: function (error) {
+                            // Handle error
+                            Swal.fire({
+                                title: 'Error',
+                                text: 'An error occurred while applying for leave.',
+                                icon: 'error',
+                                confirmButtonText: 'OK'
+                            }).then(() => {
+                                // Redirect to the AddNewExamSNAsync action
+                                window.location.href = '@Url.Action("LeaveMainViewAsyncNS", "Student")';
+                            });
+                        }
+                    });
+                }
+                function displayToast(message, type) {
+                    // Display Toastr notification
+                    toastr[type](message);
+                }
+
+                toastr.options = {
+                    closeButton: true,
+                    progressBar: true,
+                    positionClass: 'toast-top-right',
+                    showMethod: 'slideDown',
+                    timeOut: 4000 // How long the toast will be displayed (in milliseconds)
+        };
+            </script>*@
+
+
+
+
+
+
+
+        @*_______________________________________Calculating Noofdays_________________________________*@
+
+        <script>
+            $(document).ready(function () {
+                function calculateDays() {
+                    var startDate = new Date($('#StartDate').val());
+                    var endDate = new Date($('#EndDate').val());
+
+                    if (!isNaN(startDate) && !isNaN(endDate) && startDate <= endDate) {
+                        var timeDifference = endDate.getTime() - startDate.getTime();
+                        var daysDifference = Math.ceil(timeDifference / (1000 * 3600 * 24)) + 1;
+                        $('#NoOfDays').val(daysDifference);
+                    } else {
+                        $('#NoOfDays').val('');
+                    }
+                }
+
+                $('#StartDate, #EndDate').change(function () {
+                    calculateDays();
+                });
+            });
+        </script>
+
+
+
+        @*/////////////////////////for Startdate enddate update btn validation__________________*@
+        <script>
+          //   
+        $(document).ready(function () {
+            $('#UpdateLeaveFormStudent').submit(function (event) {
+                event.preventDefault();
+                var formData = new FormData(this);
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("UpdatePendingLeavesAsyncNS", "Student")',
+                    data: formData,
+                    contentType: false,
+                    processData: false,
+                    success: function (response) {
+                        if (response.success) {
+                            toastr.success('Leave updated successfully!');
+                            $('#UpdateLeaveFormStudent')[0].reset();
+                            setTimeout(function () {
+                                window.location.href = '/Student/UpdatePendingLeavesAsyncNS';
+                            }, 2000);
+                        } else {
+                            toastr.error(response.message || 'An error occurred while updating the leave.');
+                        }
+                    },
+                    error: function (error) {
+                        toastr.error('An error occurred while updating the leave.');
+                    }
+                });
+            });
+
+            // Additional client-side validations if needed...
+        });
+
+        toastr.options = {
+            closeButton: true,
+            progressBar: true,
+            positionClass: 'toast-top-right',
+            showMethod: 'slideDown',
+            timeOut: 4000
+        };
+        </script>
+    </body>
+</html>

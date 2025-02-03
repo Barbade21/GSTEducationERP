@@ -1,0 +1,418 @@
+@model GSTEducationERPLibrary.Account.Account
+@{ Layout = null; }
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="~/Content/plugins/jquery/jquery.min.js"></script>
+    <meta charset="UTF-8">
+    <title>GST EduERP</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
+          integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w=="
+          crossorigin="anonymous" referrerpolicy="no-referrer" /> <!-- For Eye Image -->
+    <link href="~/Content/Account/css/style.css" rel="stylesheet" />
+    <link href="~/Content/plugins/toastr/toastr.min.css" rel="stylesheet" />
+    <script src="~/Content/plugins/toastr/toastr.min.js"></script>
+    <style>
+        #CaptchaImageCode {
+            margin-left: 200px !important;
+            margin-top: -84px !important;
+            height: 35px !important;
+        }
+
+        .ReloadBtn {
+            position: absolute;
+            margin-top: -30px !important;
+            margin-left: 380px !important;
+        }
+
+        #UserCaptchaCode {
+            width: 180px !important;
+            font-size: 11px !important;
+            margin-top: -5px !important;
+        }
+
+        .eye {
+            top: -7px !important;
+        }
+
+        .login h2 {
+            top: -25px !important;
+        }
+
+        .login .group a {
+            margin-top: -25px !important;
+            margin-left: 3px !important;
+        }
+
+        .login .inputBox1 input {
+            top: -20px;
+        }
+
+        .toggle-container {
+            display: inline-flex;
+            border: 2px solid #4CAF50;
+            border-radius: 25px;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .toggle-option {
+            padding: 10px 20px;
+            font-size: 16px;
+            text-align: center;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+            .toggle-option.selected {
+                background-color: #4CAF50;
+                color: white;
+            }
+
+            .toggle-option.unselected {
+                background-color: white;
+                color: #4CAF50;
+            }
+
+        .inputBox input[type="submit"] {
+            cursor: pointer;
+            top: -3vw;
+            background-color: #8fabfe;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            color: white;
+            transition: background-color 0.3s ease;
+            margin-top: -30px;
+        }
+
+            .inputBox input[type="submit"]:hover {
+                background-color: #6f93ff !important;
+            }
+
+
+        .toggle-button-cover {
+            display: table-cell;
+            position: relative;
+            width: 200px;
+            height: 140px;
+            box-sizing: border-box;
+        }
+
+        .button-cover {
+            height: 100px;
+            margin: 20px;
+            background-color: #fff;
+            box-shadow: 0 10px 20px -8px #c5d6d6;
+            border-radius: 4px;
+        }
+
+            .button-cover:before {
+                counter-increment: button-counter;
+                content: counter(button-counter);
+                position: absolute;
+                right: 0;
+                bottom: 0;
+                color: #d7e3e3;
+                font-size: 12px;
+                line-height: 1;
+                padding: 5px;
+            }
+
+        .button-cover,
+        .knobs,
+        .layer {
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+        }
+
+        .button {
+            position: absolute;
+            width: 81.4px;
+            height: 36px;
+            margin-top: -250px;
+            overflow: hidden;
+        }
+
+            .button.r,
+            .button.r .layer {
+                border-radius: 100px;
+            }
+
+            .button.b2 {
+                border-radius: 2px;
+            }
+
+        .checkbox {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            padding: 0;
+            margin: 0;
+            opacity: 0;
+            cursor: pointer;
+            z-index: 3;
+        }
+
+        .knobs {
+            z-index: 2;
+        }
+
+        .layer {
+            width: 100%;
+            background-color: #ebf7fc;
+            transition: 0.3s ease all;
+            z-index: 1;
+        }
+
+        section {
+            width: 100%;
+            height: 100vh;
+            background-size: cover;
+            background-position: center;
+        }
+
+
+        #button-10 .knobs:before,
+        #button-10 .knobs:after,
+        #button-10 .knobs span {
+            position: absolute;
+            top: 4px;
+            width: 30px;
+            height: 10px;
+            font-size: 10px;
+            font-weight: bold;
+            text-align: center;
+            line-height: 1;
+            padding: 9px 4px;
+            border-radius: 2px;
+            transition: 0.3s ease all;
+        }
+
+        #button-10 .knobs:before {
+            content: "";
+            left: 4px;
+            background-color: #03a9f4;
+        }
+
+        #button-10 .knobs:after {
+            content: "Student";
+            right: 4px;
+            color: #4e4e4e;
+        }
+
+        #button-10 .knobs span {
+            display: inline-block;
+            left: 8px;
+            color: #fff;
+            z-index: 1;
+        }
+
+        #button-10 .checkbox:checked + .knobs span {
+            color: #4e4e4e;
+        }
+
+        #button-10 .checkbox:checked + .knobs:before {
+            left: 42px;
+            background-color: #03a9f4;
+        }
+
+        #button-10 .checkbox:checked + .knobs:after {
+            color: #fff;
+        }
+
+
+
+        .allignment {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <section id="backgroundSection" style="background-image: url('/Content/Account/img/StaffLogin.jpg');">
+        <div class="login">
+            <h2>Login</h2>
+            <form action="/Account/Login" method="post">
+                <div>
+                    <div class="allignment">
+                        <input type="hidden" name="Role" id="Role" />
+                        <div class="inputBox">
+                            <input type="text" name="EmailId" id="EmailId" placeholder="Email" />
+                        </div>
+                        <div class="inputBox">
+                            <input type="password" name="Password" placeholder="Password" id="myInput" />
+                            <span class="eye" onclick="myFunction()">
+                                <i id="hide1" class="fa fa-eye"></i>
+                                <i id="hide2" class="fas fa-eye-slash"></i>
+                            </span>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="inputBox">
+                                    <input type="text" id="UserCaptchaCode" class="CaptchaTxtField" placeholder="Enter Captcha - Case Sensitive" />
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div>
+                                    <div id="CaptchaImageCode" class="CaptchaTxtField">
+                                        <canvas id="CapCode" class="capcode" width="200" height="40"></canvas>
+                                    </div>
+                                    <div>
+                                        <input type="button" class="ReloadBtn" onclick='CreateCaptcha();'>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <br />
+                    <div class="button b2" id="button-10">
+                        <input type="checkbox" class="checkbox" id="IsStudent" />
+                        <div class="knobs">
+                            <span>Staff</span>
+                        </div>
+                        <div class="layer"></div>
+                    </div>
+
+                    <br />
+                    <div class="inputBox" style=" margin-top: 65px;">
+                        <div><input type="submit" value="Login" style="top: -3vw; background-color: #8fabfe;"></div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </section>
+    <script>
+        $(document).ready(function () {
+            CreateCaptcha();
+            if ('@TempData["ErrorMessage"]' !== '') {
+                toastr.error('@TempData["ErrorMessage"]');
+            }
+            $('form').submit(function (event) {
+                $('#Role').val($('#IsStudent').is(':checked') ? 'Student' : 'Staff');
+                event.preventDefault();
+                if (validateForm()/* && validateCaptcha()*/) {
+                        $('form')[0].submit();
+                }
+            });
+        });
+        function CreateCaptcha() {
+            var alpha = new Array('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q','R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9');
+            var i;
+            for (i = 0; i < 6; i++)
+            {
+                var a = alpha[Math.floor(Math.random() * alpha.length)];
+                var b = alpha[Math.floor(Math.random() * alpha.length)];
+                var c = alpha[Math.floor(Math.random() * alpha.length)];
+                var d = alpha[Math.floor(Math.random() * alpha.length)];
+                var e = alpha[Math.floor(Math.random() * alpha.length)];
+                var f = alpha[Math.floor(Math.random() * alpha.length)];
+            }
+            cd = a + ' ' + b + ' ' + c + ' ' + d + ' ' + e + ' ' + f;
+            $('#CaptchaImageCode').empty().append('<canvas id="CapCode" class="capcode" width="300" height="80"></canvas>')
+            var c = document.getElementById("CapCode"),
+                ctx = c.getContext("2d"),
+                x = c.width / 2,
+                img = new Image();
+            img.src = "https://pixelsharing.files.wordpress.com/2010/11/salvage-tileable-and-seamless-pattern.jpg";
+            img.onload = function ()
+            {
+                var pattern = ctx.createPattern(img, "repeat");
+                ctx.fillStyle = pattern;
+                ctx.fillRect(0, 0, c.width, c.height);
+                ctx.font = "46px Roboto Slab";
+                ctx.fillStyle = '#ccc';
+                ctx.textAlign = 'center';
+                ctx.setTransform(1, -0.12, 0, 1, 0, 15);
+                ctx.fillText(cd, x, 55);
+            };
+        }
+        function validateForm() {
+            var email = $('#EmailId').val().trim();
+            var password = $('#myInput').val().trim();
+            if (email === "" || !isValidEmail(email))
+            {
+                toastr.error("Please Enter Valid Email-Id");
+                return false;
+            }
+            if (password === "" / !isValidPassword(password))
+            {
+                toastr.error("Please Enter Valid Password");
+                return false;
+            }
+            return true;
+        }
+        function isValidEmail(email)
+        {
+            var emailRegex = /^[^\s]+[^\s]+\.[^\s]+$/;
+            return emailRegex.test(email);
+        }
+        function isValidPassword(password)
+        {
+            var passwordRegex = /^(?=.[a-z])(?=.[A-Z])(?=.\d)(?=.[@@$!%?&])[A-Za-z\d@@$!%?&]{8,}$/;
+            return passwordRegex.test(password);
+        }
+        function validateCaptcha()
+        {
+            var string1 = removeSpaces(cd);
+            var string2 = removeSpaces($('#UserCaptchaCode').val());
+            if (string2 === "") {
+                toastr.error("Enter captcha code.");
+                return false;
+            }
+            if (string1 == string2) {
+                return true;
+            } else {
+                toastr.error("Please enter the correct captcha code.");
+                $('#UserCaptchaCode').val('');
+                CreateCaptcha();
+                return false;
+            }
+        }
+        function removeSpaces(string)
+        {
+            return string.split(' ').join('');
+        }
+        // Password hide-show
+        function myFunction()
+        {
+            var x = document.getElementById("myInput");
+            var y = document.getElementById("hide1");
+            var z = document.getElementById("hide2");
+            if (x.type === 'password')
+            {
+                x.type = "text";
+                y.style.display = "block";
+                z.style.display = "none";
+            }
+            else
+            {
+                x.type = "password";
+                y.style.display = "none";
+                z.style.display = "block";
+            }
+        }
+        // Disable the back button
+        function preventBack() { window.history.forward(); }
+        setTimeout("preventBack()", 0);
+        window.onunload = function () { null };
+    </script>
+    <script>
+        $(document).ready(function () {
+            // Event listener for the checkbox to change the background image
+            document.getElementById('IsStudent').addEventListener('change', function () {
+                var backgroundSection = document.getElementById('backgroundSection');
+                if (this.checked) {
+                    // If the button is in "Yes" state, show the first image
+                    backgroundSection.style.backgroundImage = "url('/Content/Account/img/StudentLogin.jpg')";
+                } else {
+                    // If the button is in "No" state, show the second image
+                    backgroundSection.style.backgroundImage = "url('/Content/Account/img/StaffLogin.jpg')";
+                }
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,427 @@
+﻿@model GSTEducationERPLibrary.Bind.Bind
+
+
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Tempusdominus Bootstrap 4 -->
+
+    <script src="~/Content/plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js"></script>
+    <script src="~/Content/plugins/daterangepicker/daterangepicker.js"></script>
+    <link rel="stylesheet" href="~/Content/plugins/toastr/toastr.min.css">
+    <script src="~/Content/plugins/toastr/toastr.min.js"></script>
+    <script src="~/Content/plugins/jquery/jquery.min.js" type="text/javascript"></script>
+    <style>
+        input[readonly] {
+            background-color: #e9ecef; /* Light grey background color */
+            cursor: not-allowed; /* Change cursor to indicate it's not editable */
+        }
+    </style>
+</head>
+<body>
+
+    @using (Html.BeginForm("UpdateLeaveRequestAsyncAM", "Bind", FormMethod.Post, new { enctype = "multipart/form-data", id = "leaveform" }))
+    {
+        @Html.AntiForgeryToken()
+
+        <div class="row">
+            <div class="col-md-12">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="input-group leaveform" id="leavetypesField">
+                            <div class="input-group">
+                              @*  @Html.LabelFor(model => model.LeaveAppliedId, htmlAttributes: new { @class = "control-label col-md-4", style = "display: none;" })*@
+                                @Html.HiddenFor(model => model.LeaveAppliedId, new { htmlAttributes = new { @class = "form-control col-md-12", @readonly = "readonly", required = "required" } })
+
+                                @Html.LabelFor(model => model.LeaveType, "Leave Type", htmlAttributes: new { @class = "control-label col-md-4" })
+                                <div class="col-md-7">
+                                    @Html.EditorFor(model => model.LeaveType, new { htmlAttributes = new { @class = "form-control col-md-12", @readonly = "readonly", required = "required" } })
+                                    @Html.ValidationMessageFor(model => model.LeaveType, "", new { @class = "text-danger" })
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-8">
+                        <div class="input-group leaveform clearfix" id="dayField">
+                            <!-- radio -->
+                            <span>
+                                <label>
+                                    Day Type
+                                </label>
+                            </span>
+                            <div class="form-group clearfix">
+                                <div class="icheck-primary d-inline">
+                                    @if (Model.Day == "Full Day")
+                                    {
+                                        <input type="radio" class="day-radio" id="Full Days" value="Full Day" name="Day" readonly />
+                                    }
+                                    else
+                                    {
+                                        <input type="radio" class="day-radio" id="Full Days" value="Full Day" name="Day" readonly />
+                                    }
+                                    <label for="Full Days">
+                                        Full Day
+                                    </label>
+                                </div>
+                                <div class="icheck-primary d-inline">
+                                    <input type="radio" class="day-radio" id="Half Day" value="Half Day" name="Day" readonly />
+                                    <label for="Half Day">
+                                        Half Day
+                                    </label>
+                                </div>
+                                <div class="icheck-primary d-inline">
+                                    <input type="radio" class="day-radio" id="Short Leave" value="Short Leave" name="Day" readonly />
+                                    <label for="Short Leave">
+                                        Short Leave
+
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+
+            </div>
+            <br />
+            <div class="col-md-12">
+                <div class="row">
+                    <div class="col-md-5">
+                        <div class="input-group leaveform" id="startdateField">
+                            @Html.LabelFor(model => model.StartDate, "From Date", htmlAttributes: new { @class = "control-label col-md-4" })
+                            <div class="col-md-7">
+
+                                @Html.EditorFor(model => model.StartDate, new { htmlAttributes = new { @class = "form-control datepicker col-md-12", min = DateTime.Now.ToString("yyyy-MM-dd"), required = "required", id = "startdate" } })
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bootstrap-timepicker">
+                        <div class="bootstrap-timepicker">
+                            <div class="input-group mb-10 leaveform" style="margin-left:15px;" id="starttimeFields">
+                                <div class="col-md-3">
+                                    <label>Start Time</label>
+                                </div>
+                                <div class="col-md-6" style="margin-left:53px;">
+                                    <div class="input-group date" data-target-input="nearest">
+                                        <input type="text" name="StartTime" id="timepicker" class="form-control datetimepicker-input" data-target="#timepicker" required />
+                                        <div class="input-group-append" data-target="#timepicker" data-toggle="datetimepicker">
+                                            <div class="input-group-text"><i class="far fa-clock"></i></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+            <br />
+            <br />
+            <div class="col-md-12">
+                <div class="row">
+                    <div class="col-md-5">
+                        <div class="input-group leaveform" id="enddateField">
+                            @Html.LabelFor(model => model.EndDate, "To Date", htmlAttributes: new { @class = "control-label col-md-4" })
+                            <div class="col-md-7">
+
+                                @Html.EditorFor(model => model.EndDate, new { htmlAttributes = new { @class = "form-control datepicker col-md-12", min = DateTime.Now.ToString("yyyy-MM-dd"), required = "required", id = "endDate" } })
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bootstrap-timepicker">
+                        <div class="bootstrap-timepicker">
+                            <div class="input-group mb-6 leaveform" style="margin-left:15px;" id="endtimeField">
+                                <div class="col-md-3">
+                                    <label>End Time </label>
+                                </div>
+                                <div class="col-md-6" style="margin-left:53px;">
+                                    <div class="input-group date" data-target-input="nearest">
+                                        <input type="text" name="EndTime" id="Endtimepicker" class="form-control datetimepicker-input" data-target="#Endtimepicker" required />
+                                        <div class="input-group-append" data-target="#Endtimepicker" data-toggle="datetimepicker">
+                                            <div class="input-group-text"><i class="far fa-clock"></i></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <br />
+            <br />
+            <br />
+            <div class="col-md-12">
+                <div class="row">
+                    <div class="col-md-5">
+                        <div class="input-group leaveform" id="noofdaysField">
+                            @Html.LabelFor(model => model.NoOfDays, "No of Days", htmlAttributes: new { @class = "control-label col-md-4" })
+                            <div class="col-md-7">
+                                <input type="text" class="form-control col-md-12" name="NoOfDays" id="NoOfDays" readonly />
+                            </div>
+                        </div>
+
+                        @*<input type="text" name="EndTime" id="endTime" class="form-control" readonly />*@
+                    </div>
+                    <div class="mb-15">
+                        <div class="input-group leaveform" id="leavelocationField">
+
+                            @Html.LabelFor(model => model.LeaveLocation, "Location", htmlAttributes: new { @class = "control-label col-md-4" })
+
+                            <div class="col-md-6">
+                                @Html.EditorFor(model => model.LeaveLocation, new { htmlAttributes = new { @class = "form-control ", id = "Leavelocation", } })
+                                @*@Html.EditorFor(model => model.LeaveLocation, new { @class = "form-control col-md-12", required = "required", id = "Leavelocation" })*@
+                                @Html.ValidationMessageFor(model => model.LeaveLocation, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <br />
+            <br />
+            <div class="col-md-12">
+                <div class="row">
+                    <div class="col-md-6">
+
+                        <div class="input-group leaveform" id="reasonField">
+                            @Html.LabelFor(model => model.Reason, htmlAttributes: new { @class = "control-label col-md-4" })
+                            <div class="col-md-8">
+                                <textarea name="Reason" class="form-control col-md-12" , required="required" id="reason"> </textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-5">
+                        <div class="input-group leaveform" id="document">
+                            @Html.LabelFor(model => model.Document, "Leave Type", htmlAttributes: new { @class = "control-label col-md-4" })
+                            <div class="col-md-8">
+                                <button type="button" class="btn btn-primary btn-sm" name="Document" id="btnPreviewFile">View</button>
+                                @Html.ValidationMessageFor(model => model.Document, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <br />
+            <br />
+            <br />
+
+            <div class="col-md-12">
+                <div class="row">
+                            <div class="col-md-5">
+                                <div class="input-group leaveform" id="leaveStatus">
+                                    @Html.LabelFor(model => model.StatusId, "Leave Type", htmlAttributes: new { @class = "control-label col-md-4" })
+                                    <div class="col-md-8">
+
+
+                                        <select id="leaveStatus" name="StatusId" class="form-control">
+                                            <option value="">Select Option</option>
+
+                                            <option value="6"> Pending </option>
+                                            <option value="7"> Reject </option>
+                                            <option value="16"> Approve </option>
+
+                                        </select>
+
+                                        @*@Html.DropDownListFor(model => model.LeaveType, new SelectList(ViewBag.LeaveType, "Value", "Text"), "--Select Leave Type--", new { @class = "form-control col-md-12", required = "required", id = "leaveId" })*@
+                                        @Html.ValidationMessageFor(model => model.StatusId, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+                            </div>
+                </div>
+            </div>
+
+            <div class="col-md-12">
+                <div class="row">
+
+                    <div class="col-md-8">
+                        <div class="input-group justify-content-end " style="margin-top:10px; padding-right:40px;">
+                            <div class="col-md-offset-2 col-md-2">
+                                <button type="button" class="btn btn-block bg-gradient-success btn-block" id="submit" onclick="updateLeaveStatus(event)">Update</button>
+                            </div>
+                            <div class="col-md-2">
+                                <button type="button" class="btn btn-block bg-gradient-danger btn-block" onclick="resetForm()">Clear</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <br />
+
+            </div>
+        </div>
+
+    }
+
+
+
+    @*<script src="~/Scripts/jquery-3.4.1.min.js"></script>*@
+    <script src="~/Content/plugins/jquery-validation/jquery.validate.min.js"></script>
+    <script src="~/Content/plugins/daterangepicker/daterangepicker.js"></script>
+    <link href="~/Content/plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css" rel="stylesheet" />
+    <script src="~/Content/Admin/js/Icon.js"></script>
+    <!-- Include SweetAlert CSS and JS files -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="~/Content/plugins/jquery-validation/jquery.validate.min.js"></script>
+
+
+
+    <script type="text/javascript">
+        function updateLeaveStatus(event) {
+            console.log("Before validation");
+             
+            // Prevent default form submission
+            event.preventDefault();
+             
+
+            // Validate fields before showing the confirmation dialog
+            var leaveStatusId = $('#leaveStatus').val();
+            var leaveStatus = $('#leaveStatus option:selected').text(); // Get the text of the selected option
+
+            // Check if any required field is empty
+            if (!leaveStatusId) {
+                // If any required field is empty, show an error message
+                Swal.fire({
+                    title: 'Error',
+                    text: 'Please Select Leave Status',
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                });
+                return false; // Prevent further execution and form submission
+            }
+
+            // If all required fields are filled, proceed to show the confirmation dialog
+            Swal.fire({
+                title: 'Are you sure you want to ' + leaveStatus + ' the leave?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, ' + leaveStatus + '!',
+                cancelButtonText: 'Cancel'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // User confirmed, submit the form with file data using FormData
+                    var formData = new FormData($('#leaveform')[0]);
+
+                    $.ajax({
+                        type: 'POST',
+                        url: '@Url.Action("UpdateLeaveRequestAsyncAM", "Bind")',
+                        data: formData,
+                        contentType: false,
+                        processData: false,
+                        success: function (data) {
+                            displayToast('Leave ' + leaveStatus + ' successfully!', 'success');
+                            $('#leaveform')[0].reset();
+                            $('.custom-file-label').html('Choose File'); // Reset the file input label text
+                            // Wait for the toast to be shown before redirecting
+                            setTimeout(function () {
+                                // window.location.href = '/Placement/ListAllInterviewAsyncSN'; // Replace '/home' with the URL you want to redirect to
+                            }, 2000); // Adjust the timeout value as needed
+                        },
+                        error: function (error) {
+                            // Handle error
+                            Swal.fire({
+                                title: 'Error',
+                                text: 'An error occurred while updating leave status.',
+                                icon: 'error',
+                                confirmButtonText: 'OK'
+                            }).then(() => {
+                                // Redirect to the AddNewExamSNAsync action
+                                window.location.href = '@Url.Action("GetLeaveRequestsAsyncAM", "Bind")';
+                            });
+                        }
+                    });
+                }
+            });
+
+            return false; // Prevent default form submission
+        }
+
+
+
+
+        $(document).ready(function () {
+            console.log("Document ready");
+             
+            if (@Model.StatusId !== "null") {
+                var selectedValueId = '@Model.StatusId';
+                $('#leaveStatus').val(selectedValueId);
+            }
+
+            var fieldsToDisable = [ '#startdate', '#timepicker', '#Endtimepicker', '#endDate', '#Leavelocation', '#reason'];
+
+            $.each(fieldsToDisable, function (index, fieldId) {
+                $(fieldId).prop('disabled', true);
+            });
+
+
+        var day = '@(Model.Day != null ? Model.Day : "null")';
+                if (day !== "null") {
+                    if (day === "Full Day") {
+                        $('.day-radio[value="Full Day"]').prop('checked', true);
+
+                        var radioButtonsToDisable = ['.day-radio[value="Half Day"]', '.day-radio[value="Short Leave"]'];
+
+                        $.each(radioButtonsToDisable, function (index, selector) {
+                            $(selector).prop('disabled', true);
+                            $('#starttimeFields, #endtimeField').hide();
+                        });
+                    }
+                    if (day === "Half Day") {
+                        $('.day-radio[value="Half Day"]').prop('checked', true);
+
+                        var radioButtonsToDisable = ['.day-radio[value="Full Day"]', '.day-radio[value="Short Leave"]'];
+
+                        $.each(radioButtonsToDisable, function (index, selector) {
+                            $(selector).prop('disabled', true);
+                        });
+                        $('#enddateField').hide();
+                    }
+                    if (day === "Short Leave") {
+                        $('.day-radio[value="Short Leave"]').prop('checked', true);
+
+                        var radioButtonsToDisable = ['.day-radio[value="Full Day"]', '.day-radio[value="Half Day"]'];
+
+                        $.each(radioButtonsToDisable, function (index, selector) {
+                            $(selector).prop('disabled', true);
+                        });
+                        $('#enddateField').hide();
+                    }
+            }
+
+              $('#btnPreviewFile').click(function () {
+       
+
+
+         var DocumentPath = '@Url.Content(Model.Document)';
+
+
+             if (DocumentPath.trim() !== '') {
+
+                 openLeaveDoc(DocumentPath);
+                 updateFileName();
+             } else {
+
+                 toastr.error('Document not available.');
+             }
+        // }
+         });
+     function openLeaveDoc(DocumentPath) {
+          
+         // For a modal (using SweetAlert2):
+         Swal.fire({
+             title: 'Leave Document',
+             html: '<iframe src="' + DocumentPath + '" width="100%" height="600px"></iframe>',
+             showCloseButton: true,
+             showConfirmButton: false
+      });
+  }
+        });
+    </script>
+</body>
+</html>

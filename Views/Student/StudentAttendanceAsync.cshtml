@@ -1,0 +1,57 @@
+﻿@model GSTEducationERPLibrary.Student.Student
+
+<style>
+    .label-color {
+        color: #3b5999;
+    }
+</style>
+
+<div class="container">
+    <hr />
+    <dl class="row">
+        @*<dt class="col-sm-4 text-right label-color">
+            @Html.HiddenFor(model => model.AssignScheduleId)
+        </dt>
+        <dd class="col-sm-8">
+            @Html.HiddenFor(model => model.AssignScheduleId)<br /><br />
+        </dd>*@
+        <dt class="col-sm-4 text-right label-color">
+            @Html.DisplayNameFor(model => model.TopicName)
+        </dt>
+        <dd class="col-sm-8">
+            @Html.DisplayFor(model => model.TopicName)<br /><br />
+        </dd>
+
+        <dt class="col-sm-4 text-right label-color">
+            @Html.DisplayNameFor(model => model.StaffName)
+        </dt>
+        <dd class="col-sm-8">
+            @Html.DisplayFor(model => model.StaffName)<br /><br />
+        </dd>
+
+        <dt class="col-sm-4 text-right label-color">
+            @Html.DisplayNameFor(model => model.Status)
+        </dt>
+        <dd class="col-sm-8">
+            @Html.DisplayFor(model => model.Status)<br /><br />
+        </dd>
+
+        <dt class="col-sm-4 text-right label-color">
+            @Html.DisplayNameFor(model => model.NoOfSessions)
+        </dt>
+        <dd class="col-sm-8">
+            @Html.DisplayFor(model => model.NoOfSessions)<br /><br />
+        </dd>
+
+        <dt class="col-sm-4 text-right label-color">
+            @Html.DisplayNameFor(model => model.Date)
+        </dt>
+        <dd class="col-sm-8">
+            @Html.DisplayFor(model => model.Date)<br /><br />
+        </dd>
+    </dl>
+</div>
+<p>
+    @*@Html.ActionLink("Edit", "Edit", new { /* id = Model.PrimaryKey */ }) |
+        @Html.ActionLink("Back to List", "Index")*@
+</p>

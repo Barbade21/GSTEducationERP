@@ -1,0 +1,86 @@
+﻿@model GSTEducationERPLibrary.Accountant.Accountant
+
+
+<head>
+    <script src="/Content/plugins/jquery/jquery.min.js" type="text/javascript"></script>
+    <style>
+        .card {
+            padding: 10px;
+        }
+
+        td {
+            text-align: center;
+            padding: 8px;
+        }
+
+            td p {
+                margin: 0;
+            }
+
+        strong {
+            font-weight: bold;
+       /*     text-align: center;*/
+        }
+
+        .dataalign{
+            text-align:left;
+        }
+    </style>
+    <style>
+        thead th {
+            position: sticky;
+            top: 0;
+ 
+            z-index: 2;
+        }
+
+        tbody tr td:first-child, thead tr th:first-child {
+            position: sticky;
+            left: 0;
+
+            z-index: 1;
+        }
+
+        .credit-text {
+            color: red !important;
+        }
+
+        .debit-text {
+            color: green !important;
+        }
+    </style>
+</head>
+<div>
+    <div class="card">
+
+        <table class="border-1">
+            <tr>
+                <td class="dataalign"><p>Bank Name:<strong> @Model.BankName</strong></p></td>
+                <td class="dataalign"><p>Bank Branch:<strong> @Model.BankBrach</strong></p></td>
+            </tr>
+            <tr>
+                <td class="dataalign"><p>Account Opening Date:<strong> @Model.BankAccountOpeningDate.ToString("dd/MM/yyyy")</strong></p></td>
+                <td class="dataalign"><p>Account Type:<strong> @Model.AccountType</strong></p></td>
+
+            </tr>
+            <tr>
+                <td class="dataalign"><p> Holder Name:<strong> @Model.AccountHolderName</strong></p></td>
+                <td class="dataalign"><p>Account Number:<strong> @Model.BankAccountNumber</strong></p></td>
+            </tr>
+            <tr>
+                <td class="dataalign"><p>IFSC Code:<strong> @Model.IFSCCode</strong></p></td>
+                <td class="dataalign"><p>MICR Code:<strong> @Model.MICRCode</strong></p></td>
+            </tr>
+            <tr>
+                <td class="dataalign"><p>Current Balance:<strong> @String.Format("{0:N2} ₹", Model.BankAmount)</strong></p></td>
+                <td class="dataalign"><p>Opening Balance:<strong> @String.Format("{0:N2} ₹", Model.BankAccountOpeningBalance)</strong></p></td>
+            </tr>
+            <tr>
+                <td class="dataalign"><p>Minimum Balance:<strong> @String.Format("{0:N2} ₹", Model.BankAccountMinimumBalance)</strong></p></td>
+                <td class="dataalign"><p>Account Added Date:<strong> @Model.Date.ToString("dd/MM/yyyy")</strong></p></td>
+            </tr>
+        </table>
+    </div>
+
+
+</div>

@@ -1,0 +1,377 @@
+﻿@model GSTEducationERPLibrary.Accountant.Accountant
+
+@{
+    ViewBag.Title = "PendingInstallmentsAsyncAD";
+    Layout = "~/Views/Shared/_LayoutERP.cshtml";
+}
+
+<html>
+<head>
+    <script src="~/Content/plugins/jquery/jquery.min.js"></script>
+    <link href="~/Content/plugins/fontawesome-free/css/all.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="~/Content/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+    <link rel="stylesheet" href="~/Content/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
+    <link rel="stylesheet" href="~/Content/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
+    <style>
+
+        .breadcrumb a {
+            color: #33CCCC; /* Base color for breadcrumb links */
+            text-decoration: none; /* Optional: removes underline */
+        }
+
+            .breadcrumb a:hover,
+            .breadcrumb a:focus {
+                color: #66FFFF; /* Lighter shade on hover or focus */
+            }
+
+        .breadcrumb .breadcrumb-item.active {
+            color: #33CCCC; /* Color for the active breadcrumb item */
+        }
+
+        /* Optional: If you want to add a faint background on click (active state) */
+        .breadcrumb a:active {
+            color: #33CCCC;
+            background-color: #e6f9ff; /* Light background on click */
+        }
+
+
+        h2 {
+            padding-top: 10px;
+            margin-bottom: 10px;
+            font-family: Verdana;
+            font-weight: bold;
+            font-size: medium;
+            color: #33CCCC;
+        }
+
+        .dataTables_wrapper .btn-secondary {
+            color: #235;
+            background-color: transparent !important;
+            border-color: transparent;
+            font-size: x-large;
+            margin: 0px !important;
+        }
+
+        .card-primary.card-outline-tabs > .card-header a.active {
+            border-top: 3px solid #33CCCC;
+        }
+
+        a {
+            color: #33CCCC;
+        }
+
+        .card.card-outline-tabs .card-header a:hover {
+            color: #33CCCC;
+        }
+
+        .card-primary.card-outline-tabs > .card-header a.active, .card-primary.card-outline-tabs > .card-header a.active:hover {
+            border-top: 3px solid #33CCCC;
+        }
+
+        .card-body {
+            font-family: Calibri !important;
+            padding-bottom: 0px !important;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        th {
+            background-color: #33CCCC;
+            color: #000;
+            text-align: center !important;
+        }
+
+        td {
+            text-align: center;
+            color: black !important;
+        }
+
+        .table td {
+            padding: 0px 0px 0px 0px !important;
+            font-size: 14px !important;
+        }
+
+        .table th {
+            padding: 5px 5px 4px 10px !important;
+            font-size: 14px !important;
+        }
+
+        table.dataTable > thead .sorting:after, table.dataTable > thead .sorting:before {
+            font-size: xx-small !important;
+        }
+
+        div.dataTables_wrapper div.dataTables_filter {
+            margin-top: -40px !important;
+        }
+
+        div.dt-buttons {
+            margin-top: -20px !important;
+        }
+
+        .btn-group > .btn:not(:last-child):not(.dropdown-toggle), .btn-group > .btn-group:not(:last-child) > .btn {
+            padding-left: 5px !important;
+            padding-right: 5px !important;
+        }
+
+        div.dataTables_wrapper div.dataTables_filter label {
+            font-size: small !important;
+        }
+
+        div.dataTables_wrapper div.dataTables_filter input {
+            height: 20px !important;
+        }
+
+        div.dataTables_wrapper div.dataTables_info {
+            padding: 0px !important;
+            font-size: small !important;
+        }
+
+        div.dataTables_wrapper div.dataTables_paginate ul.pagination {
+            margin-top: -20px !important;
+        }
+
+        div.dataTables_wrapper div.dataTables_paginate {
+            font-size: small !important;
+        }
+
+        a {
+            color: #33CCCC;
+        }
+
+        .page-item.active .page-link {
+            background-color: #33CCCC;
+            border-color: #33CCCC;
+            color: #fff;
+        }
+
+        .table.dataTable.dtr-inline.collapsed > tbody > tr > td.dtr-control:before, table.dataTable.dtr-inline.collapsed > tbody > tr > th.dtr-control:before {
+            background-color: #33CCCC;
+        }
+
+        .dropdown-item.active, .dropdown-item:active {
+            background-color: #33CCCC;
+        }
+
+        .sidebar-dark-primary .nav-sidebar > .nav-item > .nav-link.active, .sidebar-light-primary .nav-sidebar > .nav-item > .nav-link.active {
+            background-color: #33CCCC;
+        }
+
+        h3, h5 {
+            color: #33CCCC;
+            font-weight: bold;
+            font-size: 20px;
+            font-family: sans-serif;
+        }
+    </style>
+</head>
+<body style="margin: 0; padding: 0;">
+
+    <h3>Pending Installlments</h3>
+    <br />
+
+    <div class="card " style="padding: 10px;">
+        <div class="row">
+            <div class="col-md-4">
+                <h2></h2>
+            </div>
+   
+        </div>
+        <hr />
+        <div class="card-body">
+            <div class="container" style="margin-left:-10px">
+                <div class="row">
+                    <div class="col-6">
+                        <div class="card card-primary card-outline card-outline-tabs">
+                            <div class="card-header p-0 border-bottom-0">
+                                <ul class="nav nav-tabs" id="custom-tabs-four-tab" role="tablist">
+                                    <li class="nav-item">
+                                        <a class="nav-link active" data-toggle="pill" href="#scheduled" id="StaffDetailsTab" role="tab" aria-controls="custom-tabs-four-home" aria-selected="true">Pending Fees</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" data-toggle="pill" href="#pending" id="pendingTab" role="tab" aria-controls="custom-tabs-four-home" aria-selected="true">Internal</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" data-toggle="pill" href="#conducted" id="conductedTab" role="tab" aria-controls="custom-tabs-four-home" aria-selected="true">External</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    @*<div class="col-4"
+                    <div class="col-6">
+                        <div class="row justify-content-end">
+                            <div class="col-auto">
+                                <a id="scheduleLink" href="#" class="icon" title="Schedule">
+                                    <video width="35" height="35" playsinline loop>
+                                        <source src="~/Content/Admin/icon/Add Event.mp4" type="video/mp4">
+                                    </video>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                </div>*@
+
+                </div>
+
+                <div id="MockList"></div>
+
+            </div>
+        </div>
+
+
+
+
+
+        <script src="~/Content/plugins/jquery/jquery.min.js" type="text/javascript"></script>
+        <script src="~/Content/plugins/bootstrap/js/bootstrap.bundle.min.js" type="text/javascript"></script>
+        <script src="~/Content/plugins/datatables/jquery.dataTables.min.js" type="text/javascript"></script>
+        <script src="~/Content/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js" type="text/javascript"></script>
+        <script src="~/Content/plugins/datatables-responsive/js/dataTables.responsive.min.js" type="text/javascript"></script>
+        <script src="~/Content/plugins/datatables-responsive/js/responsive.bootstrap4.min.js" type="text/javascript"></script>
+        <script src="~/Content/plugins/datatables-buttons/js/dataTables.buttons.min.js" type="text/javascript"></script>
+        <script src="~/Content/plugins/datatables-buttons/js/buttons.bootstrap4.min.js" type="text/javascript"></script>
+        <script src="~/Content/plugins/jszip/jszip.min.js" type="text/javascript"></script>
+        <script src="~/Content/plugins/pdfmake/pdfmake.min.js" type="text/javascript"></script>
+        <script src="~/Content/plugins/pdfmake/vfs_fonts.js" type="text/javascript"></script>
+        <script src="~/Content/plugins/datatables-buttons/js/buttons.html5.min.js" type="text/javascript"></script>
+        <script src="~/Content/plugins/datatables-buttons/js/buttons.print.min.js" type="text/javascript"></script>
+        <script src="~/Content/plugins/datatables-buttons/js/buttons.colVis.min.js" type="text/javascript"></script>
+
+
+
+
+            <script>
+		jQuery(document).ready(function ($) {
+               loadTabContent('@Url.Action("PendingInstallmentsListAsyncAD", "Accountant")');
+            @*
+
+            *@
+            $("#StaffDetailsTab").click(function () {
+
+
+               loadTabContent('@Url.Action("PendingInstallmentsListAsyncAD", "Accountant")');
+
+            });
+
+			$("#pendingTab").click(function () {
+
+
+            });
+
+			$("#conductedTab").click(function () {
+
+
+			});
+
+		function loadTabContent(tabContentUrl, statusId) {
+            $.ajax({
+				url: tabContentUrl,
+				data: { id: statusId },
+                type: 'GET',
+                success: function (data) {
+                    $('#MockList').html(data);
+                    var table = $('#MockList table').DataTable({
+                        "responsive": true,
+                        "lengthChange": false,
+                        "autoWidth": false,
+                        "stateSave": true,
+                        "dom": 'Bfrtip', // Only buttons without other elements
+                        "buttons": [
+                            {
+                                extend: 'copy',
+                                text: '<img src="/Content/Admin/icon/copy.png" title="Copy" alt="Copy" height="20" width="20" />',
+                                titleAttr: 'Copy'
+                            },
+                            {
+                                extend: 'csv',
+                                text: '<img src="/Content/Admin/icon/csv.jpg" title="CSV" alt="CSV" height="20" width="20" />',
+                                titleAttr: 'CSV'
+                            },
+                            {
+                                extend: 'excel',
+                                text: '<img src="/Content/Admin/icon/xls-file.png" title="xls" alt="xls" height="20" width="20" />',
+                                titleAttr: 'Excel'
+                            },
+                            {
+                                extend: 'pdf',
+                                text: '<img src="/Content/Admin/icon/pdf-file.png" title="pdf" alt="pdf" height="20" width="20" />',
+                                titleAttr: 'PDF'
+                            },
+                            {
+                                extend: 'print',
+                                text: '<img src="/Content/Admin/icon/printer.png" title="printer" alt="printer" height="20" width="20" />',
+                                titleAttr: 'Print'
+                            },
+                            {
+                                extend: 'colvis',
+                                text: '<img src="/Content/Admin/icon/column.jpg" title="column" alt="column" height="20" width="20" />',
+                                titleAttr: 'Columns'
+                            }
+                        ]
+                    });
+                    table.buttons().container().appendTo('#MockList .col-md-6:eq(0)');
+                },
+                error: function () {
+                    alert('Error loading content.');
+                }
+            });
+        }
+    });
+            </script>
+            <script>
+                $("#scheduleLink").click(function () {
+                    var isInternal = $("#internalButton").hasClass("active");
+                    redirectToAssignMock(isInternal);
+                });
+                function redirectToAssignMock(isInternal) {
+                    // Define the base URL
+                    var baseUrl = '/Placement/';
+
+                    // Define the action names for both internal and external cases
+                    var internalAction = 'ScheduleInternalMockSHAsync';
+                    var externalAction = 'ScheduleExternalMockSHAsync';
+
+                    // Construct the URL based on the condition
+                    var url = isInternal ? baseUrl + internalAction : baseUrl + externalAction;
+
+                    // Set the modal body content based on the URL
+                    jQuery.ajax({
+                        url: url,
+                        type: 'GET',
+                        success: function (data) {
+                            $('#ScheduleModal .modal-body').html(data);
+                            // Show the modal
+                            $('#ScheduleModal').modal('show');
+                        },
+                        error: function () {
+                            alert('Error loading content.');
+                        }
+                    });
+                }
+            </script>
+
+            <div class="modal fade" id="ScheduleModal" role="dialog" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content" style="background-color: white; width: 800px;">
+
+                        <div class="modal-body">
+                            Content for Schedule Modal
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            @*<nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/TrainerDashboardAsyncTS/Accountant">Dashboard</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Pending Installments</li>
+            </ol>
+        </nav>*@
+
+
+</body>
+</html>

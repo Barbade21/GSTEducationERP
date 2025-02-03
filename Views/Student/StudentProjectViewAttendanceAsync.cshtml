@@ -1,0 +1,136 @@
+﻿@model GSTEducationERPLibrary.Student.Student
+
+<head>
+    <link rel="stylesheet" href="~/Content/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+    <link rel="stylesheet" href="~/Content/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
+    <link rel="stylesheet" href="~/Content/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
+</head>
+<div class="row">
+    <div class="col-9 " style="left:1vw;">
+        <h2>Project Name: </h2>
+    </div>
+    <div class="col-9" style="top:-2vw;left:10vw;">
+        <label>
+            <b> @Model.ProjectName</b>
+        </label>
+    </div>
+
+</div>
+<div class="table-responsive container">
+    <div class="table-wrapper">
+        <table class="table table-bordered" id="example">
+            <thead>
+                <tr>
+                    <th hidden>
+                        @Html.HiddenFor(model => model.AssignProjectId)
+                    </th>
+
+                    <th>
+                        @Html.DisplayNameFor(model => model.Date)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.InTime)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.OutTime)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Status)
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+
+                @foreach (var item in Model.lstviewprojectattendance)
+                {
+                    <tr>
+                        <td hidden>
+                            @Html.HiddenFor(modelItem => item.AssignProjectId)
+                        </td>
+
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Date)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.InTime)
+
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.OutTime)
+
+                        </td>
+
+                        <td>
+                            @if (item.Status == "Present")
+                            {
+                                <span class="badge bg-success">@Html.DisplayFor(modelItem => item.Status)</span>
+                            }
+
+                            @if (item.Status == "Absent")
+                            {
+                                <span class="badge bg-danger">@Html.DisplayFor(modelItem => item.Status)</span>
+                            }
+                        </td>
+                    </tr>
+
+                }
+
+
+            </tbody>
+        </table>
+    </div>
+</div>
+<style>
+    .table-responsive {
+        position: relative;
+    }
+
+        .table-responsive thead th {
+            position: sticky;
+            top: 0;
+            color: white;
+            z-index: 1;
+            background-color: #3b5999;
+            box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.4);
+            border: black;
+        }
+
+        .table-responsive tbody td {
+            border-block-color: black;
+        }
+
+    .table-wrapper {
+        max-height: 190px; /* or whatever height you prefer */
+        overflow-y: auto;
+    }
+</style>
+
+
+<style>
+    #example.table-bordered th,
+    #example.table-bordered td {
+        border: 1px solid black !important;
+    }
+
+    #example.table-bordered {
+        border: 1px solid black !important;
+    }
+</style>
+<style>
+    .table-container {
+        max-height: 400px; /* Adjust the height as needed */
+        overflow-y: auto; /* Adds a vertical scrollbar if content overflows */
+        border: 1px solid black; /* Optional: border around the container */
+    }
+
+        .table-container table {
+            width: 100%; /* Ensures the table takes up the full width of the container */
+            border-collapse: collapse; /* Optional: ensures borders between cells are collapsed */
+        }
+
+        .table-container th,
+        .table-container td {
+            border: 1px solid black; /* Ensures table cells have black borders */
+        }
+</style>
+

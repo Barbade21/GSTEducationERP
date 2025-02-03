@@ -1,0 +1,186 @@
+﻿@model GSTEducationERPLibrary.Accountant.Accountant
+
+@using System.Globalization
+@{
+    var cultureInfo = new CultureInfo("hi-IN"); // Or dynamically set based on your requirements
+    var currencySymbol = cultureInfo.NumberFormat.CurrencySymbol;
+}
+
+@{
+    ViewBag.Title = "ListCompletedVoucher";
+    // Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<table id="example1" class="table table-bordered">
+    <thead>
+        <tr>
+            <th>@Html.DisplayNameFor(model => model.VoucherCode)</th>
+            <th>@Html.DisplayNameFor(model => model.AmountReceiver)</th>
+            <th>@Html.DisplayNameFor(model => model.AmountReceiverType)</th>
+            <th>@Html.DisplayNameFor(model => model.VoucherType)</th>
+            <th>@Html.DisplayNameFor(model => model.VoucherDate)</th>
+            <th>@Html.DisplayNameFor(model => model.PaymentMode)</th>
+            <th>@Html.DisplayNameFor(model => model.Amount)</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.lstVoucher)
+        {
+            <tr>
+                <td data-toggle="tooltip" title="@item.Description">
+                    @Html.DisplayFor(modelItem => item.VoucherCode)
+                </td>
+                <td>
+                    @if (!string.IsNullOrEmpty(item.VendorName))
+                    {
+                        @Html.DisplayFor(modelItem => item.VendorName)
+                    }
+                    else if (!string.IsNullOrEmpty(item.AmountPaidTo))
+                    {
+                        @Html.DisplayFor(modelItem => item.AmountPaidTo)
+                    }
+                    else
+                    {
+                        @Html.DisplayFor(modelItem => item.AmountReceiver)
+                    }
+                </td>
+                <td>
+                    @if (!string.IsNullOrEmpty(item.VendorName))
+                    {
+                        @Html.Raw("Vendor")
+                    }
+                    else if (!string.IsNullOrEmpty(item.AmountPaidTo))
+                    {
+                        @Html.Raw("Staff")
+                    }
+                    else
+                    {
+                        @Html.DisplayFor(modelItem => item.AmountReceiverType)
+                    }
+                </td>
+                <td>@Html.DisplayFor(modelItem => item.VoucherType)</td>
+                <td>@Html.DisplayFor(modelItem => item.VoucherDate)</td>
+                <td>@Html.DisplayFor(modelItem => item.PaymentMode)</td>
+                <td>
+                    @string.Format(cultureInfo, "{0:N2} {1}", item.Amount, currencySymbol) <!-- Dynamic symbol -->
+                </td>
+                <td>
+                    <a href="#" class="icon" data-id="@item.VoucherCode" data-url="@Url.Action("DetailsVoucherSGS", "Accountant", new { id = item.VoucherCode })"
+                       data-toggle="modal" data-target="#voucherModal" title="View">
+                        <video width="25" height="25" playsinline loop>
+                            <source src="~/Content/Admin/icon/view.mp4" type="video/mp4">
+                        </video>
+                    </a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<!-- Voucher Details Modal -->
+<div class="modal fade" id="voucherModal" tabindex="-1" role="dialog" aria-labelledby="voucherModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="voucherModalLabel">Voucher Details</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <!-- Voucher details will be loaded here -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="~/Content/Admin/js/Icon.js"></script>
+<!-- jQuery -->
+<script src="~/Content/plugins/jquery/jquery.min.js"></script>
+<!-- Bootstrap 4 -->
+<script src="~/Content/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+<!-- DataTables  & Plugins -->
+<script src="~/Content/plugins/datatables/jquery.dataTables.min.js"></script>
+<script src="~/Content/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
+<script src="~/Content/plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
+<script src="~/Content/plugins/datatables-responsive/js/responsive.bootstrap4.min.js"></script>
+<script src="~/Content/plugins/datatables-buttons/js/dataTables.buttons.min.js"></script>
+<script src="~/Content/plugins/datatables-buttons/js/buttons.bootstrap4.min.js"></script>
+<script src="~/Content/plugins/jszip/jszip.min.js"></script>
+<script src="~/Content/plugins/pdfmake/pdfmake.min.js"></script>
+<script src="~/Content/plugins/pdfmake/vfs_fonts.js"></script>
+<script src="~/Content/plugins/datatables-buttons/js/buttons.html5.min.js"></script>
+<script src="~/Content/plugins/datatables-buttons/js/buttons.print.min.js"></script>
+<script src="~/Content/plugins/datatables-buttons/js/buttons.colVis.min.js"></script>
+<script type="text/javascript">
+    //$(document).ready(function () {
+
+    //    $('#example1').on('click', '.icon', function () {
+    //        var voucherCode = $(this).data('id');
+    //        var url = $(this).data('url');
+    //        var targetModal = $(this).data('target');
+
+    //        $.ajax({
+    //            url: url,
+    //            type: 'GET',
+    //            success: function (data) {
+    //                $(targetModal + ' .modal-body').html(data);
+    //                $(targetModal).modal('show');
+    //            },
+    //            error: function (xhr, status, error) {
+    //                console.log(xhr.responseText);
+    //            }
+    //        });
+    //    });
+    //    $('[data-toggle="tooltip"]').tooltip();
+    //});
+    //jQuery(document).ready(function ($) {
+    //    $('#example1').on('click', '.sectionEditLink', function () {
+    //        var LabId = $(this).data('id');
+    //        var url = $(this).data('url');
+    //        $.ajax({
+    //            url: url,
+    //            type: 'GET',
+    //            success: function (data) {
+    //                $('#SectionModal .modal-body').html(data);
+    //                $('#SectionModal').modal('show');
+    //            }
+    //        });
+    //    });
+    //    $('#example1').on('click', '.sectionEditLink2', function () {
+    //        var LabId = $(this).data('id');
+    //        var url = $(this).data('url');
+    //        $.ajax({
+    //            url: url,
+    //            type: 'GET',
+    //            success: function (data) {
+    //                $('#SectionModal .modal-body').html(data);
+    //                $('#SectionModal').modal('show');
+    //            }
+    //        });
+    //    });
+
+    //});
+</script>
+@*<script type="text/javascript">
+    $(document).ready(function () {
+        $('#example1').on('click', '.sectionEditLink', function (e) {
+            e.preventDefault(); // Prevent default link behavior
+            var AssignTestId = $(this).data('id');
+            var url = $(this).data('url');
+            $.ajax({
+                url: url,
+                type: 'GET',
+                success: function (data) {
+                    $('#SectionModal .modal-body').html(data);
+                    $('#SectionModal').modal('show');
+                },
+                error: function (xhr, status, error) {
+                    // Handle errors if any
+                    console.error(xhr.responseText);
+                }
+            });
+        });
+    });
+</script>*@

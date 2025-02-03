@@ -1,0 +1,81 @@
+﻿@model GSTEducationERPLibrary.Student.Student
+
+<div class="card " style="padding: 10px;">
+    <table id="LoadList1" class="wrapper table-striped table-bordered" style="width:100%">
+        <thead>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.SerialNo)
+                </th>
+
+                <th>
+                    @Html.DisplayNameFor(model => model.TestName)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.SectionName)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.TopicName)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.LabName)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Date)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Time)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Duration)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.TotalMarks)
+                </th>
+
+            </tr>
+        </thead>
+        <tbody>
+
+            @foreach (var item in Model.UpcomingTestList)
+
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.SerialNo)
+                    </td>
+
+                    <td>
+                        @Html.DisplayFor(modelItem => item.TestName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.SectionName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.TopicName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.LabName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Date)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Time)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Duration)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.TotalMarks)
+                    </td>
+
+
+                </tr>
+            }
+
+
+        </tbody>
+        
+    </table>
+    </div>

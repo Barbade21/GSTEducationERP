@@ -1,0 +1,569 @@
+﻿@model GSTEducationERPLibrary.Accountant.Accountant
+
+
+<head>
+    <script src="/Content/plugins/jquery/jquery.min.js" type="text/javascript"></script>
+    <link href="~/Content/plugins/fontawesome-free/css/all.min.css" rel="stylesheet" />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <style>
+        h2 {
+            padding-top: 10px;
+            margin-bottom: 8px;
+            font-family: Verdana;
+            font-weight: bold;
+            font-size: medium;
+            color: #33CCCC;
+        }
+
+        .btn-green:hover {
+            color: white;
+            background: #2b83cb;
+        }
+
+        .btn-black {
+            color: white;
+            background: rgb(169,169,169);
+        }
+
+        a {
+            color: #13c6e6;
+        }
+
+        .btn-black:hover {
+            background: black;
+        }
+
+        .addlogo {
+            width: 65%;
+            aspect-ratio: 3/2;
+            object-fit: contain;
+            /*mix-blend-mode: color-burn;*/
+        }
+
+        .sectionEditLink:hover {
+            background-color: darkturquoise;
+        }
+
+        .card {
+            padding: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        label {
+            /*margin-right: 10px;*/
+            font: xx-small !important;
+        }
+
+        input {
+            padding: 5px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .required-field::after {
+            content: "*";
+            color: red;
+            margin-left: 5px;
+        }
+    </style>
+</head>
+<body>
+    @*<form id="AddNewBank" action="/Accountant/AddNewBankAccountAsyncAN" method="post" enctype="multipart/form-data">*@
+    @using (Html.BeginForm("AddNewBankAccountAsyncAN", "Accountant", FormMethod.Post, new { @id = "AddNewBank", @enctype = "multipart/form-data" }))
+    {
+        @Html.AntiForgeryToken()
+
+        <br />
+        <div class="card">
+
+
+            <div class="form-group row">
+                <div class="col-md-2">
+                    @Html.Label("IFSC Code:", htmlAttributes: new { @class = "required-field" })
+                </div>
+                <div class="col-md-4">
+                    <div class="input-group mb-3">
+                        @Html.TextBox("IFSCCode", null, new { @class = "form-control", id = "IFSCCode", style = "text-transform:uppercase;" })
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    @Html.LabelFor(model => model.MICRCode, "MICR Code:", htmlAttributes: new { @class = "control-label" })
+                </div>
+                <div class="col-md-4">
+                    <div class="input-group mb-3">
+                        @*<span class="input-group-text"><i class="far fa-code-branch"></i></span>*@
+                        @Html.EditorFor(model => model.MICRCode, new { htmlAttributes = new { @class = "form-control", id = "MICR", @readonly = "readonly" } })
+                    </div>
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-md-2">
+                    @Html.LabelFor(model => model.BankName, "Bank Name:", htmlAttributes: new { @class = "control-label" })
+                </div>
+                <div class="col-md-4">
+                    <div class="input-group mb-3">
+                        @*<span class="input-group-text"><i class="far fa-ambulance"></i></span>*@
+                        @Html.EditorFor(model => model.BankName, new { htmlAttributes = new { @class = "form-control", id = "BankName", @readonly = "readonly" } })
+                    </div>
+                </div>
+
+                <div class="col-md-2">
+                    @Html.LabelFor(model => model.BankBranch, "Branch:", htmlAttributes: new { @class = "control-label" })
+                </div>
+                <div class="col-md-4">
+                    <div class="input-group mb-3">
+                        @*<span class="input-group-text"><i class="far fa-ambulance"></i></span>*@
+                        @Html.EditorFor(model => model.BankBranch, new { htmlAttributes = new { @class = "form-control", id = "BankBranch", @readonly = "readonly" } })
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group row">
+                <div class="col-md-2">
+                    @Html.LabelFor(model => model.AccountHolderName, "Account Holder Name:", htmlAttributes: new { @class = "required-field" })
+                </div>
+                <div class="col-md-4">
+                    <div class="input-group mb-3">
+                        @*<span class="input-group-text"><i class="far fa-ambulance"></i></span>*@
+                        @Html.EditorFor(model => model.AccountHolderName, new { htmlAttributes = new { @class = "form-control", id = "AccountHoldarName" } })
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    @Html.LabelFor(model => model.BankAccountNumber, "Account Number:", htmlAttributes: new { @class = "required-field" })
+                </div>
+                <div class="col-md-4">
+                    <div class="input-group mb-3">
+                        @*<span class="input-group-text"><i class="far fa-ambulance"></i></span>*@
+                        @Html.EditorFor(model => model.BankAccountNumber, new { htmlAttributes = new { @class = "form-control", id = "AccountNumber", value = "" } })
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group row">
+                <div class="col-md-2">
+                    @Html.LabelFor(model => model.AccountType, "Account Type", htmlAttributes: new { @class = "required-field" })
+                </div>
+                <div class="col-md-4">
+                    @Html.DropDownListFor(
+                        model => model.AccountType,
+                        new List<SelectListItem>
+                        {
+                            new SelectListItem { Value = "", Text = "-- Select Type --" },
+                            new SelectListItem { Value = "Saving", Text = "Saving" },
+                            new SelectListItem { Value = "Current", Text = "Current" }
+                        },
+                        new { @class = "required-field form-control", id = "BankType" }
+                    )
+
+                </div>
+                <div class="col-md-2">
+                    @Html.LabelFor(model => model.BankAccountOpeningDate, "Account Opening Date:", htmlAttributes: new { @class = "required-field" })
+                </div>
+
+                <div class="col-md-4">
+                    <div class="input-group mb-3">
+                        @*<span class="input-group-text">📅</span>*@
+                        @Html.EditorFor(model => model.BankAccountOpeningDate, new { htmlAttributes = new { @class = "form-control", type = "date", id = "OpeningDate" } })
+                    </div>
+                </div>
+
+            </div>
+            <div class="form-group row">
+                <div class="col-md-2">
+                    @Html.LabelFor(model => model.BankAccountMinimumBalance, "Minimum Balance:", htmlAttributes: new { @class = "required-field" })
+                </div>
+                <div class="col-md-4">
+                    <div class="input-group mb-3">
+                        @*<span class="input-group-text">💰</span>*@
+                        @Html.EditorFor(model => model.BankAccountMinimumBalance, new { htmlAttributes = new { @class = "form-control", id = "MinimumBalace", value = "" } })
+
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    @Html.LabelFor(model => model.BankAccountOpeningBalance, "Opening Balance:", htmlAttributes: new { @class = "required-field" })
+                </div>
+                <div class="col-md-4">
+                    <div class="input-group mb-3">
+                        @*<span class="input-group-text">💸</span>*@
+                        @Html.EditorFor(model => model.BankAccountOpeningBalance, new { htmlAttributes = new { @class = "form-control", id = "OpeningBalace", value = "" } })
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-center pt-2 mb-2">
+                <input type="submit" value="Save" class="btn btn-success" id="SaveButton">
+            </div>
+        </div>
+    }
+
+    @* </form>*@
+
+    <script type="text/javascript">
+        $('#AccountNumber').val('');
+
+
+        $('input[type=text]').each(function () {
+            var req = $(this).attr('data-val-required');
+            if (undefined != req) {
+                var label = $('label[for="' + $(this).attr('id') + '"]');
+                var text = label.text();
+                if (text.length > 0) {
+                    label.append('<span style="color:red"> *</span>');
+                }
+            }
+        });
+    </script>
+
+
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/jqueryval")
+
+    @* <script src="~/Content/plugins/jquery/jquery.min.js"></script>*@
+    <script src="~/Content/plugins/toastr/toastr.min.js"></script>
+    <link rel="stylesheet" href="~/Content/plugins/toastr/toastr.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+
+    <script>
+        //Validate the Account Number is already Exits or Not
+        $('#AccountNumber').on('blur', function () {
+            var AccountNumber = $(this).val();
+            const valid = ValidateVendorName(AccountNumber);
+            if (valid) {
+                $('AccountNumber').val(null);
+            }
+        });
+
+        function ValidateVendorName(AccountNumber) {
+            if (AccountNumber != '') {
+                return $.ajax({
+                    url: '/Accountant/ValidateAccountNumberAsync',
+                    type: 'GET',
+                    data: { AccountNumber: AccountNumber },
+                    dataType: 'json'
+                }).then(function (response) {
+                    if (response.success) {
+                        $('#AccountNumber').css('border', '');
+                        return true;
+
+                    } else {
+                        // Vendor name exists, validation failed
+                        $('#AccountNumber').css('border', '1px solid red');
+                        toastr.error("Bank account already exists.", "error");
+                        $('#AccountNumber').val('');
+                        return false;
+                    }
+                }).catch(function () {
+                    toastr.error("There has been an error validating the bank account number.", "error");
+                    return false;
+                });
+            } else {
+                toastr.error("Please enter the account number.", "error");
+                return false; // Ensure the function returns false if no vendor name is provided
+            }
+        };
+    </script>
+
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#IFSCCode').blur(function () {
+                var ifscCode = $('#IFSCCode').val();
+                if (ifscCode) {
+                    $.ajax({
+                        url: 'https://ifsc.razorpay.com/' + ifscCode,
+                        method: 'GET',
+                        success: function (data) {
+                            if (data) {
+                                $('#BankName').val(data.BANK);
+                                $('#BankBranch').val(data.BRANCH);
+                                $('#MICR').val(data.MICR);
+                            } else {
+                                toastr.error('No details found for the given IFSC code.');
+                                document.getElementById("MICR").value = "";
+                                document.getElementById("BankName").value = "";
+                                document.getElementById("BankBranch").value = "";
+                            }
+                        },
+                        error: function (xhr, status, error) {
+                            document.getElementById("MICR").value = "";
+                            document.getElementById("BankName").value = "";
+                            document.getElementById("BankBranch").value = "";
+                            toastr.error('Error fetching bank details: ' + error);
+                        }
+                    });
+                } else {
+                    toastr.error('Please enter an IFSC code.');
+                    document.getElementById("MICR").value = "";
+                    document.getElementById("BankName").value = "";
+                    document.getElementById("BankBranch").value = "";
+                }
+            });
+        });
+    </script>
+
+    <script>
+        function checkIFSCAndClearBalance() {
+            var ifscCode = document.getElementById('IFSCCode').value;
+            if (!ifscCode) {  // Checks if IFSCCode is null, undefined, or empty
+                document.getElementById("MICR").value = "";
+                document.getElementById("BankName").value = "";
+                document.getElementById("BankBranch").value = "";
+            }
+        }
+
+        // Attach this function to an event, such as 'blur' on the IFSCCode field
+        document.getElementById('IFSCCode').addEventListener('blur', checkIFSCAndClearBalance);
+    </script>
+
+
+    <script>
+        $(document).ready(function () {
+            $("#IFSCCode").blur(function () {
+                var ifscCode = $('#IFSCCode').val();
+                if (!validateIFSC(ifscCode)) {
+                    toastr.error('Invalid IFSC Code. Please check and try again.', 'Validation Error');
+                    isValid = false;
+                }
+            });
+
+            //This method used to Validate IFSC Code
+            function validateIFSC(ifsc) {
+                var ifscPattern = /^[A-Za-z]{4}[a-zA-Z0-9]{7}$/; // Example pattern
+                return ifscPattern.test(ifsc);
+            }
+
+
+            //This is used to validate the Account Number
+            $('#AccountNumber').on('blur input', function (event) {
+                var value = $(this).val().trim();
+                var maxLength = 18;
+                var minLength = 8;
+
+                // Handle the 'input' event to restrict the length
+                if (event.type === 'input') {
+                    if (value.length > maxLength) {
+                        $(this).val(value.substring(0, maxLength));
+                        toastr.warning('Account number cannot exceed ' + maxLength + ' digits.', 'Warning');
+                    }
+                }
+
+                // Handle the 'blur' event for minimum length and all zeros check
+                if (event.type === 'blur') {
+                    // Check if the value consists of all zeros
+                    if (/^0+$/.test(value)) {
+                        toastr.error('Account number cannot be all zeros.', 'Validation Error');
+                        $(this).val(''); // Clear the input
+                    }
+
+                    // Check if the value is less than the minimum length
+                    if (value.length >= 0 && value.length < minLength) {
+                        toastr.error('Account number must be at least ' + minLength + ' digits.', 'Validation Error');
+                        // Optionally, clear the input or highlight the error
+                        $(this).val(''); // Clear the input
+                    }
+                }
+            });
+
+            // This is Used to Validate Account Holder Name
+            $('#AccountHoldarName').on('blur', function () {
+                var maxLength = 250;
+                var minLength = 4;
+                var value = $(this).val().trim();
+
+                // Check for minimum length
+                if (value.length < minLength) {
+                    toastr.error('Account holder name must be at least ' + minLength + ' characters.', 'Validation Error');
+                    $(this).val(''); // Clear the input if validation fails
+                    return; // Exit the function to show only one toast at a time
+                }
+
+                // Check for maximum length and truncate if necessary
+                if (value.length > maxLength) {
+                    $(this).val(value.substring(0, maxLength));
+                    toastr.error('Account holder name cannot exceed ' + maxLength + ' characters.', 'Validation Error');
+                }
+            });
+
+            // Function to format numbers with up to 3 decimal places
+            function formatNumber(value) {
+                var parts = value.split('.');
+                if (parts.length > 1) {
+                    parts[1] = parts[1].substring(0, 3); // Limit decimal to 3 places
+                }
+                return parts.join('.');
+            }
+
+            // Validation for OpeningBalance
+            $('#OpeningBalace').on('input blur', function () {
+                var maxLength = 10;
+                var value = $(this).val().replace(/[^0-9.]/g, ''); // Allow only numbers and decimal point
+
+                // Ensure only one decimal point and limit to 3 decimal places
+                if ((value.match(/\./g) || []).length > 1) {
+                    toastr.error('Only one decimal point is allowed.', 'Validation Error');
+                    value = value.slice(0, -1); // Remove extra decimal
+                }
+
+                value = formatNumber(value); // Limit decimal places to 3
+
+                // Check if value exceeds the max length (integer part + 3 decimal places)
+                if (value.length > maxLength + 4) {
+                    toastr.warning('Opening balance cannot exceed ' + maxLength + ' digits before the decimal.', 'Warning');
+                    value = value.substring(0, maxLength); // Trim the value
+                }
+
+                $(this).val(value);
+            });
+
+            // Validation for MinimumBalance
+            $('#MinimumBalace').on('input blur', function () {
+                var maxLength = 6;
+                var value = $(this).val().replace(/[^0-9.]/g, ''); // Allow only numbers and decimal point
+
+                // Ensure only one decimal point and limit to 3 decimal places
+                if ((value.match(/\./g) || []).length > 1) {
+                    toastr.error('Only one decimal point is allowed.', 'Validation Error');
+                    value = value.slice(0, -1); // Remove extra decimal
+                }
+
+                value = formatNumber(value); // Limit decimal places to 3
+
+                // Check if value exceeds the max length (integer part + 3 decimal places)
+                if (value.length > maxLength + 4) {
+                    toastr.error('Minimum balance cannot exceed ' + maxLength + ' digits before the decimal.', 'Warning');
+                    value = value.substring(0, maxLength); // Trim the value
+                }
+
+                $(this).val(value);
+            });
+
+            // Compare OpeningBalance and MinimumBalance
+            $('#OpeningBalace, #MinimumBalace').on('blur', function () {
+                var openingBalance = parseFloat($('#OpeningBalace').val());
+                var minimumBalance = parseFloat($('#MinimumBalace').val());
+
+                if (!isNaN(openingBalance) && !isNaN(minimumBalance)) {
+                    if (openingBalance < minimumBalance) {
+                        toastr.error('Opening balance cannot be less than the minimum balance.', 'Validation Error');
+                        $('#OpeningBalace').val(''); // Clear the invalid value
+                    }
+                }
+            });
+        });
+    </script>
+    <script>
+        $(document).ready(function () {
+            var today = new Date();
+            today.setDate(today.getDate()); // Set to Today
+            var formattedDate = today.toISOString().split('T')[0]; // Format as yyyy-mm-dd
+
+            // Set max attribute for the date input
+            $('#OpeningDate').attr('max', formattedDate);
+        });
+    </script>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function () {
+
+            // Function to validate the balance
+            function validateBalances() {
+                var minBalance = parseFloat($('#MinimumBalace').val()) || 0;
+                var openingBalance = parseFloat($('#OpeningBalace').val()) || 0;
+                var errorMessage = '';
+                if (minBalance < 0) {
+                    errorMessage = 'First enter Minimum Positive Balace then Opening Balace';
+                }
+                else if (openingBalance < minBalance) {
+                    errorMessage = 'Opening Balance must be greater than Minimum Balance.';
+                }
+
+                $('#balanceValidationMessage').text(errorMessage); // Show error message
+                return !errorMessage; // Return true if no error
+            }
+
+            // Attach the validation function to the input fields
+            $('#MinimumBalace, #OpeningBalace').on('input', function () {
+                validateBalances();
+            });
+        });
+    </script>
+
+    <script>
+        $(document).ready(function () {
+
+            $("#AddNewBank").submit(function (e) {
+                e.preventDefault(); // Prevent the default form submission
+                // Show confirmation dialog
+                var bankName = $('#BankName').val();
+                var bankBranch = $('#BankBranch').val();
+                var holderName = $('#AccountHoldarName').val();
+                var acountNumber = $('#AccountNumber').val();
+                var minimumBalance = $('#MinimumBalace').val();
+                var openingBaalace = $('#OpeningBalace').val();
+                var openingDate = $('#OpeningDate').val();
+                var bankType = $('#BankType').val();
+                var ifsc = $('#IFSCCode').val();
+                var micr = $('#MICR').val();
+
+
+                // Validate form data
+                if (bankName.trim() === '' || bankBranch.trim() === '' || holderName.trim() === '' || acountNumber.trim() === '' || minimumBalance.trim() === '' || openingBaalace.trim() === '' || openingDate.trim() === '' || bankType.trim() === '' || ifsc.trim() === '' || micr.trim() === '') {
+                    Swal.fire('Error', 'Please fill in all fields.', 'error');
+                    return;
+                }
+                else {
+
+
+                    Swal.fire({
+                        title: 'Confirmation',
+                        text: 'Are you sure you want to add a new bank account?',
+                        icon: 'warning',
+
+
+                        showCancelButton: true,
+                        confirmButtonText: 'Yes',
+                        cancelButtonText: 'No',
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            // Perform form submission via AJAX
+                            $.ajax({
+                                url: $(this).attr("action"),
+                                type: $(this).attr("method"),
+                                data: new FormData(this),
+                                processData: false,
+                                contentType: false,
+                                success: function (response) {
+                                    // Clear form fields
+                                    $("#AddNewBank")[0].reset();
+
+                                    // Show success message using Toastr
+                                    toastr.success('Bank account added successfully!', 'Success');
+                                    setTimeout(function () {
+                                        window.location.href = 'BankAccountListAsyncAN';
+                                    }, 1000);
+                                },
+                                error: function () {
+                                    // Show error message if the AJAX request fails
+                                    toastr.error('An error occurred. Please try again later.', 'Error');
+                                }
+                            });
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+</body>

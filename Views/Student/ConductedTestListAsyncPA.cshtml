@@ -1,0 +1,98 @@
+﻿@model GSTEducationERPLibrary.Student.Student
+
+
+<style>
+    .bg-danger {
+        background-color: red;
+        color: white;
+    }
+
+    .bg-success {
+        background-color: green;
+        color: white;
+    }
+</style>
+
+<div class="card" style="padding: 10px;">
+    <table id="LoadList1" class="wrapper table-striped table-bordered" style="width:100%">
+
+        <thead>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.SerialNo)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.TestName)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.SectionName)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.TopicName)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.LabName)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Date)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Time)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Duration)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.TotalMarks)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.ObtainedMarks)
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.ConductedTestList)
+            {
+                int obtainedMarks;
+                bool isNumeric = int.TryParse(item.ObtainedMarks.ToString(), out obtainedMarks);
+
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.SerialNo)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.TestName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.SectionName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.TopicName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.LabName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Date)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Time)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Duration)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.TotalMarks)
+                    </td>
+                    <td>
+                        <span class="badge @(isNumeric && obtainedMarks < 20 ? "bg-danger" : "bg-success")">
+                            @Html.DisplayFor(modelItem => item.ObtainedMarks)
+                        </span>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+

@@ -1,0 +1,137 @@
+﻿@model GSTEducationERPLibrary.Student.Student
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <!-- DataTables CSS -->
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
+
+    <!-- DataTables JS -->
+    <script type="text/javascript" src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+
+    <!-- DataTables Buttons Extension -->
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/2.3.5/css/buttons.dataTables.min.css">
+    <script type="text/javascript" src="https://cdn.datatables.net/buttons/2.3.5/js/dataTables.buttons.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/buttons/2.3.5/js/buttons.html5.min.js"></script>
+</head>
+
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="form-group row">
+                @Html.HiddenFor(model => model.TopicId)
+                <div class="col-md-10">
+                    @Html.HiddenFor(model => model.TopicId, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.TopicId, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-9 " style="left:1vw;">
+                    <h2>Topic Name:</h2>
+                </div>
+                <div class="col-9" style="top:-2vw;left:9vw;">
+                    <label>
+                        <b>  @Model.TopicName</b>
+                    </label>
+                </div>
+
+            </div>
+            <div class="row">
+                <div class="col-9 " style="left:1vw; top:-2vw;">
+                    <h2>Trainer Name:</h2>
+                </div>
+                <div class="col-9" style="top:-4vw;left:10vw;">
+                    <label>
+                        <b>  @Model.StaffName</b>
+                    </label>
+                </div>
+
+            </div>
+
+           
+        </div>
+    </div>
+
+    <div class="col-12" style="top: -4vw;">
+        <div class="table-responsive">
+            <table id="example" class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th hidden>@Html.HiddenFor(model => model.TopicId)</th>
+                        <th>@Html.DisplayNameFor(model => model.Date)</th>
+                        <th>@Html.DisplayNameFor(model => model.Status)</th>
+
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.lstAttendanceTopicSS)
+                    {
+                        <tr>
+                            <td hidden>@Html.HiddenFor(modelItem => item.TopicId)</td>
+                            <td>@Html.DisplayFor(modelItem => item.Date)</td>
+                            @*<td>@Html.DisplayFor(modelItem => item.Status)</td>*@
+                            <td>
+                                @if (item.Status == "Present")
+                                {
+                                    <span class="badge bg-success">@Html.DisplayFor(modelItem => item.Status)</span>
+                                }
+                               
+                                @if (item.Status == "Absent")
+                                {
+                                    <span class="badge bg-danger">@Html.DisplayFor(modelItem => item.Status)</span>
+                                }
+                            </td>
+
+                        </tr>
+                    }
+                    @if (Model.lstAttendanceTopicSS == null || !Model.lstAttendanceTopicSS.Any())
+                    {
+                        <tr>
+                            <td colspan="4">No Attendance Data</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <style>
+        .table-responsive {
+            position: relative;
+        }
+
+            .table-responsive thead th {
+                position: sticky;
+                top: 0;
+                color: white;
+                z-index: 1;
+                background-color: #3b5999;
+                box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.4);
+                border: black;
+            }
+
+            .table-responsive tbody td {
+                border-block-color: black;
+            }
+    </style>
+   
+    <style>
+        #example.table-bordered th,
+        #example.table-bordered td {
+            border: 1px solid black !important;
+        }
+
+        #example.table-bordered {
+            border: 1px solid black !important;
+        }
+
+        h2 {
+            color: #3b5999;
+        }
+    </style>
+
+</body>
+</html>

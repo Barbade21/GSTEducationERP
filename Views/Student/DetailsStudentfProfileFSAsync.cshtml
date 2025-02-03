@@ -1,0 +1,372 @@
+﻿@model GSTEducationERPLibrary.Student.Student
+
+
+@{
+    ViewBag.Title = "DetailsStudentfProfileFSAsync";
+
+}
+<head>
+    <script src="~/Content/plugins/jquery/jquery.min.js"></script>
+
+
+
+</head>
+<style>
+    .btn i {
+        color: white;
+    }
+</style>
+
+ <div id="accordion">
+     <div class="card card-primary">
+         
+         <div class="card-header" style="background-color: #3b5999; ">
+             <h4 class="card-title w-100">
+                 <a class="d-block w-100" data-toggle="collapse" href="#collapseOne" style="color:white;">
+                     Personal Details
+                     <button class="btn" onclick="toggleIcon(this)"><i class="fas fa-plus"></i></button>
+                     @* <i class="fas fa-plus"></i>*@
+                 </a>
+             </h4>
+         </div>
+         <div id="collapseOne" class="collapse show" data-parent="#accordion">
+             <div class="card-body">
+                 <div style="display: flex;">
+                     <div style="width: 53%;">
+                         <p style=""><b>Candidate Code: </b><span style="color: #3b5999;"> @Model.CandidateCode </span></p>
+                         <p style="">
+                             <b>Full Name: </b><span style="color: #3b5999;"> @Model.FullName</span>
+
+                             @*<span onclick="myFunction(ReqFullNameF)">
+                                 <video id="myVideoforName" width="20" height="20" playsinline loop>
+                                     <source src="~/Content/Admin/icon/edit.mp4" type="video/mp4">
+                                 </video>
+                             </span>*@
+                         </p>
+                         @*<div id="ReqFullNameF" class="collapsible collapsed" data-parent="#accordion">
+                             <div class="col-md-12">
+                                 <div class="input-group">
+                                     <label> Updated Full Name</label>
+                                     <div class="col-md-8">
+                                         @Html.EditorFor(model => model.FullName, new { htmlAttributes = new { @class = "form-control col-md-12", id = "FullName", } })
+                                         @Html.ValidationMessageFor(model => model.FullName, "", new { @class = "text-danger" })
+                                     </div>
+
+                                 </div>
+                                 <div class="col-md-12">
+                                     <div class="form-group">
+                                         <label class="control-label col-md-12">Upload File</label>
+                                         <div class="col-md-12">
+                                             <div id="fileInputs" class="file-container">
+                                                 <input type="file" name="File" class="fileInput" />
+                                             </div>
+                                         </div>
+                                     </div>
+                                 </div>
+                             </div>
+                         </div>*@
+
+                         <p style="">
+                             <b>Contact Number: </b><span style="color: #3b5999;"> @Model.ContactNumber</span>
+                             @*<span onclick="myFunction(ReqContactNumberF)">
+                                 <video id="myVideoforName" width="20" height="20" playsinline loop>
+                                     <source src="~/Content/Admin/icon/edit.mp4" type="video/mp4">
+                                 </video>
+                             </span>*@
+                         </p>
+                         @*<div id="ReqContactNumberF" class="collapsible collapsed" data-parent="#accordion">
+                             <div class="col-md-12">
+                                 <div class="input-group">
+                                     <label> Updated Contact Number</label>
+                                     <div class="col-md-8">
+                                         @Html.EditorFor(model => model.ContactNumber, new { htmlAttributes = new { @class = "form-control col-md-12", id = "ContactNumber", } })
+                                         @Html.ValidationMessageFor(model => model.ContactNumber, "", new { @class = "text-danger" })
+                                     </div>
+
+                                 </div>
+                                 
+                             </div>
+                         </div>*@
+                         <p style=""><b>Admmission Date: </b><span style="color: #3b5999;"> @Model.AdmmissionDate.ToString("MMMM-d-yyyy")</span></p>
+                         <p style=""><b>DOB: </b><span style="color: #3b5999;"> @Model.DOB.ToString("MMMM-d-yyyy")</span></p>
+
+                     </div>
+                     <div style="width: 47%;">
+                         <p style="">
+                             <b>Alternate Contact: </b><span style="color: #3b5999;"> @Model.AlternateContact</span>
+                             @*<span onclick="myFunction(ReqAlternateContactF)">
+                                 <video id="myVideoforName" width="20" height="20" playsinline loop>
+                                     <source src="~/Content/Admin/icon/edit.mp4" type="video/mp4">
+                                 </video>
+
+                             </span>*@
+                         </p>
+                         @*<div id="ReqAlternateContactF" class="collapsible collapsed" data-parent="#accordion">
+                             <div class="col-md-12">
+                                 <div class="input-group">
+                                     <label> Updated Alternate Contact</label>
+                                     <div class="col-md-8">
+                                         @Html.EditorFor(model => model.AlternateContact, new { htmlAttributes = new { @class = "form-control col-md-12", id = "AlternateContact", } })
+                                         @Html.ValidationMessageFor(model => model.AlternateContact, "", new { @class = "text-danger" })
+                                     </div>
+
+                                 </div>
+                                
+                             </div>
+                         </div>*@
+
+                         <p style="">
+                             <b>Present Address: </b><span style="color: #3b5999;"> @Model.PresentAddress</span>
+                             @*<span onclick="myFunction(ReqPresentAddressF)">
+                                 <video id="myVideoforName" width="20" height="20" playsinline loop>
+                                     <source src="~/Content/Admin/icon/edit.mp4" type="video/mp4">
+                                 </video>
+                             </span>*@
+                         </p>
+                         @*<div id="ReqPresentAddressF" class="collapsible collapsed" data-parent="#accordion">
+                             <div class="col-md-12">
+                                 <div class="input-group">
+                                     <label> Updated Present Address</label>
+                                     <div class="col-md-8">
+                                         @Html.EditorFor(model => model.PresentAddress, new { htmlAttributes = new { @class = "form-control col-md-12", id = "PresentAddress", } })
+                                         @Html.ValidationMessageFor(model => model.PresentAddress, "", new { @class = "text-danger" })
+                                     </div>
+                                 </div>
+                                 <div class="col-md-12">
+                                     <div class="form-group">
+                                         <label class="control-label col-md-12">Upload File</label>
+                                         <div class="col-md-12">
+                                             <div id="fileInputs" class="file-container">
+                                                 <input type="file" name="File" class="fileInput" />
+                                             </div>
+                                         </div>
+                                     </div>
+                                 </div>
+                             </div>
+                         </div>*@
+
+
+                         <p style=""><b>Email Id: </b><span style="color: #3b5999;"> @Model.EmailId</span></p>
+                         <p style=""><b>Gender: </b><span style="color: #3b5999;"> @Model.Gender</span></p>
+
+
+                         @*<div class="col-md-6">
+                             <button type="submit" value="Request" style="background-color: #007bff; color: white;" id="requestButton">Request</button>
+                         </div>*@
+                     </div>
+                 </div>
+             </div>
+         </div>
+     </div>
+     <div class="card card-danger">
+         <div class="card-header" style="background-color: #3b5999;">
+             <h4 class="card-title w-100">
+                 <a class="d-block w-100" data-toggle="collapse" href="#collapseTwo" style="color:white;">
+                     Qualification Details
+                     <button class="btn" onclick="toggleIcon(this)"><i class="fas fa-plus"></i></button>
+                     @*<i class="fas fa-plus"></i>*@
+                 </a>
+             </h4>
+         </div>
+         <div id="collapseTwo" class="collapse" data-parent="#accordion">
+             <div class="card-body">
+                 <div style="display:flex;">
+                     <div style="width:53%;">
+                         <div style="width: 90%; margin: 0 auto; text-align:left;">
+
+                             <p style=""><b>CandidateCode: </b><span style="color: #3b5999;"> @Model.CandidateCode</span></p>
+                             <p style=""><b>SSC Year: </b><span style="color: #3b5999;"> @Model.SSCYear</span></p>
+                             <p style=""><b>HSC Year: </b><span style="color: #3b5999;"> @Model.HSCYear</span></p>
+
+                             <p style=""><b>Graduation Name: </b><span style="color: #3b5999;"> @Model.GraduationName</span></p>
+                             <p style=""><b>Graduation Year: </b><span style="color: #3b5999;"> @Model.GraduationYear</span></p>
+                             <p style=""><b>Post Graduation Name: </b><span style="color: #3b5999;"> @Model.PostGraduationName</span></p>
+                             <p style=""><b>Post Graduation Year: </b><span style="color: #3b5999;"> @Model.PostGraduationYear</span></p>
+                         </div>
+
+                     </div>
+             </div>
+         </div>
+
+         <script>
+             function myFunction(RequestedDiv) {
+                 //var id = ocument.getElementById("collapseName1");
+                 //var x = document.getElementById("collapseName1");
+                 var id = RequestedDiv.getAttribute('id');
+                 var x = document.getElementById(id);
+                 if (x.style.display === "none") {
+                     x.style.display = "block";
+                 } else {
+                     x.style.display = "none";
+                 }
+             }
+
+         </script>
+         <script>
+             $(document).ready(function () {
+
+                 $('#ReqFullNameF').hide();
+                 $('#ReqContactNumberF').hide();
+                 $('#ReqAlternateContactF').hide();
+                 $('#ReqPresentAddressF').hide();
+
+             });
+         </script>
+         <script>
+             $("#requestButton").click(function () {
+                 // Assuming ObjCo is already defined elsewhere in your script
+                 $.post("/StudentController/DetailsStudentfProfileFSAsync1", Objs, function (response) {
+                     // Handle the response here
+                     console.log(response);
+                 });
+             });
+             $("#myVideoforName3").click(function () {
+                 $("#ReqFullNameF").toggle();
+             });
+             $("#myVideoforName4").click(function () {
+                 $("#ReqContactNumberF").toggle();
+             });
+             $("#myVideoforName1").click(function () {
+                 $("#ReqAlternateContactF").toggle();
+             });
+             $("#myVideoforName2").click(function () {
+                 $("#ReqPresentAddressF").toggle();
+             });
+         </script>
+         <script>
+    jQuery(document).ready(function ($) {
+        $('#requestButton').on('click', function (e) {
+                e.preventDefault(); // Prevent default form submission
+
+                var fileInput = $('#file')[0];
+                if (fileInput.files.length === 0) {
+                Swal.fire({
+                icon: 'error',
+                title: 'Error!',
+                text: 'Please select a file to import.'
+                });
+                return;
+                }
+
+                var formData = new FormData($('form')[0]);
+                $.ajax({
+                type: 'POST',
+                url: '@Url.Action("DetailsStudentfProfileFSAsync", "Counsellor")',
+                data: formData,
+                contentType: false,
+                processData: false,
+                beforeSend: function () {
+                // Show a loading message or animation here
+                Swal.fire({
+                icon: 'info',
+                title: 'Loading...',
+                text: 'Please wait while the file is being uploading.',
+                allowOutsideClick: false,
+                showConfirmButton: false
+                });
+                },
+                success: function (data) {
+                if (data.success) {
+                Swal.fire({
+                icon: 'success',
+                title: 'Upload Successfully!',
+                text: data.message
+                });
+                } else {
+                Swal.fire({
+                icon: 'error',
+                title: 'Error!',
+                text: data.message
+                });
+                }
+                },
+                error: function (xhr, status, error) {
+                Swal.fire({
+                icon: 'error',
+                title: 'Error!',
+                text: 'An error occurred while uploading the file.'
+                });
+                },
+                complete: function () {
+                // Hide the loading message or animation here
+                Swal.close();
+                }
+                });
+     })
+         </script>
+         @*--------------------------------------------------Full Name Validation-------------------------------------*@
+         <script>
+             $(document).ready(function () {
+                 $('#FullName').on('input', function () {
+                     var input = $(this).val();
+                     if (!/^[a-zA-Z ]*$/.test(input)) {
+                         $(this).val(input.replace(/[^a-zA-Z ]/g, ''));
+                         $('#FullName').next('.text-danger').text('The field can only contain alphabetic characters.');
+                     } else {
+                         $('#FullName').next('.text-danger').text('');
+                     }
+                 });
+             });
+         </script>
+         @*--------------------------------------------------Contact Number Validation-------------------------------------*@
+         <script>
+             $(document).ready(function () {
+                 $('#ContactNumber').on('input', function () {
+                     var input = $(this).val();
+                     // Remove non-digit characters
+                     input = input.replace(/\D/g, '');
+                     if (input.length > 16) {
+                         input = input.slice(0, 16); // Limit to 16 characters
+                         $('#ContactNumber').next('.text-danger').text('The field can only contain up to 16 digits.');
+                     } else if (!/^\d*$/.test(input)) {
+                         $('#ContactNumber').next('.text-danger').text('The field can only contain numeric characters.');
+                     } else {
+                         $('#ContactNumber').next('.text-danger').text('');
+                     }
+                     $(this).val(input); // Set the modified value back to the input
+                 });
+             });
+         </script>
+
+         @*--------------------------------------------------Alternate Contact Validation-------------------------------------*@
+
+         <script>
+             $(document).ready(function () {
+                 $('#AlternateContact').on('input', function () {
+                     var input = $(this).val();
+                     // Remove non-digit characters
+                     input = input.replace(/\D/g, '');
+                     if (input.length > 16) {
+                         input = input.slice(0, 16); // Limit to 16 characters
+                         $('#AlternateContact').next('.text-danger').text('The field can only contain up to 16 digits.');
+                     } else if (!/^\d*$/.test(input)) {
+                         $('#AlternateContact').next('.text-danger').text('The field can only contain numeric characters.');
+                     } else {
+                         $('#AlternateContact').next('.text-danger').text('');
+                     }
+                     $(this).val(input); // Set the modified value back to the input
+                 });
+             });
+         </script>
+         <script>
+             function toggleIcon(button) {
+                 const icon = button.querySelector('i');
+                 if (icon.classList.contains('fa-plus')) {
+                     icon.classList.remove('fa-plus');
+                     icon.classList.add('fa-minus');
+                 } else {
+                     icon.classList.remove('fa-minus');
+                     icon.classList.add('fa-plus');
+                 }
+             }
+         </script>
+         <script>
+             function toggleIcon(element) {
+                 element.querySelector('i').classList.toggle('fa-plus');
+                 element.querySelector('i').classList.toggle('fa-minus');
+             }
+         </script>
+
+     </div>
+  </div>
+

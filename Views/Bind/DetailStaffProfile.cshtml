@@ -1,0 +1,316 @@
+﻿@model GSTEducationERPLibrary.Bind.Bind
+
+@{
+    ViewBag.Title = "DetailStaffProfile";
+    Layout = "~/Views/Shared/_LayoutERP.cshtml";
+}
+
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile Picture Upload</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="~/Content/plugins/jquery/jquery.min.js"></script>
+    <link href="~/Content/plugins/fontawesome-free/css/all.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="~/Content/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+    <link rel="stylesheet" href="~/Content/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
+    <link rel="stylesheet" href="~/Content/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
+
+    <style>
+        .profile-container {
+            position: relative;
+            display: inline-block;
+        }
+
+        .profile-user-img {
+            border-radius: 50%;
+            border: 2px solid #ccc;
+            width: 150px;
+            height: 150px;
+            object-fit: cover;
+        }
+
+        .upload-symbol {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 24px;
+            color: red;
+            cursor: pointer;
+            background-color: white;
+            border-radius: 50%;
+            padding: 5px;
+        }
+
+            .upload-symbol:hover {
+                color: darkred;
+            }
+
+        .upload-input {
+            display: none;
+        }
+
+        h2 {
+            color: #64bbc9;
+            font-weight: bold;
+            font-size: 20px;
+            margin-left: 17px;
+            margin-bottom: -10px;
+            font-family: sans-serif;
+        }
+
+        .dataTables_wrapper .btn-secondary {
+            color: #235;
+            background-color: transparent !important;
+            border-color: transparent;
+            font-size: x-large;
+            margin: 0px !important;
+        }
+
+        .card-primary.card-outline-tabs > .card-header a.active {
+            border-top: 3px solid #33CCCC;
+        }
+
+        a {
+            color: #33CCCC;
+        }
+
+        .card.card-outline-tabs .card-header a:hover {
+            color: #33CCCC;
+        }
+
+        .card-primary.card-outline-tabs > .card-header a.active, .card-primary.card-outline-tabs > .card-header a.active:hover {
+            border-top: 3px solid #33CCCC;
+        }
+
+        .card-body {
+            font-family: Calibri !important;
+            padding-bottom: 0px !important;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        th {
+            background-color: #33CCCC;
+            color: #000;
+            text-align: center !important;
+        }
+
+        td {
+            text-align: center;
+            color: black !important;
+        }
+
+        .table td {
+            padding: 0px 0px 0px 0px !important;
+            font-size: 14px !important;
+        }
+
+        .table th {
+            padding: 5px 5px 4px 10px !important;
+            font-size: 14px !important;
+        }
+
+        table.dataTable > thead .sorting:after, table.dataTable > thead .sorting:before {
+            font-size: xx-small !important;
+        }
+
+        div.dataTables_wrapper div.dataTables_filter {
+            /*margin-top: -40px !important;*/
+        }
+
+        div.dt-buttons {
+            margin-top: -20px !important;
+        }
+
+        .btn-group > .btn:not(:last-child):not(.dropdown-toggle), .btn-group > .btn-group:not(:last-child) > .btn {
+            padding-left: 5px !important;
+            padding-right: 5px !important;
+        }
+
+        div.dataTables_wrapper div.dataTables_filter label {
+            font-size: small !important;
+        }
+
+        div.dataTables_wrapper div.dataTables_filter input {
+            height: 20px !important;
+        }
+
+        div.dataTables_wrapper div.dataTables_info {
+            padding: 0px !important;
+            font-size: small !important;
+        }
+
+        div.dataTables_wrapper div.dataTables_paginate ul.pagination {
+            /* margin-top: -20px !important;*/
+        }
+
+        div.dataTables_wrapper div.dataTables_paginate {
+            font-size: small !important;
+        }
+    </style>
+</head>
+<body>
+    <section class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-3">
+                    @{
+                        var photograph = Session["Photograph"] as string;
+                        
+                    }
+                    <!-- Profile Image -->
+                    <div class="card card-primary card-outline" style="width:330px;">
+                        <div class="card-body box-profile">
+                            <div class="text-center">
+                                <div class="profile-container">
+                                    <img class="profile-user-img img-fluid"
+                                         src="@Url.Content(photograph)"
+                                         alt="User profile picture" id="profile-picture">
+                                    <span class="upload-symbol" onclick="document.getElementById('file-input').click()">&#x270E;</span>
+                                    <input type="file" id="file-input" class="upload-input" accept="image/*" onchange="uploadProfilePicture(event)">
+                                </div>
+
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <!-- Additional form elements can go here -->
+                                    </div>
+                                </div>
+                            </div>
+
+
+                            <h3 class="profile-username text-center">@Model.StaffName</h3>
+
+                            <ul class="list-group list-group-unbordered mb-3">
+                                <li class="list-group-item">
+                                    <b>Role</b> <a class="float-right" style="color: #0c00ff;"> @Model.StaffPosition </a>
+                                </li>
+                                <li class="list-group-item">
+                                    <b>Designation</b> <a class="float-right" style="color: #0c00ff;">@Model.DesignationCurrent</a>
+                                </li>
+                                <li class="list-group-item">
+                                    <b>Department</b> <a class="float-right" style="color: #0c00ff;">@Model.DepartmentNameCurrent</a>
+                                </li>
+                                <li class="list-group-item">
+                                    <b>Date of joining</b> <a class="float-right" style="color: #0c00ff;">@Model.JoiningDate</a>
+                                </li>
+                                <li class="list-group-item">
+                                    <strong><i class="fas fa-book mr-1"></i> Education</strong>
+
+                                    <p class="text-muted">
+
+                                        @Model.GraduationName , @Model.PostGraduationName
+                                    </p>
+                                </li>
+                                <li class="list-group-item">
+                                    <strong><i class="fas fa-map-marker-alt mr-1"></i> Location</strong>
+
+                                    <p class="text-muted">@Model.BranchName , @Model.currentCity</p>
+                                </li>
+                                @if (!string.IsNullOrEmpty(Model.SkillNames))
+                                {
+                                    <li class="list-group-item">
+                                        <strong><i class="fas fa-pencil-alt mr-1"></i> Skills</strong>
+
+                                        <p class="text-muted">
+                                            @Model.SkillNames
+
+                                        </p>
+                                    </li>
+                                }
+
+                            </ul>
+                        </div>
+                        <!-- /.card-body -->
+                    </div>
+                    <!-- /.card -->
+                    <!-- /.card -->
+                </div>
+                <!-- /.col -->
+                <div class="col-md-9">
+                    <div class="card" style="width:880px; margin-left:40px;">
+                        <div class="card-header p-2">
+                            <ul class="nav nav-tabs" id="custom-tabs-four-tab" role="tablist">
+                                <li class="nav-item">
+                                    <a class="nav-link active" data-toggle="pill" href="@Url.Action("DetailsStaffProfileAsync", "Bind")" role="tab" aria-controls="custom-tabs-four-home" aria-selected="true">Profile</a>
+                                </li>
+                                <li class="nav-item1">
+                                    <a class="nav-link" data-toggle="pill" href="@Url.Action("DetailsStaffDocumetAsync", "Bind")" role="tab" aria-controls="custom-tabs-four-settings" aria-selected="false">Document</a>
+                                </li>
+                            </ul>
+                        </div><!-- /.card-header -->
+                        <div class="card-body">
+                            <div id="tab-content">
+
+                            </div>
+                            <!-- /.tab-content -->
+                        </div><!-- /.card-body -->
+                    </div>
+                    <!-- /.card -->
+                </div>
+                <!-- /.col -->
+            </div>
+            <!-- /.row -->
+        </div><!-- /.container-fluid -->
+    </section>
+
+
+    <script src="~/Content/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="~/Content/plugins/datatables/jquery.dataTables.min.js" type="text/javascript"></script>
+    <script src="~/Content/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js" type="text/javascript"></script>
+    <script src="~/Content/plugins/datatables-responsive/js/dataTables.responsive.min.js" type="text/javascript"></script>
+    <script src="~/Content/plugins/datatables-responsive/js/responsive.bootstrap4.min.js" type="text/javascript"></script>
+    <script src="~/Content/plugins/datatables-buttons/js/dataTables.buttons.min.js" type="text/javascript"></script>
+    <script src="~/Content/plugins/datatables-buttons/js/buttons.bootstrap4.min.js" type="text/javascript"></script>
+    <script src="~/Content/plugins/jszip/jszip.min.js" type="text/javascript"></script>
+    <script src="~/Content/plugins/pdfmake/pdfmake.min.js" type="text/javascript"></script>
+    <script src="~/Content/plugins/pdfmake/vfs_fonts.js" type="text/javascript"></script>
+    <script src="~/Content/plugins/datatables-buttons/js/buttons.html5.min.js" type="text/javascript"></script>
+    <script src="~/Content/plugins/datatables-buttons/js/buttons.print.min.js" type="text/javascript"></script>
+    <script src="~/Content/plugins/datatables-buttons/js/buttons.colVis.min.js" type="text/javascript"></script>
+    @*<script src="~/Content/Trainer/js/StudetList.js"></script>*@
+    <script>
+    jQuery(document).ready(function ($) {
+        function loadTabContent(tabContentUrl) {
+            $.ajax({
+                url: tabContentUrl,
+                type: 'GET',
+                success: function (data) {
+                    $('#tab-content').html(data);
+                  
+                },
+                    error: function () {
+                    //alert('Error loading content.');
+                }
+            });
+        }
+
+        $('#custom-tabs-four-tab').on('click', '.nav-link', function (e) {
+            e.preventDefault();
+            var tabContentUrl = $(this).attr('href');
+            loadTabContent(tabContentUrl);
+        });
+         var defaultTabUrl = '@Url.Action("DetailsStaffProfileAsync", "Bind")';
+        loadTabContent(defaultTabUrl);
+
+
+    });
+    </script>
+    <script>
+        function uploadProfilePicture(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    document.getElementById('profile-picture').src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+                // Here you can add an AJAX call to upload the file to the server if needed
+            }
+        }
+    </script>
+</body>
+</html>

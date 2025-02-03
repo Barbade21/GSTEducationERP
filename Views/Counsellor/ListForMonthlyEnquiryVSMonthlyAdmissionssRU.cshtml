@@ -1,0 +1,110 @@
+﻿@model GSTEducationERPLibrary.Counsellor.Counsellor
+
+<p>
+    @Html.ActionLink("Create New", "Create")
+</p>
+<table class="table">
+    <thead>
+        <tr>
+
+            <th>
+                @Html.DisplayNameFor(model => model.admittedcount)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.EnquiryCount)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CandidateCode)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.FullName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.EnquiryDate)
+            </th>
+            <th>
+                @Html.HiddenFor(model => model.EnquiryAddedStaffCode)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Status)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Admissiondate)
+            </th>
+            <th>
+                @Html.HiddenFor(model => model.admissionstaffcode)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.enquiryyear)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.enquirymonth)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.admissionyear)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.admissionmonth)
+            </th>
+
+            <th>
+
+            </th>
+        </tr>
+    </thead>
+
+
+    <tbody>
+        @foreach (var item in Model.lstforenqVSAdmsn) 
+         {
+             <tr>
+
+
+                <td>
+                    @Html.DisplayFor(modelItem => item.admittedcount)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.EnquiryCount)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.CandidateCode)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.FullName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.EnquiryDate)
+                </td>
+                <td>
+                    @Html.HiddenFor(modelItem => item.EnquiryAddedStaffCode)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Status)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Admissiondate)
+                </td>
+                <td>
+                    @Html.HiddenFor(modelItem => item.admissionstaffcode)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.enquiryyear)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.enquirymonth)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.admissionyear)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.admissionmonth)
+                </td>
+                 <td>
+
+                 </td>
+
+
+             </tr>
+         }
+    </tbody>
+</table>

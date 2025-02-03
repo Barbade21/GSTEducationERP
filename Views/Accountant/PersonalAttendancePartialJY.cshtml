@@ -1,0 +1,186 @@
+﻿@model GSTEducationERPLibrary.Accountant.Accountant
+
+@{
+    var sundays = new List<DateTime>();
+
+    DateTime firstDate;
+    DateTime lastDate;
+
+    if (Model.LstAttendence == null || !Model.LstAttendence.Any())
+    {
+        firstDate = DateTime.MinValue;
+        lastDate = DateTime.MinValue;
+    } else
+    {
+        firstDate = Model.LstAttendence.Min(a => a.Date);
+        lastDate = Model.LstAttendence.Max(a => a.Date);
+    }
+
+    var currentDate = firstDate;
+    while (currentDate <= lastDate)
+    {
+        if (currentDate.DayOfWeek == DayOfWeek.Sunday)
+        {
+            sundays.Add(currentDate);
+        }
+        currentDate = currentDate.AddDays(1);
+    }
+
+    var allDates = Enumerable.Range(0, (lastDate - firstDate).Days + 1)
+                     .Select(offset => firstDate.AddDays(offset))
+                     .ToList();
+
+    var totalDays = 0;
+    var absentDays = 0;
+    var holidays = 0;
+    var earlyleave = 0;
+
+    if (Model.LstAttendence.Any())
+    {
+        totalDays = allDates.Count;
+        absentDays = allDates.Count(date => Model.LstAttendence.Any(a => a.Date == date && a.Status == "Absent"));
+        holidays = allDates.Count(date =>
+            Model.LstAttendence.Any(a => a.Date == date && a.Status == "Holiday"));
+        earlyleave = allDates.Count(date =>
+Model.LstAttendence.Any(a => a.Date == date && a.Status == "Early Leave"));
+    }
+}
+
+    <div class="card-body border-0 shadow-sm bi-browser-edge">
+        <div class="container" id="lable">
+            <div class="row">
+                <div class="col-md-6" style="display: flex; align-items: center;">
+                    <label class="control-label" style="flex: 1;">Name:</label>
+                    <span style="flex: 1; text-align: right; padding-right:300px;">@Model.StaffName</span>
+                </div>
+                <div class="col-md-6" style="display: flex; align-items: center;">
+                    <label class="control-label" style="flex: 1;">Early Leave:</label>
+                    <span style="flex: 1; text-align: right; padding-right: 300px;">@earlyleave</span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6" style="display: flex; align-items: center;">
+                    <label class="control-label" style="flex: 1;">Total Month Days:</label>
+                    <span style="flex: 1; text-align: right; padding-right:300px;">@Model.TotalMonthDays</span>
+                </div>
+                <div class="col-md-6" style="display: flex; align-items: center;">
+                    <label class="control-label" style="flex: 1;">Worked Days:</label>
+                    <span style="flex: 1; text-align: right; padding-right: 300px;">@Model.WorkedDays</span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6" style="display: flex; align-items: center;">
+                    <label class="control-label" style="flex: 1;">Payable Days:</label>
+                    <span style="flex: 1; text-align: right; padding-right: 300px;">@Model.PayableDays.ToString("F1")</span>
+                </div>
+                <div class="col-md-6" style="display: flex; align-items: center;">
+                    <label class="control-label" style="flex: 1;">Absent Days:</label>
+                    <span style="flex: 1; text-align: right; padding-right: 300px;">@absentDays</span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6" style="display: flex; align-items: center;">
+                    <label class="control-label" style="flex: 1;">Half Days:</label>
+                    <span style="flex: 1; text-align: right; padding-right: 300px;">@Model.HalfDays</span>
+                </div>
+                <div class="col-md-6" style="display: flex; align-items: center;">
+                    <label class="control-label" style="flex: 1;">Late Mark:</label>
+                    <span style="flex: 1; text-align: right; padding-right: 300px;">@Model.LateMark</span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6" style="display: flex; align-items: center;">
+                    <label class="control-label" style="flex: 1;">Holidays:</label>
+                    <span style="flex: 1; text-align: right; padding-right: 300px;">@holidays</span>
+                </div>
+                <div class="col-md-6" style="display: flex; align-items: center;">
+                    <label class="control-label" style="flex: 1;">Miss Punching:</label>
+                    <span style="flex: 1; text-align: right; padding-right: 300px;">@Model.MissPunching</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+<div class="card-body">
+    <div class="card card-primary card-outline card-outline-tabs">
+        <br />
+        <table id="example1" class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>In Time</th>
+                    <th>Out Time</th>
+                    <th>Hours Worked</th>
+                    <th>Status</th>
+                    <th>Remarks</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var date in allDates)
+                {
+                    var item = Model.LstAttendence.FirstOrDefault(a => a.Date == date);
+                    var isSunday = date.DayOfWeek == DayOfWeek.Sunday;
+
+                    <tr>
+                        <td>@(date == new DateTime(1, 1, 1) ? "-- -- ----" : date.ToString("dd-MM-yyyy"))</td>
+                        <td>@(item != null && item.InTime != null ? item.InTime.Value.ToString(@"hh\:mm") : "--:--")</td>
+                        <td>@(item != null && item.OutTime != null ? item.OutTime.Value.ToString(@"hh\:mm") : "--:--")</td>
+                        <td>
+                            @if (item != null && (item.Hrs == "0" || item.Hrs == null))
+                            {
+                                @:--
+                            } else if (item != null)
+                            {
+                                @item.Hrs
+                            }
+                        </td>
+                        <td>
+                            @if (item != null)
+                            {
+                                // Existing status logic for present item
+                                if (item.Status == "Leave")
+                                {
+                                    <span class="badge bg-orange">@item.Status</span>
+                                } else if (item.Status == "Absent")
+                                {
+                                    <span class="badge bg-danger">@item.Status</span>
+                                } else if (item.Status == "Late Mark")
+                                {
+                                    <span class="badge bg-yellow">@item.Status</span>
+                                } else if (item.Status == "Holiday")
+                                {
+                                    <span class="badge bg-cyan">Holiday</span>
+                                } else if (item.Status == "Mispunch")
+                                {
+                                    <span class="badge bg-indigo">@item.Status</span>
+                                } else if (item.Status == "Present")
+                                {
+                                    <span class="badge bg-success">@item.Status</span>
+                                } else if (item.Status == "Early Leave")
+                                {
+                                    <span class="badge bg-gradient-yellow">@item.Status</span>
+                                } else if (item.Status == "Half Day")
+                                {
+                                    <span class="badge bg-gradient-lime">@item.Status</span>
+                                }
+                            } else if (date == new DateTime(1, 1, 1))
+                            {
+                                <span></span>
+                            } else if (isSunday)
+                            {
+                                <span class="badge bg-gradient-navy">WeeklyOff</span>
+                            } else
+                            {
+                                <span class="badge bg-danger">!!!</span> <!-- Display !!! for missing data -->
+                            }
+                        </td>
+                        <td>@(item != null ? item.Remark : (isSunday ? "Sunday" : "DATA NOT FOUND"))</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

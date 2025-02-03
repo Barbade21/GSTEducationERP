@@ -1,0 +1,310 @@
+﻿@model GSTEducationERPLibrary.Accountant.Accountant
+@using System.Globalization
+@{
+    var cultureInfo = new CultureInfo("hi-IN"); // Or dynamically set based on your requirements
+    var currencySymbol = cultureInfo.NumberFormat.CurrencySymbol;
+}
+<style>
+    .voucher-container {
+        width: 100%;
+        max-width: 100%;
+        margin: 0 auto;
+        padding: 20px 40px;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background-color: #ffffff;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        position: relative;
+    }
+
+    .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 30px;
+    }
+
+    .company-logo {
+        max-width: 200px;
+    }
+
+    .company-details {
+        font-size: 16px;
+        color: #333;
+        text-align: right;
+        flex: 1;
+        margin-left: 20px;
+    }
+
+    .voucher-title {
+        text-align: center;
+        margin: 30px 0;
+    }
+
+        .voucher-title h4 {
+            font-size: 32px;
+            color: #007bff;
+            margin: 0;
+        }
+
+    .voucher-body {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 30px;
+    }
+
+    .voucher-section {
+        width: 48%;
+    }
+
+    .voucher-details {
+        display: flex;
+        flex-wrap: wrap;
+    }
+
+        .voucher-details dt,
+        .voucher-details dd {
+            width: 50%;
+            margin: 0;
+            padding: 5px 0;
+        }
+
+        .voucher-details dt {
+            font-weight: bold;
+            color: #555;
+        }
+
+        .voucher-details dd {
+            color: #333;
+        }
+
+    .voucher-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 30px;
+    }
+
+        .voucher-table th,
+        .voucher-table td {
+            border: 1px solid #ccc;
+            padding: 12px;
+            text-align: left;
+        }
+
+        .voucher-table th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+
+    .voucher-footer {
+        margin-top: 40px;
+        text-align: right;
+        font-size: 16px;
+        color: #333;
+    }
+
+    /* Print button styling */
+    #printButton {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 1000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        cursor: pointer;
+    }
+
+    #printButton:hover {
+        background-color: #0056b3;
+    }
+
+    /* Print styles */
+    @@media print {
+        body * {
+            visibility: hidden;
+        }
+
+        .voucher-container, .voucher-container * {
+            visibility: visible;
+        }
+
+        .voucher-container {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            padding: 0;
+            margin: 0;
+        }
+
+        #printButton {
+            display: none;
+        }
+    }
+</style>
+
+<div class="voucher-container">
+    <div class="header">
+        <img src="~/Content/Admin/img/@ViewBag.logo" alt="Company Logo" class="company-logo" />
+        <div class="col-4 company-details">
+            @Html.Raw(ViewBag.address)
+        </div>
+    </div>
+
+    <div class="voucher-title">
+        @if (Model.PaymentMode == "CASH")
+        {
+            <h4>Cash Payment Voucher</h4>
+        } else
+        {
+            <h4>Bank Payment Voucher</h4>
+        }
+    </div>
+
+    <div class="voucher-body">
+        <!-- Left Section -->
+        <div class="voucher-section">
+            <dl class="voucher-details">
+                <dt>@Html.DisplayNameFor(model => model.VoucherCode):</dt>
+                <dd>@Html.DisplayFor(model => model.VoucherCode)</dd>
+
+                <dt>@Html.DisplayNameFor(model => model.VoucherDate):</dt>
+                <dd>@Html.DisplayFor(model => model.VoucherDate)</dd>
+
+                <dt>@Html.DisplayNameFor(model => model.VoucherType):</dt>
+                <dd>@Html.DisplayFor(model => model.VoucherType)</dd>
+
+                <dt>@Html.DisplayNameFor(model => model.Amount):</dt>
+                <dd>@string.Format(cultureInfo, "{0:N2} {1}", Model.Amount, currencySymbol)</dd>
+
+                @if (string.IsNullOrEmpty(Model.VendorName))
+                {
+                    <dt>@Html.DisplayNameFor(model => model.AmountPaidTo):</dt>
+                    <dd>@Html.DisplayFor(model => model.AmountPaidTo)</dd>
+                } else
+                {
+                    <dt>@Html.DisplayNameFor(model => model.VendorName):</dt>
+                    <dd>@Html.DisplayFor(model => model.VendorName)</dd>
+                }
+            </dl>
+        </div>
+
+        <!-- Right Section -->
+        <div class="voucher-section">
+            <dl class="voucher-details">
+                <dt>@Html.DisplayNameFor(model => model.PaymentMode):</dt>
+                <dd>@Html.DisplayFor(model => model.PaymentMode)</dd>
+
+                @if (Model.PaymentMode == "BANK")
+                {
+                    <dt>@Html.DisplayNameFor(model => model.BankName):</dt>
+                    <dd>@Html.DisplayFor(model => model.BankName)</dd>
+
+                    <dt>Receiver's Bank Details:</dt>
+                    <dd></dd>
+
+                    <dt>@Html.DisplayNameFor(model => model.ReceiverBankAccountNumber):</dt>
+                    <dd>@Html.DisplayFor(model => model.ReceiverBankAccountNumber)</dd>
+
+                    <dt>@Html.DisplayNameFor(model => model.ReceiverBankAccountHolderName):</dt>
+                    <dd>@Html.DisplayFor(model => model.ReceiverBankAccountHolderName)</dd>
+
+                    <dt>@Html.DisplayNameFor(model => model.ReceiverBankIFSCCode):</dt>
+                    <dd>@Html.DisplayFor(model => model.ReceiverBankIFSCCode)</dd>
+
+                    <dt>@Html.DisplayNameFor(model => model.ReceiverBankName):</dt>
+                    <dd>@Html.DisplayFor(model => model.ReceiverBankName)</dd>
+
+                    <dt>@Html.DisplayNameFor(model => model.TransactionId):</dt>
+                    <dd>@Html.DisplayFor(model => model.TransactionId)</dd>
+                } else if (Model.PaymentMode == "CHEQUE")
+                {
+                    <dt>Cheque Number:</dt>
+                    <dd>@Html.DisplayFor(model => model.TransactionId)</dd>
+
+                    <dt>@Html.DisplayNameFor(model => model.ChequeDate):</dt>
+                    <dd>@Html.DisplayFor(model => model.ChequeDate)</dd>
+                } else if (Model.PaymentMode == "UPI")
+                {
+                    <dt>@Html.DisplayNameFor(model => model.BankName):</dt>
+                    <dd>@Html.DisplayFor(model => model.BankName)</dd>
+                    <dt>@Html.DisplayNameFor(model => model.TransactionId):</dt>
+                    <dd>@Html.DisplayFor(model => model.TransactionId)</dd>
+                }
+            </dl>
+        </div>
+    </div>
+
+    <div>
+        <table class="voucher-table">
+            <thead>
+                <tr>
+                    <th>Sr No.</th>
+                    <th>Date</th>
+                    <th>Description</th>
+                    <th>Amount (₹)</th>
+                    <th>Balance (₹)</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.lstVoucherStatement != null && Model.lstVoucherStatement.Count > 0)
+                {
+                    foreach (var item in Model.lstVoucherStatement)
+                    {
+                        <tr>
+                            <td>@item.SrNumber</td>
+                            <td>@item.VoucherDate.ToString("dd/MM/yyyy")</td>
+                            <td>@item.Description</td>
+                            <td>@item.Amount.ToString("N2")</td>
+                            <td>@item.Balance.ToString("N2")</td>
+                        </tr>
+                    }
+                } else
+                {
+                    <tr>
+                        <td colspan="5" style="text-align:center;">No data available</td>
+                    </tr> 
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <div class="row">
+        <div class="col-md-9">
+            <br>
+            <b>Terms and Conditions :</b><br />
+            <span class="text-danger"><i>1. This is a system-generated voucher.</i></span><br />
+            <span class="text-danger"><i>2. Reproduction or unauthorized use of this document is prohibited and may be subject to legal action.</i></span><br />
+            <span class="text-danger"><i>3. This voucher is for informational purposes only and is issued under @ViewBag.ClientName's standard policies and guidelines.</i></span><br />
+        </div>
+        <div class="col-3 text-right">
+            <div class="voucher-footer">
+                <br />
+                <br />
+                <br />
+                Authorised Signatory
+            </div>
+        </div>
+    </div>
+</div>
+
+<button type="button" class="btn btn-primary" id="printButton">
+    <i class="fa fa-print"></i>
+</button>
+
+<script>
+    $(document).ready(function () {
+        $('#printButton').on('click', function () {
+            window.print();
+        });
+    });
+</script>

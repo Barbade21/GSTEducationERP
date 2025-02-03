@@ -1,0 +1,404 @@
+﻿@model GSTEducationERPLibrary.Student.Student
+
+<head>
+    <link rel="stylesheet" href="~/Content/plugins/toastr/toastr.min.css">
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File Upload and View</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+    <link rel="stylesheet" href="~/Content/plugins/toastr/toastr.min.css">
+    <script src="~/Content/plugins/toastr/toastr.min.js"></script>
+
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+
+
+    <!-- Toastr CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" />
+    <!-- Toastr JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+
+
+
+</head>
+@using (Html.BeginForm("ApplyLeaveAsyncNSSSS", "Student", FormMethod.Post, new { enctype = "multipart/form-data", id = "ApplyLeaveFormStudent" }))
+{
+    @Html.AntiForgeryToken()
+
+    <style>
+        #ApplyLeaveId {
+            background-color: #4cff00;
+            color: white;
+        }
+
+        .highlight-label {
+            font-weight: bold;
+            color: #3b5999; /* You can change this color to your preference */
+        }
+
+        .required-asterisk {
+            color: red; /* Color for the asterisk */
+        }
+
+        .form-group.row .control-label, .form-group.row .col-md-9 {
+            padding-left: 0; /* Remove left padding */
+            padding-right: 0; /* Remove right padding */
+        }
+
+        .form-group.row .col-md-9 {
+            margin-left: 0; /* Remove left margin */
+        }
+
+
+
+        .a4-view {
+            width: 210mm;
+            height: 297mm;
+            border: 1px solid #000;
+            overflow: hidden;
+            margin: 0 auto;
+        }
+
+            .a4-view iframe, .a4-view img {
+                width: 100%;
+                height: 100%;
+            }
+
+        .btn-hover-effect {
+            background-color: #28a745; /* Initial button color */
+            color: white; /* Initial text color */
+        }
+
+            .btn-hover-effect:hover {
+                background-color: #218838; /* Button color on hover */
+                color: red; /* Text color on hover */
+            }
+
+        .btn-zoom-effect {
+            transition: transform 0.3s ease; /* Smooth transition */
+        }
+
+            .btn-zoom-effect:hover {
+                transform: scale(1.1); /* Zoom in on hover */
+            }
+    </style>
+
+    <div class="form-horizontal">
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+        <div class="form-group row">
+            @*<div class="container mt-5">
+                    <div class="row">
+
+                    </div>
+                </div>*@
+
+
+
+
+            <div class="modal fade" id="fileModal" tabindex="-1" aria-labelledby="fileModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-fullscreen">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="fileModalLabel">View Document</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div id="filePreview" class="w-100 h-100"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+
+        <div class="form-group row">
+            <div class="col-md-6">
+                <label class="control-label col-md-6 highlight-label">
+                    @Html.LabelFor(model => model.StartDate)
+                    <span class="required-asterisk">*</span>
+                </label>
+                <div class="col-md-8">
+                    @Html.EditorFor(model => model.StartDate, new { htmlAttributes = new { @class = "form-control", @id = "StartDate" } })
+                    @Html.ValidationMessageFor(model => model.StartDate, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="col-md-6">
+                <label class="control-label col-md-4 highlight-label">
+                    @Html.LabelFor(model => model.EndDate)
+                    <span class="required-asterisk">*</span>
+                </label>
+                <div class="col-md-8">
+                    @Html.EditorFor(model => model.EndDate, new { htmlAttributes = new { @class = "form-control", @id = "EndDate" } })
+                    @Html.ValidationMessageFor(model => model.EndDate, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+        <br />
+
+        <div class="form-group row">
+            <div class="col-md-6">
+                <label class="control-label col-md-4 highlight-label">Upload File</label>
+                <div class="col-md-8">
+                    <input type="file" id="LeaveDocument" name="LeaveDocument" class="form-control-file" />
+                    <div class="col-md-1" style="left:10vw;top:-2vw;">
+                        @*<button id="viewBtn" class="btn btn-primary btn-sm ms-2" disabled>
+                                <img src="~/Content/StudentTemplate/icon/eye.png" alt="View" style="height: 20px;" />
+                            </button>*@
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                @Html.LabelFor(model => model.NoOfDays, htmlAttributes: new { @class = "control-label col-md-4 highlight-label" })
+                <div class="col-md-8">
+                    @Html.EditorFor(model => model.NoOfDays, new { htmlAttributes = new { @class = "form-control", @id = "NoOfDays", @readonly = "readonly" } })
+                    @Html.ValidationMessageFor(model => model.NoOfDays, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+        </div>
+
+        <div class="form-group row">
+            <div>
+                <label class="control-label col-md-3 highlight-label">
+                    @Html.LabelFor(model => model.Reason)
+                    <span class="required-asterisk">*</span>
+                </label>
+            </div>
+            <div class="col-md-10">
+                <textarea class="form-control" name="Reason" id="Reason" maxlength="200" rows="3" placeholder="Enter ..."></textarea>
+                @Html.ValidationMessageFor(model => model.Reason, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+
+
+        <br>
+        <div class="form-group row">
+            <div class="col-md-12 text-center">
+                <button type="submit" id="ApplyLeaveId" class="btn btn-success btn-hover-effect btn-zoom-effect" onclick="applyLeave(event)">Apply</button>
+            </div>
+        </div>
+    </div>
+}
+
+<script src="~/Content/plugins/jquery-validation/jquery.validate.min.js"></script>
+<script src="~/Content/plugins/jquery/jquery.min.js" type="text/javascript"></script>
+<script src="~/Content/plugins/moment/moment.min.js"></script>
+<script src="~/Content/plugins/toastr/toastr.min.js"></script>
+<script src="~/Content/plugins/jquery/jquery.min.js" type="text/javascript"></script>
+
+
+
+@*____________________________validation for StartDate enddate____________________*@
+
+<script>
+    $(document).ready(function () {
+        var today = new Date();
+        // Format the date as "yyyy-mm-dd"
+        var formattedToday = today.toISOString().split('T')[0];
+
+        $('#StartDate').attr('min', formattedToday);
+
+        // Update the minimum date for EndDate when StartDate changes
+        $('#StartDate').on('change', function () {
+            var selectedStartDate = $(this).val();
+            $('#EndDate').attr('min', selectedStartDate);
+        });
+    });
+</script>
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+
+
+
+
+
+<script type="text/javascript">
+    function applyLeave(event) {
+        console.log("Before validation");
+
+        // Prevent default form submission
+        event.preventDefault();
+
+        // Check if StartDate, EndDate, and Reason are filled
+        var startDate = $('#StartDate').val();
+        var endDate = $('#EndDate').val();
+        var reason = $('#Reason').val().trim();
+
+        if (!startDate) {
+            displayToast('Please select a Start date.', 'error');
+            return;
+        }
+        if (!endDate) {
+            displayToast('Please select an End date.', 'error');
+            return;
+        }
+        if (reason.length === 0) {
+            displayToast('Reason field cannot be empty or whitespace.', 'error');
+            return;
+        }
+
+        var formData = new FormData($('#ApplyLeaveFormStudent')[0]);
+
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("ApplyLeaveAsyncNSSSS", "Student")',
+            data: formData,
+            contentType: false,
+            processData: false,
+            success: function (data) {
+                displayToast('Leave Applied ..!', 'success');
+                // Redirect to ListAllLeaves view after a short delay
+                setTimeout(function () {
+                    window.location.href = '@Url.Action("LeaveMainViewAsyncNS", "Student")';
+                }, 2000); // Adjust the timeout value as needed
+            },
+            error: function (error) {
+                // Handle error
+                Swal.fire({
+                    title: 'Error',
+                    text: 'An error occurred while applying for leave.',
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                }).then(() => {
+                    // Redirect to the LeaveMainViewAsync action
+                    window.location.href = '@Url.Action("LeaveMainViewAsyncNS", "Student")';
+                });
+            }
+        });
+    }
+
+
+
+    function displayToast(message, type) {
+        // Display Toastr notification
+        toastr[type](message);
+    }
+
+    toastr.options = {
+        closeButton: true,
+        progressBar: true,
+        positionClass: 'toast-top-right',
+        showMethod: 'slideDown',
+        timeOut: 4000 // How long the toast will be displayed (in milliseconds)
+    };
+</script>
+
+
+<script>
+
+
+    $('#viewBtn').on('click', function () {
+
+        if ($('#LeaveDocument')[0].files.length > 0) {
+            const file = $('#fileInput')[0].files[0];
+            const fileUrl = URL.createObjectURL(file);
+
+            let previewElement;
+
+            if (file.type.startsWith('image/')) {
+                previewElement = $('<img>').attr('src', fileUrl).addClass('img-fluid');
+            } else if (file.type === 'application/pdf') {
+                previewElement = $('<iframe>').attr('src', fileUrl).css({ width: '100%', height: '100%' });
+            } else {
+                previewElement = $('<p>').text('Cannot preview this file type.');
+            }
+
+            var previewDoc = previewElement.attr('src');
+            openLeaveDoc(previewDoc);
+        }
+    });
+
+    function openLeaveDoc(DocumentPath) {
+
+
+        Swal.fire({
+            title: 'Leave Document',
+            html: '<iframe src="' + DocumentPath + '" width="100%" height="600px"></iframe>',
+            showCloseButton: true,
+            showConfirmButton: false
+        });
+    }
+</script>
+
+
+@*__________________________________________Calculating NoOfDays_____________________________________________*@
+
+<script>
+    $(document).ready(function () {
+        function calculateDays() {
+            var startDate = new Date($('#StartDate').val());
+            var endDate = new Date($('#EndDate').val());
+
+            if (!isNaN(startDate) && !isNaN(endDate) && startDate <= endDate) {
+                var timeDifference = endDate.getTime() - startDate.getTime();
+                var daysDifference = Math.ceil(timeDifference / (1000 * 3600 * 24)) + 1;
+                $('#NoOfDays').val(daysDifference);
+            } else {
+                $('#NoOfDays').val('');
+            }
+        }
+
+        $('#StartDate, #EndDate').change(function () {
+            calculateDays();
+        });
+    });
+</script>
+
+@*\\\\\_______________Validation for Pdf File____________________*@
+
+<script>
+    $(document).ready(function () {
+        $('#LeaveDocument').change(function () {
+            var file = this.files[0];
+            if (file) {
+                var fileType = file.type;
+                var fileSize = file.size / (1024 * 1024); // Size in MB
+
+                if (fileType !== 'application/pdf') {
+                    toastr.error('Please upload a PDF file.');
+                    this.value = ''; // Clear the input
+                    $('#viewBtn').prop('disabled', true);
+                } else if (fileSize > 5) {
+                    toastr.error('File size exceeds 5MB. Please upload a smaller file.');
+                    this.value = ''; // Clear the input
+                    $('#viewBtn').prop('disabled', true);
+                } else {
+                    $('#viewBtn').prop('disabled', false); // Enable view button if validation passes
+                }
+            }
+        });
+
+        //$('#viewBtn').click(function () {
+        //    var file = $('#LeaveDocument')[0].files[0];
+        //    if (file) {
+        //        var fileURL = URL.createObjectURL(file);
+        //        window.open(fileURL, '_blank');
+        //    }
+        //});
+    });
+</script>
+@*_______________________________________________________*@
+<!-- Form validation script -->
+<script>
+    $(document).ready(function () {
+        $('form').on('submit', function (e) {
+            var reason = $('#Reason').val().trim();
+
+            if (reason === "") {
+                alert("Reason field cannot be empty or whitespace.");
+                e.preventDefault(); // Prevent form submission
+            }
+        });
+    });
+</script>

@@ -1,0 +1,344 @@
+﻿
+@model GSTEducationERPLibrary.Accountant.Accountant
+@{
+    var currency = Html.Raw(ViewBag.Currency);
+   
+
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Expense Management</title>
+
+    @*<script src="~/Content/plugins/jquery/jquery.min.js"></script>*@
+    @*<script src="~/Content/Admin/js/Icon.js"></script>*@
+    
+
+    <style>
+        .popover-header {
+            background-color: #33CCCC;
+            color: /white/ black;
+            border-bottom: 1px solid #33CCCC;
+        }
+
+        .single-line-ellipsis {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 200px; /* Adjust as necessary */
+        }
+        /* Custom tooltip styling for ExpenseType */
+        /*.expense-tooltip {
+            position: relative;
+            cursor: pointer;*/ /* Pointer cursor on hover */
+        /*}
+
+            .expense-tooltip:hover::after {
+                content: attr(data-tooltip);*/ /* Use the custom data-tooltip attribute */
+                /*position: absolute;
+                left: 50%;
+                top: 100%;
+                transform: translateX(-50%);
+                background-color: #333;*/ /* Tooltip background color */
+                /*color: #fff;*/ /* Tooltip text color */
+                /*padding: 5px 10px;
+                border-radius: 5px;
+                white-space: nowrap;
+                z-index: 1000;
+                font-size: 14px;
+                opacity: 1;
+                visibility: visible;
+                pointer-events: none;
+            }
+
+            .expense-tooltip::after {
+                content: '';*/ /* Default state hides the tooltip */
+                /*opacity: 0;
+                visibility: hidden;
+                transition: opacity 0.2s ease-in-out, visibility 0.2s ease-in-out;
+            }*/
+
+        @@media (max-width: 500px) {
+            #MatchVoucherModal {
+                width: 90vw; /* Set modal width to 90% of the viewport for small screens */
+                padding-left: 5vw; /* Center the modal */
+            }
+        }
+    </style>
+
+</head>
+<body>
+    <div class="card">
+
+        <div class="card-body">
+
+            <table id="ExpenseList" class="table table-bordered table-striped">
+                <thead>
+                    <tr>
+                        <th>Expense No.</th>
+                        @*<th>Expense Type</th>*@
+                        @if (Model.ExpID == "3")
+                        {
+                            <th>Reference By Name</th>
+                            <th>Reference To Name</th>
+                        }
+                        @if (Model.ExpID == "2")
+                        {
+                            <th>Full Name</th>
+                        }
+                        @if (Model.ExpID == "4")
+                        {
+                            <th>Full Name</th>
+                            <th hidden>Staff Code</th>
+                        }
+                        @if (Model.ExpID == "1")
+                        {
+                            <th>Vendor Name</th>
+                            <th hidden>Vendor Code</th>
+                            <th>Expense Name</th>
+                        }
+                        <th hidden>ExpId</th>
+                        <th>Transaction Date</th>
+
+                        <th>Payable Amount </th>
+                        <th>Paid Amount</th>
+                        <th>Balance Amount</th>
+                        @if (Model.ExpID == "5")
+                        {
+                            <th>Description </th>
+                        }
+
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.lstRegularExpense)
+                    {
+                        <tr>
+                            @*<td class="text-center" style="position: relative;">
+                            *@
+                            <td class="single-line-ellipsis" data-toggle="popover" title="Description" data-content="@item.Description">
+
+                                @Html.DisplayFor(modelItem => item.TransactionCode)
+
+                            </td>
+
+
+                            @if (Model.ExpID == "3")
+                            {
+                                <td >
+                                    @Html.DisplayFor(modelItem => item.ReferenceByName)
+                                </td>
+                                <td>@Html.DisplayFor(modelItem => item.ReferenceToName)</td>
+                            }
+                            @if (Model.ExpID == "2")
+                            {
+                                <td>@Html.DisplayFor(modelItem => item.VendorName)</td>
+                            }
+                            @if (Model.ExpID == "4")
+                            {
+                                <td>@Html.DisplayFor(modelItem => item.StaffCode_CandidateCode)</td>
+                                <td hidden>@Html.DisplayFor(modelItem => item.StaffCode)</td>
+                            }
+                            @if (Model.ExpID == "1")
+                            {
+                                <td>@Html.DisplayFor(modelItem => item.VendorName)</td>
+                                <td hidden>@Html.DisplayFor(modelItem => item.VendorCode)</td>
+                                <td class="single-line-ellipsis" style="position: relative;" data-toggle="popover" title="Description" data-content="@item.Description">
+                                    @Html.DisplayFor(modelItem => item.ExpenseName)
+                                </td>
+                            }
+
+                            <td hidden>@Html.DisplayFor(modelItem => item.ExpID)</td>
+
+
+                            <td class="single-line-ellipsis" style="position: relative;" data-toggle="popover" title="Expense Type" data-content="@item.ExpenseType">
+                                @item.Date.ToString("dd/MM/yyyy")
+                            </td>
+
+                            <td >
+                                @String.Format("{0:N2} ₹", item.TotalAmount)
+                            </td>
+
+                            <td> @String.Format("{0:N2} ₹", item.Amount)</td>
+                            <td>
+                                @if (item.Status == "Pending")
+                                {
+                                    <span style="color:red;">@String.Format("{0:N2} ₹", item.Balance)</span>
+                                }
+                                else
+                                {
+                                    @String.Format("{0:N2} ₹", item.Balance)
+
+                                }
+
+                            </td>
+                            @if (Model.ExpID == "5")
+                            {
+                                <td>@Html.DisplayFor(modelItem => item.Description)</td>
+                            }
+
+                            <td>
+                                @if (item.Status == "Pending")
+                                {
+                                    <span class="badge bg-danger">@Html.DisplayFor(modelItem => item.Status)</span>
+                                }
+                                else
+                                {
+
+                                    <span class="badge bg-success">@Html.DisplayFor(modelItem => item.Status)</span>
+                                }
+                            </td>
+                            <td>
+                                @if (item.Status == "Completed")
+                                {
+
+
+                                    if (item.ExpenseName == "Salary")
+                                    {
+
+                                    }
+                                    else
+                                    {
+                                        <!-- Icon for viewing Detail Transaction -->
+                                        <a href="#" class="view-icon icon" data-id="@item.TransactionCode" data-expid="@Model.ExpID" data-action="@Url.Action("ViewTransactionAsyncMB", "Accountant", new { TCode = item.TransactionCode, ExpId=item.ExpID})"
+                                           title="View Detail Transaction">
+                                            <video width="25" height="25" playsinline loop muted>
+                                                <source src="~/Content/Admin/icon/view.mp4" type="video/mp4">
+                                            </video>
+                                        </a>
+                                    }
+
+                                }
+                                else
+                                {
+
+                                    var actionUrl = Url.Action("ExpenseMatchVoucherAsyncVM", "Accountant", new
+                                    {
+                                        TCode = item.TransactionCode ?? "",
+                                        Amount = item.Balance != null ? string.Format("{0:F2}", item.Balance) : "0.00", // Ensures 2 decimal places in C#
+                                        VendorCode = item.VendorCode ?? "",
+                                        VendorName = item.VendorName ?? "Unknown",
+                                        StaffCode = item.StaffCode ?? "",
+                                        ExpTypeID = item.ExpID.ToString() ?? "0", // Handles null for ExpID and converts to string
+                                        Expenses = item.ExpenseName ?? "General",
+                                        Description = item.Description ?? "No description provided"
+                                    });
+
+                                    <!-- Icon for Match Vouchers -->
+                                    <a href="#"
+                                       class="match-icon icon"
+                                       data-id="@item.TransactionCode"
+                                       data-action="@actionUrl"
+                                       data-toggle="modal"
+                                       data-target="#MatchVoucherModal"
+                                       title="Match Voucher">
+                                        <video width="25" height="25" playsinline loop muted>
+                                            <source src="~/Content/Admin/icon/payment.mp4" type="video/mp4">
+                                        </video>
+                                    </a>
+
+                                    if (item.ExpenseName == "Salary")
+                                    {
+
+                                    }
+                                    else
+                                    {
+                                        <!-- Icon for viewing Detail Transaction -->
+                                        <a href="#" class="view-icon icon" data-id="@item.TransactionCode" data-expid="@Model.ExpID" data-action="@Url.Action("ViewTransactionAsyncMB", "Accountant", new { TCode = item.TransactionCode, ExpId=item.ExpID})"
+                                           title="View Detail Transaction">
+                                            <video width="25" height="25" playsinline loop muted>
+                                                <source src="~/Content/Admin/icon/view.mp4" type="video/mp4">
+                                            </video>
+                                        </a>
+                                    }
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Modal Structure -->
+    <div class="modal fade custom-modal-width" id="MatchVoucherModal" role="dialog" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content" style="width:40vw;">
+                <div class="modal-body">
+                    <!-- Content for the modal will be loaded here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @*<script src="~/Content/plugins/popper/popper.min.js"></script>*@
+    <script>
+        $(document).ready(function () {
+            $('[data-toggle="popover"]').popover({
+                trigger: 'hover',
+                placement: 'top',
+                html: true
+            });
+        });
+    </script>
+    <script type="text/javascript">
+        //jQuery.noConflict();
+        jQuery(document).ready(function ($) {
+
+            $(document).on('click', '#ExpenseList .match-icon', function (e) {
+                e.preventDefault();
+
+                var $this = $(this);
+
+                if ($this.hasClass('disabled')) return; // Prevent double clicks
+
+                $this.addClass('disabled');
+
+                var url = $this.data('action');
+                //showLoadingOverlay();
+                $.ajax({
+                    url: url,
+                    type: 'GET',
+                    success: function (data) {
+                        $('#MatchVoucherModal .modal-content').html(data);
+                        $('#MatchVoucherModal').modal('show');
+                    },
+                    error: function (xhr, status, error) {
+                        console.error(`Error: ${status} - ${error}`);
+                        alert('Failed to load the voucher match modal. Please try again.');
+                    },
+                    complete: function () {
+                       // hideLoadingOverlay();
+                        $this.removeClass('disabled');
+
+                    }
+                });
+            });
+
+
+            $('#ExpenseList').off('click', '.view-icon').on('click', '.view-icon', function (e) {
+                e.preventDefault();
+                var tCode = this.getAttribute('data-id');
+                var expId = this.getAttribute('data-expid');
+
+                // Disable the icon to prevent multiple clicks
+                $(this).prop('disabled', true);
+
+                var url = '@Url.Action("ViewTransactionAsyncMB", "Accountant")';
+                window.location.href = url + '?TCode=' + encodeURIComponent(tCode) + '&ExpId=' + encodeURIComponent(expId);
+            });
+
+        });
+    </script>
+
+
+</body>
+</html>
+
+
+
+

@@ -1,0 +1,1167 @@
+﻿@model GSTEducationERPLibrary.Counsellor.Counsellor
+@{
+
+    Layout = "~/Views/Shared/_LayoutERP.cshtml";
+}
+
+
+<head>
+    <!-- Include Font Awesome CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link href="~/Content/plugins/icheck-bootstrap/icheck-bootstrap.min.css" rel="stylesheet" />
+
+    <link rel="stylesheet" href="~/Content/plugins/bs-stepper/css/bs-stepper.min.css" />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="~/Content/plugins/bs-stepper/js/bs-stepper.min.js"></script>
+
+    @*<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@10.16.6/dist/sweetalert2.min.css">*@
+    @*<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10.16.6/dist/sweetalert2.min.js"></script>*@
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@10.16.0/dist/sweetalert2.min.css">
+
+    <!-- Include SweetAlert JS -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10.16.0/dist/sweetalert2.min.js"></script>
+    <!-- Include SweetAlert CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@10.16.0/dist/sweetalert2.min.css">
+
+    <!-- Include jQuery (assuming you're using it for $.ajax) -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <!--Toaster for validations-->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <style>
+        .toast {
+            background-color: #ff6347; /* Red background color */
+            color: white; /* Text color */
+            border-radius: 4px; /* Rounded corners */
+            box-shadow: none; /* Remove default box shadow */
+            width: auto; /* Auto width */
+            max-width: 400px; /* Maximum width */
+        }
+
+        .toast-error {
+            background-color: #ff6347; /* Red background color */
+        }
+
+        .toast-title {
+            font-weight: bold; /* Title font weight */
+        }
+
+        .toast-message {
+            font-weight: normal; /* Message font weight */
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+</head>
+
+@using (Html.BeginForm("UpdateCourseEnquiryPK", "Counsellor", FormMethod.Post, new { enctype = "multipart/form-data", id = "myform" }))
+{
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card card-default">
+                <div class="card-header">
+                    <h2>Course Enquiry Form </h2>
+                </div>
+                <div class="card-body p-0">
+                    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                    <div class="bs-stepper">
+                        <div class="bs-stepper-header" role="tablist">
+                            <!-- your steps here -->
+                            <div class="step" data-target="#personal-info">
+                                <button type="button" class="step-trigger" role="tab" aria-controls="personal-info" id="personal-info-trigger">
+                                    <span class="bs-stepper-circle">1</span>
+                                    <span class="bs-stepper-label">Personal Details</span>
+                                </button>
+                            </div>
+                            <div class="line"></div>
+                            <div class="step" data-target="#address-info">
+                                <button type="button" class="step-trigger" role="tab" aria-controls="address-info" id="address-info-trigger">
+                                    <span class="bs-stepper-circle">2</span>
+                                    <span class="bs-stepper-label">Address</span>
+                                </button>
+                            </div>
+                            <div class="line"></div>
+                            <div class="step" data-target="#education-info">
+                                <button type="button" class="step-trigger" role="tab" aria-controls="education-info" id="education-info-trigger">
+                                    <span class="bs-stepper-circle">3</span>
+                                    <span class="bs-stepper-label">Information</span>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="bs-stepper-content">
+                            <!-- your steps content here -->
+                            <div id="personal-info" class="content" role="tabpanel" aria-labelledby="personal-info-trigger">
+                                <!-- Personal Info Form Fields -->
+
+                                <div class="form-group row">
+                                    <label class="col-sm-2 col-form-label" for="FullName">Full Name   @Html.ValidationMessageFor(model => model.FullName, "*", new { @class = "text-danger" })</label>
+                                    <div class="col-sm-4">
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text"><i class="fas fa-user"></i></span>
+                                            </div>
+                                            @Html.HiddenFor(model => model.CandidateCode, new { htmlAttributes = new { @class = "form-control", @id = "CandidateCode" } })
+                                            @Html.HiddenFor(model => model.EnqStatusId, new { htmlAttributes = new { @class = "form-control", @id = "enqStatusid" } })
+
+                                            @Html.EditorFor(model => model.FullName, new { htmlAttributes = new { @class = "form-control", @id = "FullName", @required = "required", @placeholder = "Enter Name" } })
+                                        </div>
+
+                                    </div>
+
+                                    <label class="col-sm-2 col-form-label" for="gender">Gender @Html.ValidationMessageFor(model => model.Gender, "*", new { @class = "text-danger" })</label>
+                                    <div class="col-sm-4">
+                                        <div class="form-group">
+                                            <div class="form-group clearfix">
+                                                <div class="radio icheck-primary d-inline">
+                                                    <input type="radio" id="Male" name="gender" value="Male">
+                                                    <label for="Male" style="display: inline;">Male</label>
+                                                </div>
+                                                <div class="radio icheck-primary d-inline">
+                                                    <input type="radio" id="Female" name="gender" value="Female">
+                                                    <label for="Female" style="display: inline;">Female</label>
+                                                </div>
+                                                <div class="radio icheck-primary d-inline">
+                                                    <input type="radio" id="Other" name="gender" value="Other">
+                                                    <label for="Other" style="display: inline;">Other</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                                <div class="form-group row">
+                                    <label class="col-sm-2 col-form-label" for="EmailId">Email Id   @Html.ValidationMessageFor(model => model.EmailId, "*", new { @class = "text-danger" })</label>
+                                    <div class="col-sm-4">
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text"><i class="fas fa-envelope"></i></span>
+                                            </div>
+                                            @Html.EditorFor(model => model.EmailId, new { htmlAttributes = new { @class = "form-control", @id = "EmailId", @required = "required", @type = "email", @placeholder = "example@gmail.com" } })
+
+                                            @Html.ValidationMessageFor(model => model.EmailId, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
+
+                                    <label class="col-sm-2 col-form-label" for="StudMobileNo">Mobile No  @Html.ValidationMessageFor(model => model.StudMobileNo, "*", new { @class = "text-danger" })</label>
+                                    <div class="col-sm-4">
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text"><i class="fas fa-phone"></i></span>
+                                            </div>
+                                            @Html.EditorFor(model => model.ContactNumber, new { htmlAttributes = new { @class = "form-control", @id = "ContactNumber", @required = "required", @placeholder = "Contact Number", @pattern = "\\d{10}" } })
+
+                                            @Html.ValidationMessageFor(model => model.ContactNumber, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-group row">
+
+                                    <label class="col-sm-2 col-form-label" for="StudMobileNo">Alternate No:</label>
+                                    <div class="col-sm-4">
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text"><i class="fas fa-phone"></i></span>
+                                            </div>
+                                            @Html.EditorFor(model => model.AlternateNumber, new { htmlAttributes = new { @class = "form-control", @id = "alternateno", @required = "required", @placeholder = "Alternate Number", @pattern = "\\d{10}" } })
+
+                                            @Html.ValidationMessageFor(model => model.AlternateNumber, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
+
+                                    <label class="col-sm-2 col-form-label" for="Profession"> Profession  @Html.ValidationMessageFor(model => model.ProfessionalStatusId, "*", new { @class = "text-danger" })</label>
+                                    <div class="col-sm-4">
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text"><i class="fas fa-suitcase"></i></span>
+                                            </div>
+                                            @Html.DropDownListFor(model => model.ProfessionalStatusId, new SelectList(ViewBag.ProfessionalStatuslist, "Value", "Text"), "---Select---", new { @class = "form-control", id = "profession", Style = "width:250px;" })
+
+                                            @*   @Html.DropDownListFor(model => model.ProfessionalStatusId, new SelectList(ViewBag.ProfessionalStatuslist, "Value", "Text"), "--Select Profession--", new { @class = "form-control", @required = "required" })*@
+                                            @Html.ValidationMessageFor(model => model.ProfessionalStatusId, "", new { @class = "text-danger" })
+
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-group row">
+
+                                    <label class="col-sm-2 col-form-label" for="EnquiryDescription">Equiry Description:</label>
+                                    <div class="col-sm-4">
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text"><i class="fas fa-audio-description"></i></span>
+                                            </div>
+                                            @Html.TextAreaFor(model => model.EnquiryDescription, new { htmlAttributes = new { @class = "form-control", @id = "AlternateNumber", @pattern = "\\d{10}" } })
+                                        </div>
+                                        @Html.ValidationMessageFor(model => model.EnquiryDescription, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+
+                                <button class="btn btn-primary btn-sm" type="button" onclick="location.href='@Url.Action("ListEnquiryCourse", "Counsellor")'">Back</button>
+                                <button class="btn btn-primary btn-sm" type="button" id="Nextbutton" @*onclick="stepper.next()*@>Next</button>
+                            </div>
+                            <div id="address-info" class="content" role="tabpanel" aria-labelledby="address-info-trigger">
+                                <!---------Steper 2 start-->
+                                <!-- Address Info Form Fields -->
+                                <div class="form-group row">
+                                    <label class="col-sm-2 col-form-label" for="PresentAddress">Present Address   @Html.ValidationMessageFor(model => model.PresentAddress, "*", new { @class = "text-danger" })</label>
+                                    <div class="col-sm-4">
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text" id="presentaddressError"><i class="fas fa-home"></i></span>
+                                                @Html.TextAreaFor(model => model.PresentAddress, new { htmlAttributes = new { @class = "form-control", @placeholder = "Present Address...", style = "width:300px; height:150px;", id = "PresentAddress" } })
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <label class="col-sm-2 col-form-label" for="PresentPincode">
+                                        Present Pincode
+                                        @Html.ValidationMessageFor(model => model.PresentPincode, "*", new { @class = "text-danger" })
+                                    </label>
+                                    <div class="col-sm-4">
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text"><i class="fas fa-landmark"></i></span>
+                                            </div>
+                                            @Html.EditorFor(model => model.PresentPincode, new { htmlAttributes = new { @class = "form-control", @placeholder = "Present Pincode", @required = "required", @id = "PresentPincode" } })
+                                        </div>
+                                    </div>
+
+                                </div>
+
+                                <div class="form-group row">
+                                    <div class="col-md-4">
+                                        <h6><b>Present Country: @Html.ValidationMessageFor(model => model.CountryId, "*", new { @class = "text-danger" })</b></h6>
+                                        @Html.DropDownListFor(model => model.CountryId, new SelectList(ViewBag.Country, "Value", "Text"), "---Select Country---", new { @class = "form-control", @required = "required", id = "countryId" })
+                                    </div>
+
+                                    <div class="col-md-4">
+                                        <h6><b> Present State @Html.ValidationMessageFor(model => model.StateId, "*", new { @class = "text-danger" })</b></h6>
+                                        <select class="form-control" id="state" name="state">
+                                            <option value="">---Select State---</option>
+                                            <!-- other options here -->
+                                        </select>
+                                    </div>
+
+                                    <div class="col-md-4">
+                                        <h6><b>Present City   @Html.ValidationMessageFor(model => model.PresentCityId, "*", new { @class = "text-danger" })</b></h6>
+                                        <select class="form-control" id="city" name="PresentCityId">
+                                            <option value="">---Select City---</option>
+                                            <!-- other options here -->
+                                        </select>
+                                    </div>
+                                </div>
+                                
+                                <hr />
+                                <div class="form-group">
+                                    <label>
+                                        <input type="checkbox" id="copyAddressCheckbox" /> Same as Present Address
+                                    </label>
+                                </div>
+                                <hr />
+
+                                <div class="form-group row">
+                                    <label class="col-sm-2 col-form-label" for="PermanentAddress">Permanent Address   @Html.ValidationMessageFor(model => model.PermanantAddress, "*", new { @class = "text-danger" })</label>
+                                    <div class="col-sm-4">
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text" id="permanentaddressError"><i class="fas fa-home"></i></span>
+                                                @Html.TextAreaFor(model => model.PermanentAddress, new { htmlAttributes = new { @class = "form-control", @placeholder = "Permanent Address...", style = "width:300px; height:150px;", id = "PermanentAddress" } })
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <label class="col-sm-2 col-form-label" for="PermanantPincode">Permanent Pincode   @Html.ValidationMessageFor(model => model.PermanantPincode, "*", new { @class = "text-danger" })</label>
+                                    <div class="col-sm-4">
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text"><i class="fas fa-landmark"></i></span>
+                                            </div>
+                                            @Html.EditorFor(model => model.PermanantPincode, new { htmlAttributes = new { @class = "form-control", @id = "permanantpincode", @required = "required", @type = "Pincode" } })
+
+                                            @Html.ValidationMessageFor(model => model.PermanantPincode, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
+
+                                </div>
+
+                                <div class="form-group row">
+                                    <div class="col-md-4">
+                                        <h6><b>Permanent Country: @Html.ValidationMessageFor(model => model.CountryId, "*", new { @class = "text-danger" })</b></h6>
+                                        @Html.DropDownListFor(
+                                            model => model.CountryId,
+                                            new SelectList(ViewBag.AdditionalCountry, "Value", "Text"),
+                                            "Select Country",
+                                            new { @class = "form-control", id = "additionalCountryDropdown" }
+                                        )
+                                    </div>
+
+
+                                    <div class="col-md-4">
+                                        <h6><b> Permanent State:@Html.ValidationMessageFor(model => model.State, "*", new { @class = "text-danger" })</b></h6>
+                                        <select id="additionalStateDropdown" class="form-control">
+                                            <option value="">---Select State---</option>
+                                            <!-- other options here -->
+                                        </select>
+                                    </div>
+
+                                    <div class="col-md-4">
+    <h6><b>Permanent City @Html.ValidationMessageFor(model => model.PermanantCityId, "*", new { @class = "text-danger" })</b></h6>
+    @if (ViewBag.city != null && ((IEnumerable<SelectListItem>)ViewBag.city).Any())
+    {
+        @Html.DropDownListFor(model => model.PermanantCityId, new SelectList(ViewBag.city, "Value", "Text"), new { @class = "form-control", id = "additionalCityDropdown" })
+    }
+    else
+    {
+        <select class="form-control" id="additionalCityDropdown">
+            <option value="">No cities available</option>
+        </select>
+    }
+</div>
+                                </div>
+
+
+                                <!-- More Address Info Fields -->
+                                <button class="btn btn-primary btn-sm" type="button" onclick="stepper.previous()">Previous</button>
+                                <button class="btn btn-primary btn-sm" type="button" id="Step2NxtButton" @*onclick="stepper.next()*@>Next</button>
+                            </div>
+                            <div id="education-info" class="content" role="tabpanel" aria-labelledby="education-info-trigger">
+
+                                <!-- Education Info Form Fields -->
+                                <div class="container">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <div class="form-group clearfix">
+                                                <div class="checkbox icheck-primary d-inline">
+                                                    <input type="checkbox" id="SSC" name="education" value="SSC">
+                                                    <label for="SSC" style="display: inline;">SSC</label>
+                                                </div>
+                                                <div class="checkbox icheck-primary d-inline">
+                                                    <input type="checkbox" id="HSC" name="education" value="HSC">
+                                                    <label for="HSC" style="display: inline;">HSC</label>
+                                                </div>
+                                                <div class="checkbox icheck-primary d-inline">
+                                                    <input type="checkbox" id="Diploma" name="education" value="Diploma">
+                                                    <label for="Diploma" style="display: inline;">Diploma</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <div class="row">
+                                            <div class="col-md-6" id="graduationDropdown" style="display: none;">
+                                                <label class="col-md-12">Graduation:</label>
+                                                @Html.DropDownList("Graduation", (IEnumerable<SelectListItem>)ViewBag.GraduationList, "---SELECT---", new { @class = "form-control", @id = "GraduationId" })
+                                                @Html.ValidationMessageFor(model => model.GraduationId, "", new { @class = "text-danger" })
+                                            </div>
+                                            <div class="col-md-6" id="postGraduationDropdown" style="display: none;">
+                                                <label class="col-md-12">Post Graduation:</label>
+
+                                                <!-- Always render the dropdown -->
+                                                <select class="form-control" id="PostgraduationId" name="PostGraduation">
+                                                    <option value="">---Select Post Graduation---</option>
+                                                </select>
+
+                                                @Html.ValidationMessageFor(model => model.PostgraduationId, "", new { @class = "text-danger", @id = "PostgraduationId" })
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label class="col-md-2">Interested Course   @Html.ValidationMessageFor(model => model.IntrestedCourseId, "*", new { @class = "text-danger" })</label>
+                                        <div class="custom-dropdown col-md-4">
+                                            <div class="dropdown-toggle" id="dropdownMenu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="background-color: #fff;overflow: auto;">
+                                                Select Interested Courses
+                                            </div>
+                                            <div class="dropdown-menu" aria-labelledby="dropdownMenu" style=" position: relative; margin-top:10vw;">
+                                                @foreach (var course in ViewBag.Course)
+                                                {
+                                                    <div class="dropdown-item">
+                                                        <input type="checkbox" id="@("chk_" + course.Value)" name="selectedCourses" value="@course.Value" />
+                                                        <label for="@("chk_" + course.Value)">@course.Text</label>
+                                                    </div>
+                                                }
+                                            </div>
+                                        </div>
+                                        <div id="selectedCoursesBox" class="col-md-5" style="margin-bottom: 10px; border: 1px solid #ccc; padding: 10px; background-color: #f9f9f9;">
+                                            <strong>Selected Courses:</strong>
+                                            <ul id="selectedCoursesList"></ul>
+                                        </div>
+
+                                        <label class="col-sm-2 col-form-label" for="TimePreferred">Time Preferred   @Html.ValidationMessageFor(model => model.TimePreferred, "*", new { @class = "text-danger" })</label>
+                                        <div class="col-sm-3">
+                                            <div class="input-group">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text"><i class="fas fa-school"></i></span>
+                                                </div>
+                                                <select class="form-control" id="timepreffered" name="TimePreferred">
+                                                    <option value="PreferedTime">---Preffered TIme---</option>
+                                                    <option value="AfterNoon">Afternoon</option>
+                                                    <option value="Morning">Morning</option>
+                                                    <option value="Evening">Evening</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label class="col-sm-2 col-form-label" for="StatusId">Enquiry Status   @Html.ValidationMessageFor(model => model.StatusId, "*", new { @class = "text-danger" })</label>
+                                        <div class="col-sm-4">
+                                            <div class="input-group">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text"><i class="fas fa-school"></i></span>
+                                                    @Html.DropDownListFor(model => model.StatusId, new SelectList(ViewBag.statuslist, "Value", "Text"), "--Status--", new { @class = "form-control", @required = "required" })
+                                                    @Html.ValidationMessageFor(model => model.StatusId, "", new { @class = "text-danger" })
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-4">
+                                            <label class="radio-inline mr-2">
+                                                <label class="col-form-label">Want Demo @Html.ValidationMessageFor(model => model.WantDemo, "*", new { @class = "text-danger" })</label>
+                                                @Html.RadioButtonFor(m => m.WantDemo, "Yes") Yes
+                                            </label>
+                                            <label class="radio-inline">
+                                                @Html.RadioButtonFor(m => m.WantDemo, "No") No
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button class="btn btn-primary btn-sm" type="button" onclick="stepper.previous()">Previous</button>
+                                <!-- Add your education fields here -->
+                                <div class="container" style="margin-right:-450px;">
+                                    <input type="button" class="btn btn-success btn-sm" value="Update" formaction="UpdateCourseEnquiryPK" id="saveButton">
+                                    <button type="button" class="btn btn-danger btn-sm" id="cancel-button" onclick="goBack()">Cancel</button>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+
+<script>
+    function goBack() {
+        Swal.fire({
+            title: 'Are you sure?',
+            icon: 'warning',
+            confirmButtonColor: '#d33',
+            confirmButtonText: 'Yes, cancel it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = '@Url.Action("ListEnquiryCourse", "Counsellor")';
+            }
+        });
+    }
+</script>
+
+<!-- BS-Stepper -->
+<!-- BS-Stepper -->
+<script src="~/Content/plugins/bs-stepper/js/bs-stepper.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        window.stepper = new Stepper(document.querySelector('.bs-stepper'))
+    });
+</script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+
+<script>
+
+
+        $('#countryId').val(@ViewBag.CountryId);
+        $('#state').val(@ViewBag.stateId);
+        $('#city').val(@ViewBag.cityId);
+        $('#additionalCountryDropdown').val(@ViewBag.AdditionalCountryId);
+        $('#additionalStateDropdown').val(@ViewBag.AdditionalStateId);
+        $('#additionalCityDropdown').val(@ViewBag.AdditionalCityId);
+
+
+        populateStates();
+        populateCities();
+        populatePostgraduation();
+       /* populatePermanentStates();*/
+        //populatePermanentCities();
+
+        function populateStates()
+        {
+
+            var id = $("#countryId").val();
+             var stateId= @ViewBag.stateId;
+             $("#state").empty();
+            $.post("/Counsellor/GetStateNamePK", { CountryId: id }, function (data){
+             var v = "<option value= ''>---Select State---</option>";
+             $.each(data, function (i, v1) {
+                 v += "<option value=" + v1.Value + ">" + v1.Text + "</option>";
+             });
+             $("#state").html(v);
+             $('#state').val(@ViewBag.stateId);
+           });
+
+        }
+
+        function populateCities() {
+
+            var id = @Html.Raw(Json.Encode(ViewBag.stateId));
+            var cityid = @Html.Raw(Json.Encode(ViewBag.cityId));
+            $("#city").empty();
+            $.get("/Counsellor/GetCityNamePk", { StateId: id })
+                .done(function (data) {
+                    var options = "<option value=''>---Select City---</option>";
+                    $.each(data, function (i, city) {
+                        options += "<option value='" + city.Value + "'>" + city.Text + "</option>";
+                    });
+                    $("#city").html(options);
+                    $('#city').val(cityid);
+                })
+                .fail(function (xhr, status, error) {
+                    console.error("Error fetching cities:", error);
+                });
+        }
+
+
+
+        //state city bind
+        $(document).ready(function ()
+        {
+            $("#countryId").change(function () {
+                 
+                var id = $(this).val();
+                $("#state").empty();
+                $.get("/Counsellor/GetStateNamePK", { CountryId: id }, function (data) {
+                    var v = "<option>---Select---</option>";
+                    $.each(data, function (i, v1) {
+                        v += "<option value=" + v1.Value + ">" + v1.Text + "</option>";
+                    });
+                    $("#state").html(v);
+                });
+            });
+        });
+
+        $(document).ready(function () {
+            $("#state").change(function () {
+                var id = $(this).val();
+                $("#city").empty();
+                $.get("/Counsellor/GetCityNamePk", { StateId: id }, function (data) {
+                    var v = "<option>---Select---</option>";
+                    $.each(data, function (i, v1) {
+                        v += "<option value=" + v1.Value + ">" + v1.Text + "</option>";
+                    });
+                    $("#city").html(v);
+                });
+            });
+        });
+
+        $(document).ready(function () {
+            $("#additionalCountryDropdown").change(function () {
+                var additionalCountryId = $(this).val();
+                if (additionalCountryId) {
+                    $.ajax({
+                        type: "GET",
+                        url: "/Counsellor/GetAdditionalStateNamePK",
+                        data: { AdditionalCountryId: additionalCountryId },
+                        success: function (states) {
+                            $("#additionalStateDropdown").html("");
+                            $.each(states, function (i, state) {
+                                $("#additionalStateDropdown").append('<option value="' + state.Value + '">' + state.Text + '</option>');
+                            });
+                        }
+                    });
+                } else {
+                    $("#additionalStateDropdown").html('<option value="">Select Additional State</option>');
+                    $("#additionalCityDropdown").html('<option value="">Select Additional City</option>');
+                }
+            });
+
+            $("#additionalStateDropdown").change(function () {
+                var additionalStateId = $(this).val();
+                if (additionalStateId) {
+                    $.ajax({
+                        type: "GET",
+                        url: "/Counsellor/GetAdditionalCityNamePk",
+                        data: { AdditionalStateId: additionalStateId },
+                        success: function (cities) {
+                            $("#additionalCityDropdown").html("");
+                            $.each(cities, function (i, city) {
+                                $("#additionalCityDropdown").append('<option value="' + city.Value + '">' + city.Text + '</option>');
+                            });
+                        }
+
+                    });
+                } else {
+                    $("#additionalCityDropdown").html('<option value="">Select Additional City</option>');
+                }
+            });
+        });
+
+
+
+        document.addEventListener("DOMContentLoaded", function () {
+            var graduationCheckbox = document.getElementById("chkEducationalQualificationYes");
+            var postGraduationCheckbox = document.getElementById("chkEducationalQualificationNo");
+
+            graduationCheckbox.addEventListener("change", function () {
+                var graduationDropdown = document.getElementById("graduationDropdown");
+                if (graduationCheckbox.checked) {
+                    graduationDropdown.style.display = "block";
+                } else {
+                    graduationDropdown.style.display = "none";
+                }
+            });
+
+            postGraduationCheckbox.addEventListener("change", function () {
+                var postGraduationDropdown = document.getElementById("postGraduationDropdown");
+                if (postGraduationCheckbox.checked) {
+                    postGraduationDropdown.style.display = "block";
+                } else {
+                    postGraduationDropdown.style.display = "none";
+                }
+
+            });
+        });
+</script>
+
+<script>
+    $(document).ready(function () {
+
+        $("#countryId").change(function () {
+            var id = $(this).val();
+            $("#state").empty();
+            $.get("/Counsellor/GetStateNamePK", { CountryId: id }, function (data) {
+                var options = "<option value=''>---Select State---</option>";
+                $.each(data, function (i, state) {
+                    options += `<option value="${state.Value}">${state.Text}</option>`;
+                });
+                $("#state").html(options);
+            });
+        });
+
+        $("#state").change(function () {
+            var id = $(this).val();
+            $("#city").empty();
+            $.get("/Counsellor/GetCityNamePk", { StateId: id }, function (data) {
+                var options = "<option value=''>---Select City---</option>";
+                $.each(data, function (i, city) {
+                    options += `<option value="${city.Value}">${city.Text}</option>`;
+                });
+                $("#city").html(options);
+            });
+        });
+
+        $("#additionalCountryDropdown").change(function () {
+            var additionalCountryId = $(this).val();
+            if (additionalCountryId) {
+                $.get("/Counsellor/GetAdditionalStateNamePK", { AdditionalCountryId: additionalCountryId }, function (states) {
+                    var options = "<option value=''>---Select Additional State---</option>";
+                    $.each(states, function (i, state) {
+                        options += `<option value="${state.Value}">${state.Text}</option>`;
+                    });
+                    $("#additionalStateDropdown").html(options);
+                });
+            } else {
+                $("#additionalStateDropdown").html('<option value="">Select Additional State</option>');
+                $("#additionalCityDropdown").html('<option value="">Select Additional City</option>');
+            }
+        });
+
+        $("#additionalStateDropdown").change(function () {
+            var additionalStateId = $(this).val();
+            if (additionalStateId) {
+                $.get("/Counsellor/GetAdditionalCityNamePk", { AdditionalStateId: additionalStateId }, function (cities) {
+                    var options = "<option value=''>---Select Additional City---</option>";
+                    $.each(cities, function (i, city) {
+                        options += `<option value="${city.Value}">${city.Text}</option>`;
+                    });
+                    $("#additionalCityDropdown").html(options);
+                });
+            } else {
+                $("#additionalCityDropdown").html('<option value="">Select Additional City</option>');
+            }
+        });
+    });
+
+</script>
+<script>
+    $(function () {
+         var existingGender = '@Model.Gender';
+            if (existingGender) {
+                $('input[name="gender"][value="' + existingGender + '"]').prop('checked', true);
+        }
+
+        $('#saveButton').click(function (e) {
+            e.preventDefault();
+
+            Swal.fire({
+                title: 'Are you sure?',
+                text: 'Do you want to Update the form data?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, submit it!',
+                cancelButtonText: 'No, cancel',
+            }).then((result) => {
+                console.log(result);
+                if (result.isConfirmed) {
+                    var formData = $('#myform').serialize();
+					      formData += '&PermanantCityId=' + $('#additionalCityDropdown').val();
+                    console.log(formData);
+
+                    $.ajax({
+                        url: '@Url.Action("UpdateCourseEnquiryPK", "Counsellor")',
+                        type: 'POST',
+                        data: formData,
+                        success: function (response) {
+                            console.log(response);
+                            Swal.fire('Success!', 'Updated successfully', 'success').then(() => {
+                                window.location.href = document.referrer;
+                                //window.location.href = '@Url.Action("ListEnquiryCourse", "Counsellor")'
+                            });
+                        },
+                        error: function (xhr, status, error) {
+                            console.log(xhr, status, error);
+                            Swal.fire('Error!', 'Form update failed. Please try again.', 'error');
+                        }
+                    });
+                }
+            }).catch(error => {
+                console.error('Error with Swal.fire:', error);
+            });
+        });
+    });
+</script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+<script>
+    $(document).ready(function () {
+        window.stepper = new Stepper($('.bs-stepper')[0]);
+
+        $('#Nextbutton').on('click', function () {
+
+            if (validateForm()) {
+                stepper.next();
+            }
+        });
+    });
+    function validateForm() {
+
+        var isValid = true;
+        var fullName = $('#FullName').val().trim();
+        var gender = $('input[name="gender"]:checked').val();
+        var email = $('#EmailId').val().trim();
+        var studMobileNo = $('#ContactNumber').val();
+        var profession = $('#profession').val();
+        var enquiryDate = $('#enquiryDate').val();
+
+        function isValidName(fullame) {
+            var nameRegex = /^(?=.*\s)[a-zA-Z\s]+$/;
+            return nameRegex.test(fullname) && fullname.includes(' ');
+        }
+
+        if (!gender) {
+            toastr.error("Please select a Gender");
+            isValid = false;
+        }
+
+        if (email === "" || !isValidEmail(email)) {
+            toastr.error("Invalid Email");
+            isValid = false;
+        }
+
+        if (studMobileNo === "" || !isValidMobileNo(studMobileNo)) {
+            toastr.error("Invalid Mobile No");
+            isValid = false;
+        }
+
+        if (!profession) {
+            toastr.error("Please select a Profession");
+            isValid = false;
+        }
+
+        if (enquiryDate === "") {
+            toastr.error("Invalid Enquiry Date");
+            isValid = false;
+        }
+
+        function isValidEmail(email) {
+            var emailRegex = /^[a-zA-Z0-9._%+-]+@@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+            return emailRegex.test(email);
+        }
+
+        function isValidName(name) {
+            var nameRegex = /^[a-zA-Z\s]+$/;
+            return nameRegex.test(name);
+        }
+
+        function isValidMobileNo(mobileNo) {
+            var mobileNoRegex = /^\d{10}$/;
+            return mobileNoRegex.test(mobileNo);
+        }
+
+        if (isValid) {
+            toastr.success("Personal Details Added successfully!");
+        }
+        return isValid;
+    }
+</script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function () {
+        window.stepper = new Stepper($('.bs-stepper')[0]);
+
+        $('#Step2NxtButton').on('click', function (e) {
+
+            e.preventDefault();
+
+            if (validateAddressForm()) {
+                stepper.next();
+            }
+        });
+        function validateAddressForm() {
+            var isValid = true;
+            var permanentAddress = $('#PermanentAddress').val().trim();
+            var permanentPincode = $('#permanantpincode').val();
+            var permanentCountry = $('#additionalCountryDropdown').val();
+            var permanentState = $('#PermanentState').val();
+            var permanentCity = $('#additionalCityDropdown').val();
+            var presentAddress = $('#PresentAddress').val().trim();
+            var presentPincode = $('#PresentPincode').val().trim();
+            var presentCountry = $('#countryId').val();
+            var presentState = $('#state').val();
+            var presentCity = $('#city').val();
+
+          //  $('.form-control').removeClass('is-invalid');
+            //$('.text-danger').remove();
+
+            if (permanentAddress === "") {
+                toastr.error("Permanent Address is required");
+                $('#PermanentAddress');
+                isValid = false;
+            }
+
+            if (permanentPincode === "" || !/^\d{6}$/.test(permanentPincode)) {
+                toastr.error("Please enter a valid Permanent Pincode (6 digits)");
+                $('#permanantpincode');
+                isValid = false;
+            }
+
+            if (permanentCountry === "" || permanentCountry === "---Select Country---") {
+                toastr.error("Please select a Permanent Country");
+                $('#PermanentCountry');
+                isValid = false;
+            }
+
+            if (permanentState === "" || permanentState === "---Select State---") {
+                toastr.error("Please select a Permanent State");
+                $('#PermanentState');
+                isValid = false;
+            }
+
+            if (permanentCity === "" || permanentCity === "---Select City---") {
+                toastr.error("Please select a Permanent City");
+                $('#additionalCityDropdown');
+                isValid = false;
+            }
+
+            if (presentAddress === "") {
+                toastr.error("Present Address is required");
+                $('#PresentAddress');
+                isValid = false;
+            }
+
+            if (presentPincode === "" || !/^\d{6}$/.test(presentPincode)) {
+                toastr.error("Please enter a valid Present Pincode (6 digits)");
+                $('#PresentPincode');
+                isValid = false;
+            }
+
+            if (presentCountry === "" || presentCountry === "---Select Country---") {
+                toastr.error("Please select a Present Country");
+                $('#country');
+                isValid = false;
+            }
+
+            if (presentState === "" || presentState === "---Select State---") {
+                toastr.error("Please select a Present State");
+                $('#state');
+                isValid = false;
+            }
+
+            if (presentCity === "" || presentCity === "---Select City---") {
+                toastr.error("Please select a Present City");
+                $('#city');
+                isValid = false;
+            }
+
+            if (isValid) {
+                toastr.success("Address information added successfully!");
+            }
+            return isValid;
+        }
+    });
+</script>
+<script>
+    $(document).ready(function () {
+        $('#PresentPincode').on('input', function () {
+            var val = $(this).val();
+            var numericVal = val.replace(/\D/g, ''); // Remove non-digit characters
+            $(this).val(numericVal);
+
+            // Limit to 6 digits (optional)
+            if (numericVal.length > 6) {
+                $(this).val(numericVal.slice(0, 6));
+
+            }
+        });
+    });
+</script>
+<script>
+    $(document).ready(function () {
+        $('#permanantpincode').on('input', function () {
+            var val = $(this).val();
+            var numericVal = val.replace(/\D/g, ''); // Remove non-digit characters
+            $(this).val(numericVal);
+
+            // Limit to 6 digits (optional)
+            if (numericVal.length > 6) {
+                $(this).val(numericVal.slice(0, 6));
+
+            }
+        });
+    });
+</script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $('#alternateno').on('input', function () {
+            var cleanedValue = $(this).val().replace(/\D/g, '');
+            if (cleanedValue.length > 10) {
+                cleanedValue = cleanedValue.slice(0, 10);
+            }
+            $(this).val(cleanedValue);
+        });
+    });
+</script>
+<script>
+    $(document).ready(function () {
+        $('#ContactNumber').on('input', function () {
+            var inputValue = $(this).val().trim();
+            var sanitizedValue = inputValue.replace(/\D/g, '');
+            if (sanitizedValue.length > 10) {
+                sanitizedValue = sanitizedValue.substr(0, 10);
+            }
+            $(this).val(sanitizedValue);
+            if (sanitizedValue.length !== 10) {
+                $(this)[0].setCustomValidity('Contact number must be exactly 10 digits.');
+            } else {
+                $(this)[0].setCustomValidity('');
+            }
+        });
+    });
+</script>
+
+@*To remain existing gender checked in update form.*@
+<script>
+    $(function () {
+        var existingGender = '@Model.Gender';
+        $('input[name="gender"][value="' + existingGender + '"]').prop('checked', true);
+    });
+</script>
+
+@*To populate the Selected State and cities on update view,*@
+<script>
+$(document).ready(function () {
+    function populateStates() {
+        var countryId = $("#additionalCountryDropdown").val();
+        $("#additionalStateDropdown").empty();
+        $("#additionalCityDropdown").empty();
+
+        if (countryId) {
+            $.ajax({
+                type: "GET",
+                url: "/Counsellor/GetAdditionalStateNamePK",
+                data: { AdditionalCountryId: countryId },
+                success: function (states) {
+                    var options = '<option value="">---Select State---</option>';
+                    $.each(states, function (i, state) {
+                        options += '<option value="' + state.Value + '">' + state.Text + '</option>';
+                    });
+                    $("#additionalStateDropdown").html(options);
+                    var additionalStateId = @Html.Raw(Json.Encode(ViewBag.AdditionalStateId));
+                    if (additionalStateId) {
+                    $('#additionalStateDropdown').val(additionalStateId).trigger('change');
+                    }
+                 },
+                    error: function (xhr, status, error) {
+                    console.error("Error fetching states:", error);
+                    }
+            });
+        }
+        else
+        {
+                $("#additionalStateDropdown").html('<option value="">---Select State---</option>');
+                $("#additionalCityDropdown").html('<option value="">---Select City---</option>');
+        }
+    }
+
+                    function populateCities() {
+                    var stateId = $("#additionalStateDropdown").val();
+                    $("#additionalCityDropdown").empty();
+
+                    if (stateId) {
+                    $.ajax({
+                    type: "GET",
+                    url: "/Counsellor/GetAdditionalCityNamePk",
+                    data: { AdditionalStateId: stateId },
+                    success: function (cities) {
+                    var options = '<option value="">---Select City---</option>';
+                    $.each(cities, function (i, city) {
+                    options += '<option value="' + city.Value + '">' + city.Text + '</option>';
+                    });
+                    $("#additionalCityDropdown").html(options);
+                    var additionalCityId = @Html.Raw(Json.Encode(ViewBag.AdditionalCityId));
+                    if (additionalCityId) {
+                    $('#additionalCityDropdown').val(additionalCityId);
+                    }
+                    },
+                    error: function (xhr, status, error) {
+                    console.error("Error fetching cities:", error);
+                    }
+                    });
+                    } else {
+                    $("#additionalCityDropdown").html('<option value="">---Select City---</option>');
+                    }
+                    }
+                    $("#additionalCountryDropdown").change(function () {
+                    populateStates();
+                    });
+
+                    $("#additionalStateDropdown").change(function () {
+                    populateCities();
+                    });
+                    populateStates();
+                    });
+</script>
+
+<script>
+   $(document).ready(function () {
+    $('#graduationDropdown').show();
+    $('#postGraduationDropdown').show();
+
+    $("#GraduationId").change(function () {
+        var id = $(this).val();
+        $("#PostgraduationId").empty();  // Clear the dropdown
+
+        if (id) {
+            $.get("/Counsellor/GetPostGraduationPK", { GraduationId: id }, function (data) {
+                var options = "<option>---Select---</option>";
+                $.each(data, function (i, item) {
+                    options += "<option value='" + item.Value + "'>" + item.Text + "</option>";
+                });
+                $("#PostgraduationId").html(options);
+
+                // If selectedPostgraduationId exists, set the value after loading the options
+                if (selectedPostgraduationId) {
+                    $("#PostgraduationId").val(selectedPostgraduationId);
+                }
+            });
+        } else {
+            // Show a default message when no graduation is selected
+            $("#PostgraduationId").html('<option value="">No Post Graduation Available</option>');
+        }
+    });
+
+    var selectedGraduationId = '@Html.Raw(ViewBag.graGraduation)';
+    var selectedPostgraduationId = '@Html.Raw(ViewBag.PostgraduationId)';
+
+    // Preselect GraduationId if it exists
+    if (selectedGraduationId) {
+        $("#GraduationId").val(selectedGraduationId).trigger('change');
+    }
+});
+
+</script>
+
+<script>
+    $(document).ready(function () {
+        $('#copyAddressCheckbox').change(function () {
+            if (this.checked) {
+                // Copy Address and Pincode
+                $('#PermanentAddress').val($('#PresentAddress').val());
+                $('#permanantpincode').val($('#PresentPincode').val());
+
+                // Copy Country and trigger change event to load states
+                var presentCountry = $('#countryId').val();
+                $('#additionalCountryDropdown').val(presentCountry).trigger('change');
+
+                // Wait for the state dropdown to be populated and then set the state value
+                setTimeout(function () {
+                    var presentState = $('#state').val();
+                    $('#additionalStateDropdown').val(presentState).trigger('change');
+                }, 2000); // Adjust the timeout based on the time it takes for states to load
+
+                // Wait for the city dropdown to be populated and then set the city value
+                setTimeout(function () {
+                    var presentCity = $('#city').val();
+                    $('#additionalCityDropdown').val(presentCity);
+                }, 3000); // Adjust the timeout based on the time it takes for cities to load
+
+            } else {
+                // Clear all fields if checkbox is unchecked
+                $('#PermanentAddress').val('');
+                $('#permanantpincode').val('');
+                $('#additionalCountryDropdown').val('').trigger('change');
+                $('#additionalStateDropdown').val('').trigger('change');
+                $('#additionalCityDropdown').val('');
+            }
+        });
+    });
+</script>
+<script>
+    function shiftSelectedCourse(checkbox) {
+        var $selectedCoursesList = $('#selectedCoursesList');
+        var courseValue = $(checkbox).val();
+        var courseLabel = $(checkbox).next('label').text();
+
+        if ($(checkbox).is(':checked')) {
+            // Check if the course is already in the selected list to avoid duplicates
+            if ($selectedCoursesList.find('li[data-value="' + courseValue + '"]').length === 0) {
+                // Create a new list item for the selected course
+                var listItem = $('<li>')
+                    .text(courseLabel) // Set the label text
+                    .attr('data-value', courseValue); // Store the value in a data attribute
+
+                // Append the list item to the selected courses list
+                $selectedCoursesList.append(listItem);
+            }
+        } else {
+            // If unchecking, remove the course from the selected list
+            $selectedCoursesList.find('li[data-value="' + courseValue + '"]').remove();
+        }
+    }
+
+    // Attach the event handler to all checkboxes on page load
+    $(document).ready(function () {
+        $('input[name="selectedCourses"]').on('change', function () {
+            shiftSelectedCourse(this);
+        });
+    });
+</script>
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,291 @@
+﻿@model GSTEducationERPLibrary.Accountant.Accountant
+
+
+<html>
+<head>
+    <!-- Theme style -->
+    <!--<script src="~/Content/plugins/jquery/jquery.min.js"></script>-->
+    <!-- DataTables CSS -->
+    <!--<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">-->
+    <!-- DataTables JS -->
+    <!--<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>-->
+    @*<script src="~/Content/Admin/js/Icon.js"></script>
+        <link href="~/Content/Admin/css/UI.css" rel="stylesheet" />*@
+    <link href="~/Content/Admin/css/UI.css" rel="stylesheet" />
+    <link href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css" rel="stylesheet" />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+
+    <!-- Bootstrap 4 -->
+    <style>
+        .progress-container {
+            display: flex;
+            width: 100%;
+            /*Ensure it takes up the full width of the column height: 30px;*/
+            /*Adjust height as needed background-color: #f3f3f3;*/
+            border-radius: 5px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-bar {
+            display: flex;
+            flex: 1;
+            Ensures bars take equal space height: 100%;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            transition: width 0.6s ease;
+        }
+
+            .progress-bar.completed {
+                background-color: #4caf50;
+            }
+
+            .progress-bar.pending {
+                background-color: #e0e0e0;
+            }
+
+            .progress-bar.overdue {
+                background-color: #f44336;
+            }
+
+        .progress-step {
+            border-right: 1px solid white;
+        }
+
+            .progress-step:last-child {
+                border-right: none;
+            }
+
+
+
+
+        .success-button {
+            display: inline-block;
+            padding: 2px 2px;
+            background-color: green;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .custom-popup-width {
+            width: 80%;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .hidden-column {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+
+        <div class="table-responsive">
+
+            <table id="pendingInstallmentsTable"  class="table table-bordered table-striped">
+
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Course Name</th>
+                        <th>Batch</th>
+                        <th class="hidden-column">Course Fee</th>
+                        <th>Total Fees</th>
+                        <th>Total Paid</th>
+                        <th>Remaining Fees</th>
+                        <th>Pending Amount</th>
+                        <th>Installment Date</th>
+                        <th>Pending Installments</th>
+                        <th>Actions</th>
+                        <th class="hidden-column">Discount Percentage</th>
+                        <th class="hidden-column">Remaining Fees</th>
+                        <th class="hidden-column">Student Type</th>
+                        <th class="hidden-column">Branch Address</th>
+                        <th class="hidden-column">Must Complete</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model != null && Model.LstPendindFeeStud != null)
+                    {
+                        foreach (var item in Model.LstPendindFeeStud)
+                        {
+                            <tr>
+                                <td>@item.Name</td>
+                                <td>@item.CourseName</td>
+                                <td>@item.Batch</td>
+                                <td class="hidden-column">₹ @item.CourseFee.ToString("0.00")</td>
+                                <td>₹ @item.TotalFees.ToString("0.00")</td>
+                                <td>₹ @item.TotalPaid.ToString("0.00")</td>
+                                <td>₹ @item.RemainingFees.ToString("0.00")</td>
+                                <td>₹ @item.InstallmentAmount.ToString("0.00")</td>
+                                <td>@item.InstallmentDate.ToString("yyyy-MM-dd")</td>
+                                <td>@item.InstallmentNo</td>
+                                <td>
+                                    <a class="icon" href="javascript:void(0);" onclick="submitData('@item.CandidateCode')" title="Collect Fee">
+                                        <video width="25" height="25" playsinline loop>
+                                            <source src="~/Content/Admin/icon/Student%20Fees%204.mp4" type="video/mp4" />
+                                        </video>
+                                    </a>
+                                </td>
+                                <td class="hidden-column">@item.DiscountPercentage</td>
+                                <td class="hidden-column">₹ @item.RemainingFees.ToString("0.00")</td>
+                                <td class="hidden-column">@item.StudentType</td>
+                                <td class="hidden-column">@item.BranchAddress</td>
+                                <td class="hidden-column">₹ @item.MustCompleteAmount.ToString("0.00")</td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+
+
+            </table>
+        </div>
+
+  
+    <div class="modal fade" id="pendingInstallmentModal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalLabel">Pending Installment Details</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    Content will be loaded here
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <script src="~/Content/Admin/js/Icon.js"></script>
+
+    <!-- jQuery -->
+    <script src="~/Content/plugins/jquery/jquery.min.js"></script>
+    <!-- Bootstrap 4 -->
+    <script src="~/Content/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+    <script src="~/Content/plugins/jquery/jquery.min.js" type="text/javascript"></script>
+    <script src="~/Content/plugins/bootstrap/js/bootstrap.bundle.min.js" type="text/javascript"></script>
+    <script src="~/Content/Admin/js/Icon.js"></script>
+    <script src="~/Content/plugins/jquery/jquery.min.js" type="text/javascript"></script>
+    <script src="~/Content/plugins/bootstrap/js/bootstrap.bundle.min.js" type="text/javascript"></script>
+    <script src="~/Content/plugins/datatables/jquery.dataTables.min.js" type="text/javascript"></script>
+    <script src="~/Content/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js" type="text/javascript"></script>
+    <script src="~/Content/plugins/datatables-responsive/js/dataTables.responsive.min.js" type="text/javascript"></script>
+    <script src="~/Content/plugins/datatables-responsive/js/responsive.bootstrap4.min.js" type="text/javascript"></script>
+    <script src="~/Content/plugins/datatables-buttons/js/dataTables.buttons.min.js" type="text/javascript"></script>
+    <script src="~/Content/plugins/datatables-buttons/js/buttons.bootstrap4.min.js" type="text/javascript"></script>
+    <script src="~/Content/plugins/jszip/jszip.min.js" type="text/javascript"></script>
+    <script src="~/Content/plugins/pdfmake/pdfmake.min.js" type="text/javascript"></script>
+    <script src="~/Content/plugins/pdfmake/vfs_fonts.js" type="text/javascript"></script>
+    <script src="~/Content/plugins/datatables-buttons/js/buttons.html5.min.js" type="text/javascript"></script>
+    <script src="~/Content/plugins/datatables-buttons/js/buttons.print.min.js" type="text/javascript"></script>
+    <script src="~/Content/plugins/datatables-buttons/js/buttons.colVis.min.js" type="text/javascript"></script>
+
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            // Function to close the modal
+            function closeModal() {
+                $('#resultModal').modal('hide');
+            }
+
+            // Event listener for the Cancel button
+            $('#resultModal').on('click', '#btnCancel', function () {
+                closeModal();
+            });
+
+            // Alternatively, you can use the following approach
+            // $('#btnCancel').on('click', function () {
+            //     closeModal();
+            // });
+        });
+        $.ajax({
+            url: url,
+            type: 'GET',
+            success: function (response) {
+                $('#Pending').html(response);
+
+                var table = $('#StudentList table').DataTable({
+                    "responsive": true,
+                    "lengthChange": false,
+                    "autoWidth": false,
+                    "stateSave": true,
+                    "dom": 'Bfrtip',
+                    "buttons": [
+                        { extend: 'copy', text: '<img src="/Content/Admin/icon/copy.png" title="Copy" alt="Copy" height="20" width="20" />', titleAttr: 'Copy' },
+                        { extend: 'csv', text: '<img src="/Content/Admin/icon/csv.jpg" title="CSV" alt="CSV" height="20" width="20" />', titleAttr: 'CSV' },
+                        { extend: 'excel', text: '<img src="/Content/Admin/icon/xls-file.png" title="xls" alt="xls" height="20" width="20" />', titleAttr: 'Excel' },
+                        { extend: 'pdf', text: '<img src="/Content/Admin/icon/pdf-file.png" title="pdf" alt="pdf" height="20" width="20" />', titleAttr: 'PDF' },
+                        { extend: 'print', text: '<img src="/Content/Admin/icon/printer.png" title="printer" alt="printer" height="20" width="20" />', titleAttr: 'Print' },
+                        { extend: 'colvis', text: '<img src="/Content/Admin/icon/column.jpg" title="column" alt="column" height="20" width="20" />', titleAttr: 'Columns' }
+                    ]
+                });
+
+                table.buttons().container().appendTo('#StudentList .col-md-6:eq(0)');
+            },
+            error: function (xhr, status, error) {
+                console.error('AJAX Error:', status, error);
+            }
+        });
+    </script>
+
+
+
+
+
+    <script>
+$(document).ready(function () {
+    function submitData(candidateCode) {
+        console.log("submitData function called with candidateCode:", candidateCode);
+
+        // Find the row corresponding to the candidate
+        var row = $("a[onclick=\"submitData('" + candidateCode + "')\"]").closest("tr");
+
+        // Extract data from the row
+        var data = {
+            candidateCode: candidateCode,
+            name: row.find("td:eq(0)").text().trim(),
+            courseName: row.find("td:eq(1)").text().trim(),
+            batch: row.find("td:eq(2)").text().trim(),
+            courseFee: parseFloat(row.find("td.hidden-column:eq(0)").text().trim()) || 0.0, // Hidden column starts
+            totalFees: parseFloat(row.find("td:eq(4)").text().replace("₹", "").trim()) || 0.0,
+            totalPaid: parseFloat(row.find("td:eq(5)").text().replace("₹", "").trim()) || 0.0,
+            remainingFees: parseFloat(row.find("td:eq(6)").text().replace("₹", "").trim()) || 0.0,
+            installmentAmount: parseFloat(row.find("td:eq(7)").text().replace("₹", "").trim()) || 0.0,
+            installmentDate: row.find("td:eq(8)").text().trim(),
+            discountPercentage: row.find("td.hidden-column:eq(1)").text().trim(),
+            remainingFeesAgain: parseFloat(row.find("td.hidden-column:eq(2)").text().trim()) || 0.0,
+            studentType: row.find("td.hidden-column:eq(3)").text().trim(),
+            branchAddress: row.find("td.hidden-column:eq(4)").text().trim(),
+            mcAmount: parseFloat(row.find("td.hidden-column:eq(5)").text().trim()) || 0.0,
+        };
+
+        console.log("Data to be sent:", data);
+
+        // Create the query string parameters
+        var queryString = $.param(data);
+
+        // Redirect to the action method
+        window.location.href = '@Url.Action("PendingInstallmentCollectingFeeAsyncAD", "Accountant")' + '?' + queryString;
+    }
+
+    window.submitData = submitData;
+});
+    </script>
+
+
+</body>
+</html>

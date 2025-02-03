@@ -1,0 +1,441 @@
+﻿@model GSTEducationERPLibrary.Bind.Bind
+
+@{
+    ViewBag.Title = "LeaveManagementAsyncAM";
+    Layout = "~/Views/Shared/_LayoutERP.cshtml";
+}
+
+<!--<h2>LeaveManagementAsyncAM</h2>-->
+<html>
+<head>
+    <title>Bootstrap Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+
+
+    <link href="~/Content/plugins/bootstrap-switch/css/bootstrap3/bootstrap-switch.min.css" rel="stylesheet" />
+
+    <script src="~/Content/plugins/jquery/jquery.min.js"></script>
+    <script src="~/Content/plugins/bootstrap-switch/js/bootstrap-switch.min.js"></script>
+    <link rel="stylesheet" href="~/Content/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+    <link rel="stylesheet" href="~/Content/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
+    <link rel="stylesheet" href="~/Content/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
+    <style>
+        .slider-toggle {
+            display: none;
+            visibility: none;
+        }
+
+        .slider-button,
+        .slider-content,
+        .slider {
+            -webkit-transition: all 500ms ease-in-out;
+            -moz-transition: all 500ms ease-in-out;
+            -ms-transition: all 500ms ease-in-out;
+            -o-transition: all 500ms ease-in-out;
+            transition: all 500ms ease-in-out;
+        }
+
+        .slider-viewport {
+            /* Uncomment the border-radius and border declaration to see the webkit bug in Chrome or Safari */
+            /* border-radius: 50px;  border: 5px solid green; */
+            -moz-border-radius: 50px;
+            display: block;
+            height: 100px;
+            overflow: hidden;
+            width: 300px;
+            position: relative;
+            margin: 30px auto 0;
+            cursor: pointer;
+        }
+
+        .slider {
+            height: 100%;
+            position: relative;
+            width: 200%;
+        }
+
+        .slider-button {
+            -moz-border-radius: 50px;
+            background-color: #f2f2f2;
+            filter: progid:DXImageTransform.Microsoft.gradient(gradientType=1, startColorstr='#FFF2F2F2', endColorstr='#FFDDDDDD');
+            background-image: url('data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4gPHN2ZyB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHJhZGlhbEdyYWRpZW50IGlkPSJncmFkIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgY3g9IjUwJSIgY3k9IiIgcj0iODYiPjxzdG9wIG9mZnNldD0iMCUiIHN0b3AtY29sb3I9IiNmMmYyZjIiLz48c3RvcCBvZmZzZXQ9IjMyJSIgc3RvcC1jb2xvcj0iI2VlZWVlZSIvPjxzdG9wIG9mZnNldD0iNjElIiBzdG9wLWNvbG9yPSIjZTJlMmUyIi8+PHN0b3Agb2Zmc2V0PSI4NiUiIHN0b3AtY29sb3I9IiNkZGRkZGQiLz48L3JhZGlhbEdyYWRpZW50PjwvZGVmcz48cmVjdCB4PSIwIiB5PSIwIiB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI2dyYWQpIiAvPjwvc3ZnPiA=');
+            background-size: 100%;
+            background-image: -webkit-gradient(radial, 50%, 0, 50%, 86, color-stop(0%, #f2f2f2), color-stop(32%, #eeeeee), color-stop(61%, #e2e2e2), color-stop(86%, #dddddd));
+            background-image: -webkit-radial-gradient(center, ellipse cover, #f2f2f2 0%, #eeeeee 32%, #e2e2e2 61%, #dddddd 86%);
+            background-image: -moz-radial-gradient(center, ellipse cover, #f2f2f2 0%, #eeeeee 32%, #e2e2e2 61%, #dddddd 86%);
+            background-image: -o-radial-gradient(center, ellipse cover, #f2f2f2 0%, #eeeeee 32%, #e2e2e2 61%, #dddddd 86%);
+            background-image: -ms-radial-gradient(center, ellipse cover, #f2f2f2 0%, #eeeeee 32%, #e2e2e2 61%, #dddddd 86%);
+            background-image: radial-gradient(center, ellipse cover, #f2f2f2 0%, #eeeeee 32%, #e2e2e2 61%, #dddddd 86%);
+            -webkit-box-sizing: border-box;
+            -moz-box-sizing: border-box;
+            box-sizing: border-box;
+            -webkit-box-shadow: white 0 10px 8px inset, rgba(0, 0, 0, 0.4) 0 -5px 8px inset, rgba(0, 0, 0, 0.2) 0 0 5px;
+            -moz-box-shadow: white 0 10px 8px inset, rgba(0, 0, 0, 0.4) 0 -5px 8px inset, rgba(0, 0, 0, 0.2) 0 0 5px;
+            box-shadow: white 0 10px 8px inset, rgba(0, 0, 0, 0.4) 0 -5px 8px inset, rgba(0, 0, 0, 0.2) 0 0 5px;
+            position: absolute;
+            display: block;
+            top: 0;
+            height: 100px;
+            width: 100px;
+            cursor: pointer;
+        }
+
+        .slider-content {
+            -webkit-box-shadow: rgba(0, 0, 0, 0.2) 0 0 5px inset;
+            -moz-box-shadow: rgba(0, 0, 0, 0.2) 0 0 5px inset;
+            box-shadow: rgba(0, 0, 0, 0.2) 0 0 5px inset;
+            background: rgba(157, 38, 29, 0.5);
+            cursor: pointer;
+            display: inline-block;
+            float: left;
+            height: 100%;
+            width: 250px;
+            font-size: 50px;
+            font-weight: bold;
+            text-transform: uppercase;
+            top: 10px;
+        }
+
+            .slider-content span {
+                text-shadow: rgba(0, 0, 0, 0.1) 1px 1px 2px;
+                height: 100%;
+                line-height: 100px;
+                margin: 0 20px;
+                float: left;
+            }
+
+        .left {
+            background-color: #007bff;
+            filter: progid:DXImageTransform.Microsoft.gradient(gradientType=0, startColorstr='#FF59BDFF', endColorstr='#FF44B7FF');
+            background-image: url('data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4gPHN2ZyB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PGxpbmVhckdyYWRpZW50IGlkPSJncmFkIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgeDE9IjUwJSIgeTE9IjAlIiB4Mj0iNTAlIiB5Mj0iMTAwJSI+PHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iIzU5YmRmZiIvPjxzdG9wIG9mZnNldD0iMTAwJSIgc3RvcC1jb2xvcj0iIzQ0YjdmZiIvPjwvbGluZWFyR3JhZGllbnQ+PC9kZWZzPjxyZWN0IHg9IjAiIHk9IjAiIHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9InVybCgjZ3JhZCkiIC8+PC9zdmc+IA==');
+            background-size: 100%;
+            background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #007bff), color-stop(100%, #007bff));
+            background-image: -webkit-linear-gradient(top, #007bff 0%, #007bff 100%);
+            background-image: -moz-linear-gradient(top,#007bff 0%,#007bff 100%);
+            background-image: -o-linear-gradient(top, #007bff 0%, #007bff 100%);
+            background-image: -ms-linear-gradient(top, #59bdff 0%, #44b7ff 100%);
+            background-image: linear-gradient(top, #007bff 0%, #007bff 100%);
+        }
+
+        .right {
+            background-color: #007bff;
+            filter: progid:DXImageTransform.Microsoft.gradient(gradientType=0, startColorstr='#FFFF4F51', endColorstr='#FFFF3A3A');
+            background-image: url('data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4gPHN2ZyB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PGxpbmVhckdyYWRpZW50IGlkPSJncmFkIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgeDE9IjUwJSIgeTE9IjAlIiB4Mj0iNTAlIiB5Mj0iMTAwJSI+PHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iI2ZmNGY1MSIvPjxzdG9wIG9mZnNldD0iMTAwJSIgc3RvcC1jb2xvcj0iI2ZmM2EzYSIvPjwvbGluZWFyR3JhZGllbnQ+PC9kZWZzPjxyZWN0IHg9IjAiIHk9IjAiIHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9InVybCgjZ3JhZCkiIC8+PC9zdmc+IA==');
+            background-size: 100%;
+            background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #007bff), color-stop(100%, #007bff));
+            background-image: -webkit-linear-gradient(top, #007bff 0%, #007bff 100%);
+            background-image: -moz-linear-gradient(top, #007bff 0%,#007bff 100%);
+            background-image: -o-linear-gradient(top, #007bff1 0%,#007bff100%);
+            background-image: -ms-linear-gradient(top, #ff4f51 0%, #ff3a3a 100%);
+            background-image: linear-gradient(top, #007bff 0%, #007bff 100%);
+        }
+
+            .right span {
+                float: right;
+            }
+
+        .slider-toggle + .slider-viewport > .slider {
+            left: 0;
+        }
+
+        .slider-toggle + .slider-viewport .slider-button {
+            left: 200px;
+        }
+
+        .slider-toggle + .slider-viewport .slider-content {
+            width: 250px;
+        }
+
+        .slider-toggle + .slider-viewport .left {
+            margin-left: 0;
+        }
+
+        .slider-toggle:checked + .slider-viewport > .slider {
+            left: -100%;
+        }
+
+        .slider-toggle:checked + .slider-viewport .slider-button {
+            left: 300px;
+        }
+
+        .slider-toggle:checked + .slider-viewport .left {
+            margin-left: 100px;
+        }
+
+        .look .slider-toggle {
+            display: block;
+            margin: 30px auto 0;
+        }
+
+        .look .slider-viewport {
+            margin-top: 10px;
+            border: 4px solid orange;
+            overflow: visible;
+        }
+
+        .look .slider-content {
+            opacity: .6;
+        }
+    </style>
+    <style>
+        .slider-viewport {
+            width: 100px; /* Adjust the width as needed */
+            height: 55px; /* Adjust the height as needed */
+            display: inline-block;
+            position: relative;
+        }
+
+        .slider {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 70%;
+            background-color: #ccc;
+            border-radius: 25px;
+            transition: background-color 0.3s;
+        }
+
+        .slider-button {
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 21px; /* Adjust the button size */
+            height: 21px; /* Adjust the button size */
+            background-color: #fff;
+            border-radius: 50%;
+            transition: left 0.3s;
+        }
+
+        .slider-toggle:checked + .slider-viewport .slider-button {
+            left: 26px; /* Adjust the left position when checked */
+        }
+
+        .slider-content {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 10px; /* Adjust the font size */
+            color: #fff;
+        }
+
+            .slider-content.left {
+                left: 25px;
+            }
+
+            .slider-content.right {
+                right: 25px;
+            }
+
+        .slider-toggle:checked + .slider-viewport .slider {
+            background-color: #007bff;
+        }
+    </style>
+
+</head>
+<body>
+    <br />
+ 
+    <div class="card">
+        
+    
+       
+        <div class="card-body">
+            
+            <div class="tab-content" id="custom-tabs-one-tabContent">
+                <div class="row">
+                    <h4>Leaves</h4>
+                    <div class="col-auto ml-auto">
+                        @*<input type="checkbox" id="type" name="LeaveMgmtType" checked data-bootstrap-switchdata-off-color="primary" data-on-color="blue" data-on-text="Self" data-off-text="Team" />*@
+
+                        <input type="checkbox" id="1" class="slider-toggle" />
+                        <label class="slider-viewport" for="1" style="left:1vw;width:8vw; top:-2vw;">
+                            <div class="slider">
+                                <div class="slider-button">&nbsp;</div>
+                                <div class="slider-content left">
+                                    <div class="col-1" style="font-size:large;top:-28px;">  <span>Self</span></div>
+                                </div>
+                                <div class="slider-content right">
+                                    <div class="col-1" style="font-size:large;top:-28px;left:15vw;">
+                                        <span>Team</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <div id="LeaveCountTbl">
+
+                </div>
+                <div id="AppliedLeavesTbl">
+
+                </div>
+                <div id="LeaveRequests">
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <!-- jQuery -->
+    <!-- Bootstrap 4 -->
+
+
+    <script src="~/Content/plugins/datatables/jquery.dataTables.min.js"></script>
+    <script src="~/Content/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
+    <script src="~/Content/plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
+    <script src="~/Content/plugins/datatables-responsive/js/responsive.bootstrap4.min.js"></script>
+    <script src="~/Content/plugins/datatables-buttons/js/dataTables.buttons.min.js"></script>
+    <script src="~/Content/plugins/datatables-buttons/js/buttons.bootstrap4.min.js"></script>
+    <script src="~/Content/plugins/jszip/jszip.min.js"></script>
+    <script src="~/Content/plugins/pdfmake/pdfmake.min.js"></script>
+    <script src="~/Content/plugins/pdfmake/vfs_fonts.js"></script>
+    <script src="~/Content/plugins/datatables-buttons/js/buttons.html5.min.js"></script>
+    <script src="~/Content/plugins/datatables-buttons/js/buttons.print.min.js"></script>
+    <script src="~/Content/plugins/datatables-buttons/js/buttons.colVis.min.js"></script>
+
+    <script>
+        @*$(document).ready(function () {
+
+          //$('input[name="LeaveMgmtType"]').bootstrapSwitch();
+
+              //loadPartialView();
+              //loadAppliedLeaves();
+
+            function loadContent(isOn) {
+                if (isOn) {
+                    loadPartialView();
+                    $('#AppliedLeavesTbl').hide();
+                } else {
+                    loadAppliedLeaves();
+                    $('#LeaveCountTbl').hide();
+                       function loadAppliedLeaves() {
+                         $.get('@Url.Action("ListStaffAppliedLeavesAsyncAM", "Bind")', function (data) {
+                             $('#AppliedLeavesTbl').html(data);
+                         });
+                       }
+                }
+            }
+
+            // Load initial content based on the default state
+            loadContent($('#1').is(':checked'));
+
+            // Handle toggle switch state change
+            $('#1').change(function () {
+                loadContent($(this).is(':checked'));
+            });
+
+       function loadPartialView() {
+           $.get('@Url.Action("ListLeaveCountsAsyncAM", "Bind")', function (data) {
+               $('#LeaveCountTbl').html(data);
+           });
+       }
+
+
+
+        });*@
+
+
+
+
+         $(document).ready(function () {
+
+            function loadPartialView() {
+                $.get('@Url.Action("ListLeaveCountsAsyncAM", "Bind")', function (data) {
+                    $('#LeaveCountTbl').html(data).show();
+                   // $('#AppliedLeavesTbl').hide();
+                    $('#LeaveRequests').hide();
+                });
+            }
+
+            function loadAppliedLeaves() {
+                $.get('@Url.Action("ListStaffAppliedLeavesAsyncAM", "Bind")', function (data) {
+                    $('#AppliedLeavesTbl').html(data).show();
+                   // $('#LeaveCountTbl').hide();
+                    $('#LeaveRequests').hide();
+                });
+             }
+               function loadLeaveRequests() {
+      $.get('@Url.Action("GetLeaveRequestsAsyncAM", "Bind")', function (data) {
+          $('#LeaveRequests').html(data).show();
+          $('#LeaveCountTbl').hide();
+          $('#AppliedLeavesTbl').hide();
+      });
+  }
+
+
+            function loadContent(isOn) {
+                if (isOn) {
+                    loadPartialView();
+                    loadAppliedLeaves();
+                    
+                   
+                } else {
+                    loadLeaveRequests();
+                  
+
+                }
+            }
+
+            // Load initial content based on the default state
+            loadContent($('#1').is(':checked'));
+
+            // Handle toggle switch state change
+            $('#1').change(function () {
+                loadContent($(this).is(':checked'));
+            });
+
+        });
+
+
+           @*$(document).ready(function () {
+
+            function loadPartialView() {
+                $.get('@Url.Action("ListLeaveCountsAsyncAM", "Bind")', function (data) {
+                    $('#LeaveCountTbl').html(data).show();
+                });
+            }
+
+            function loadAppliedLeaves() {
+                $.get('@Url.Action("ListStaffAppliedLeavesAsyncAM", "Bind")', function (data) {
+                    $('#AppliedLeavesTbl').html(data).show();
+                });
+            }
+
+            function loadLeaveRequests() {
+                $.get('@Url.Action("GetLeaveRequestsAsyncAM", "Bind")', function (data) {
+                    $('#LeaveRequests').html(data).show();
+                });
+            }
+
+            function loadContent(isOn) {
+                if (isOn) {
+                    loadPartialView();
+                    loadAppliedLeaves();
+                    $('#LeaveRequests').hide();
+                } else {
+                    //loadLeaveRequests();
+                    //$('#LeaveCountTbl').hide();
+                    //$('#AppliedLeavesTbl').hide();
+                }
+            }
+
+            // Load initial content based on the default state
+            loadContent($('#1').is(':checked'));
+
+            // Handle toggle switch state change
+            $('#1').change(function () {
+                loadContent($(this).is(':checked'));
+            });*@
+
+    </script>
+
+</body>
+</html>
+
+
+

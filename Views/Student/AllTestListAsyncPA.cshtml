@@ -1,0 +1,138 @@
+﻿@model GSTEducationERPLibrary.Student.Student
+
+
+
+<title>Bootstrap Example</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<script src="~/Content/plugins/jquery/jquery.min.js"></script>
+
+@*<head>*@
+   
+
+
+  
+    <div class="card " style="padding: 10px;">
+
+        <table id="#LoadList1" class="wrapper table-striped table-bordered" style="width:100%">
+            <thead>
+                <tr>
+                    <th>
+                        @Html.DisplayNameFor(model => model.SerialNo)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.TestName)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.SectionName)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.TopicName)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.LabName)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Date)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Time)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Duration)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.TotalMarks)
+                    </th>
+                    @*<th>
+            @Html.DisplayNameFor(model => model.ObtainedMarks)
+        </th>*@
+                    <th>
+                        @Html.DisplayNameFor(model => model.Status)
+                    </th>
+                    <th hidden>
+                        @Html.HiddenFor(model => model.Reason)
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.AllTestList)
+
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.SerialNo)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.TestName)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.SectionName)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.TopicName)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.LabName)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Date)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Time)
+                        </td>
+
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Duration)
+                        </td>
+
+                        <td>
+                            @Html.DisplayFor(modelItem => item.TotalMarks)
+                        </td>
+                        @*<td>
+            @Html.DisplayFor(modelItem => item.ObtainedMarks)
+        </td>*@
+
+                        <td hidden>
+                            @Html.HiddenFor(modelItem => item.Reason)
+                        </td>
+
+                        <td>
+                            @if (item.Status == "Pending")
+                            {
+                                <span class="badge bg-warning">@Html.DisplayFor(modelItem => item.Status)</span>
+                            }
+                            @if (item.Status == "Conducted")
+                            {
+                                <span class="badge text-bg-success">@Html.DisplayFor(modelItem => item.Status)</span>
+                            }
+                            @if (item.Status == "Arranged")
+                            {
+                                <span class="badge text-bg-primary">@Html.DisplayFor(modelItem => item.Status)</span>
+                            }
+                        </td>
+
+                    </tr>
+                }
+
+            </tbody>
+
+        </table>
+        </div>
+    <!--</div>
+    <div id="LoadList1"></div>-->
+    @*<script type="text/javascript">
+                    $(document).ready(function () {
+                        $.noConflict();
+
+                        $('#custom-tabs-four-tab').on('click', '.nav-link', function (e) {
+                        e.preventDefault();
+                        var tabContentUrl = $(this).attr('href');
+                        loadTabContent(tabContentUrl);
+                    });
+
+
+
+
+        </script>*@

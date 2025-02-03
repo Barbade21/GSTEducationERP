@@ -1,0 +1,206 @@
+﻿@model GSTEducationERPLibrary.Student.Student
+
+<style>
+    #Buttoncolor {
+        color: #ff0000;
+    }
+
+    /*.hover-cell:hover {
+        transform: scale(1.1);
+        transition: transform 0.3s ease-in-out;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }*/
+
+    .dataTable th, .dataTable td {
+        border: 1px solid #000000; /* Horizontal and vertical borders */
+    }
+
+    .dataTable {
+        border-collapse: collapse; /* Ensure borders don't double up */
+        width: 100%; /* Ensure table width is 100% */
+    }
+</style>
+<style>
+    .single-line-ellipsis {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 200px; /* Adjust as necessary */
+    }
+
+    .popover-header {
+        background-color: #3b5999;
+        color: white;
+        border-bottom: 1px solid #33CCCC;
+    }
+</style>
+
+<table id="LoadLeave" class="wrapper table-striped table-bordered dataTable">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.SerialNo)
+            </th>
+            <th hidden>
+                @Html.HiddenFor(model => model.ApplyLeaveId)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.AppliedDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.StartDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.EndDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.NoOfDays)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Reason)
+            </th>
+
+            <th hidden>
+                @Html.DisplayNameFor(model => model.Status)
+            </th>
+            <th hidden>
+                @Html.HiddenFor(model => model.CandidateCode)
+            </th>
+            <th>
+                Action
+            </th>
+        </tr>
+    </thead>
+
+    <tbody>
+        @foreach (var item in Model.lstPendingLeave)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.SerialNo)
+                </td>
+                <td hidden>
+                    @Html.HiddenFor(modelItem => item.ApplyLeaveId)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.AppliedDate)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.StartDate)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.EndDate)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.NoOfDays)
+                </td>
+                @*<td class="hover-cell">
+            @Html.DisplayFor(modelItem => item.Reason)
+        </td>*@
+                <td class="single-line-ellipsis" data-toggle="popover" title="Reason" data-content="@item.Reason">@Html.DisplayFor(modelItem => item.Reason)</td>
+
+                <td hidden>
+                    @Html.DisplayFor(modelItem => item.Status)
+                </td>
+                <td hidden>
+                    @Html.HiddenFor(modelItem => item.CandidateCode)
+                </td>
+
+                <td>
+                    <a class="Edit" href="javascript:;" data-id="@item.ApplyLeaveId" title="Edit" tooltip="View DetailsLeaveRequest">
+
+                        <img src="~/Content/StudentTemplate/icon/Edit.jpg" type="video/mp4" style="width:35px;height:35px;" />
+
+                    </a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+
+<script src="~/Content/plugins/jquery/jquery.min.js" type="text/javascript"></script>
+<script src="~/Content/Trainer/js/CourseContent.js"></script>
+<script src="~/Content/Admin/js/Icon.js"></script>
+<!-- Bootstrap 4 -->
+<script src="~/Content/plugins/bootstrap/js/bootstrap.bundle.min.js" type="text/javascript"></script>
+<!-- DataTables  & Plugins -->
+<script src="~/Content/plugins/datatables/jquery.dataTables.min.js" type="text/javascript"></script>
+<script src="~/Content/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js" type="text/javascript"></script>
+<script src="~/Content/plugins/datatables-responsive/js/dataTables.responsive.min.js" type="text/javascript"></script>
+<script src="~/Content/plugins/datatables-responsive/js/responsive.bootstrap4.min.js" type="text/javascript"></script>
+<script src="~/Content/plugins/datatables-buttons/js/dataTables.buttons.min.js" type="text/javascript"></script>
+<script src="~/Content/plugins/datatables-buttons/js/buttons.bootstrap4.min.js" type="text/javascript"></script>
+<script src="~/Content/plugins/jszip/jszip.min.js" type="text/javascript"></script>
+<script src="~/Content/plugins/pdfmake/pdfmake.min.js" type="text/javascript"></script>
+<script src="~/Content/plugins/pdfmake/vfs_fonts.js" type="text/javascript"></script>
+<script src="~/Content/plugins/datatables-buttons/js/buttons.html5.min.js" type="text/javascript"></script>
+<script src="~/Content/plugins/datatables-buttons/js/buttons.print.min.js" type="text/javascript"></script>
+<script src="~/Content/plugins/datatables-buttons/js/buttons.colVis.min.js" type="text/javascript"></script>
+<script type="text/javascript">
+
+
+
+
+    $(document).ready(function () {
+        $('[data-toggle="popover"]').popover({
+            trigger: 'hover',
+            placement: 'top',
+            html: true
+        });
+
+        $.noConflict();
+        var table = $('#Examlist').DataTable({
+            "responsive": true, "lengthChange": false, "autoWidth": false,
+            "buttons": [],
+            "responsive": true,
+            "lengthChange": false,
+            "autoWidth": false
+        }).buttons().container().appendTo('#Examlist_wrapper .col-md-6:eq(0)');
+
+        $('#custom-tabs-four-tab').on('click', '.nav-link', function (e) {
+            e.preventDefault();
+            var tabContentUrl = $(this).attr('href');
+            loadTabContent(tabContentUrl);
+            $('[custom-tabs-four-tab"]').tooltip();
+        });
+    });
+</script>
+
+
+<div id="partialModal" class="modal" tabindex="-1" role="dialog" style="position:center">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content" style="width: 46vw;">
+            <div class="modal-body"></div>
+            <div class="modal-footer"></div>
+        </div>
+    </div>
+</div>
+
+<script src="~/Scripts/bootstrap.min.js"></script>
+<script src="~/Scripts/bootstrap.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $(".Edit").click(function () {
+            var $buttonClicked = $(this);
+            var id = $buttonClicked.attr('data-id');
+            $.ajax({
+                type: "GET",
+                url: "/Student/UpdatePendingLeavesAsyncNS",
+                data: { ApplyLeaveId: id },
+                contentType: "application/json; charset=utf-8",
+                dataType: "html",
+                success: function (response) {
+                    $("#partialModal").find(".modal-body").html(response);
+                    $("#partialModal").modal('show');
+                },
+                failure: function (response) {
+                    alert(response.responseText);
+                },
+                error: function (response) {
+                    alert(response.responseText);
+                }
+            });
+        });
+    });
+</script>

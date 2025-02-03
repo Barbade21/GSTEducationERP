@@ -1,0 +1,291 @@
+﻿@model GSTEducationERPLibrary.Bind.Bind
+
+@*@{
+    ViewBag.Title = "GetLeaveRequestsAsyncAM";
+    Layout = "~/Views/Shared/_LayoutERP.cshtml";
+}*@
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>AdminLTE 3 | DataTables</title>
+    <link rel="stylesheet" href="~/Content/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+    <link rel="stylesheet" href="~/Content/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
+    <link rel="stylesheet" href="~/Content/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
+    <script src="~/Content/plugins/jquery/jquery.min.js" type="text/javascript"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- Bootstrap 4 -->
+    @*<script src="~/Content/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>*@
+    <script src="~/Content/plugins/moment/moment.min.js"></script>
+    <link href="~/Content/plugins/icheck-bootstrap/icheck-bootstrap.min.css" rel="stylesheet" />
+    <!-- Tempusdominus Bootstrap 4 -->
+
+    <script src="~/Content/plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js"></script>
+    <script src="~/Content/plugins/daterangepicker/daterangepicker.js"></script>
+    <link rel="stylesheet" href="~/Content/plugins/toastr/toastr.min.css">
+    <script src="~/Content/plugins/toastr/toastr.min.js"></script>
+    <style>
+        h2 {
+            color: #64bbc9;
+            font-weight: bold;
+            font-size: 30px;
+            margin-left: 17px;
+            margin-bottom: -10px;
+            font-family: sans-serif;
+        }
+
+        .dataTables_wrapper .btn-secondary {
+            color: #235;
+            background-color: transparent !important;
+            border-color: transparent;
+            font-size: x-large;
+        }
+
+        .card-primary.card-outline-tabs > .card-header a.active {
+            border-top: 3px solid #01a6a6;
+        }
+
+        a {
+            color: #01a6a6;
+        }
+
+        .card.card-outline-tabs .card-header a:hover {
+            color: #01a6a6;
+        }
+
+        .card-primary.card-outline-tabs > .card-header a.active, .card-primary.card-outline-tabs > .card-header a.active:hover {
+            border-top: 3px solid #01a6a6;
+        }
+
+        .card-body {
+            font-family: Calibri !important;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        th {
+            background-color: #64bbc9;
+            color: #000;
+            text-align: center !important;
+        }
+
+        td {
+            text-align: center;
+            color: black !important;
+        }
+
+        .table td {
+            padding: 0px 0px 0px 0px !important;
+            font-size: 14px !important;
+        }
+
+        .table th {
+            padding: 5px 5px 4px 10px !important;
+            font-size: 14px !important;
+        }
+
+        .dataTables_filter {
+            margin-top: -50px;
+        }
+
+        #example1_filter label {
+            margin-right: 60px !important;
+        }
+
+        #example1_wrapper {
+            margin-top: 0px !important;
+        }
+
+
+        /* Define styles for disabled options */
+        select option:disabled {
+            color: #999; /* Change the text color */
+            background-color: #f2f2f2; /* Change the background color */
+            font-style: italic; /* Apply italic font style */
+            /* Add more styles as needed */
+        }
+    </style>
+
+</head>
+<body>
+    <div class="card">
+        <div class="card-body">
+            <h2>Leave Requests</h2>
+            </div>
+        </div>
+
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <table id="example1" class="table table-bordered table-striped">
+                            <tr>
+                                <th align="center" hidden>
+                                    @Html.DisplayNameFor(model => model.StatusId)
+                                </th>
+                                <th align="center">
+                                    @Html.DisplayNameFor(model => model.StaffName)
+                                </th>
+                                <th align="center">
+                                    @Html.DisplayNameFor(model => model.StartDate)
+                                </th>
+                                <th align="center">
+                                    @Html.DisplayNameFor(model => model.EndDate)
+                                </th>
+                                <th align="center">
+                                    @Html.DisplayNameFor(model => model.Status)
+                                </th>
+                                <th align="center">
+                                    @Html.DisplayNameFor(model => model.LeaveCount)
+                                </th>
+                                <th align="center" hidden>
+                                    @Html.DisplayNameFor(model => model.LeaveAppliedId)
+                                </th>
+                                <th align="center">
+                                    @Html.DisplayNameFor(model => model.LeaveType)
+                                </th>
+                                <th align="center">
+                                    @Html.DisplayNameFor(model => model.Day)
+                                </th>
+                                <th align="center">
+                                    @Html.DisplayNameFor(model => model.LeaveLocation)
+                                </th>
+                                <th align="center">
+                                    @Html.DisplayNameFor(model => model.Reason)
+                                </th>
+                                <th align="center" hidden>
+                                    @Html.DisplayNameFor(model => model.Document)
+                                </th>
+                                <th></th>
+                            </tr>
+
+                            @foreach (var item in Model.ListLeaveRequests)
+                            {
+                                <tr>
+                                    <td align="center" hidden>
+                                        @Html.DisplayFor(modelItem => item.StatusId)
+                                    </td>
+                                    <td align="center">
+                                        @Html.DisplayFor(modelItem => item.StaffName)
+                                    </td>
+                                    <td align="center">
+                                        @Html.DisplayFor(modelItem => item.StartDate)
+                                    </td>
+                                    <td align="center">
+                                        @Html.DisplayFor(modelItem => item.EndDate)
+                                    </td>
+                                    <td align="center">
+                                        @Html.DisplayFor(modelItem => item.Status)
+                                    </td>
+                                    <td align="center">
+                                        @Html.DisplayFor(modelItem => item.NoOfDays)
+                                    </td>
+                                    <td align="center" hidden>
+                                        @Html.DisplayFor(modelItem => item.LeaveAppliedId)
+                                    </td>
+                                    <td align="center">
+                                        @Html.DisplayFor(modelItem => item.LeaveType)
+                                    </td>
+                                    <td align="center">
+                                        @Html.DisplayFor(modelItem => item.Day)
+                                    </td>
+                                    <td align="center">
+                                        @Html.DisplayFor(modelItem => item.LeaveLocation)
+                                    </td>
+                                    <td align="center">
+                                        @Html.DisplayFor(modelItem => item.Reason)
+                                    </td>
+                                    <td align="center" hidden>
+                                        @Html.DisplayFor(modelItem => item.Document)
+                                    </td>
+                                    <td align="center">
+                                        <a href="#" class="sectionEditLink2" data-id="@item.LeaveAppliedId" data-url="@Url.Action("UpdateLeaveRequestAsyncAM", "Bind", new { id = item.LeaveAppliedId })" data-toggle="modal" data-target="#LeaveRequestModal" title="UPDATE">
+                                            <video width="25" height="25" playsinline loop>
+                                                <source src="~/Content/Admin/icon/Edit%20Details.mp4" type="video/mp4">
+                                            </video>
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+
+                        </table>
+                    </div>
+                    <!--PopUp Display code-->
+                    <div class="modal fade" id="LeaveRequestModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-lg" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="exampleModalLabel" style="color: #33CCCC;">Update Leave Request</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                </div>
+                                <div class="modal-footer">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!--PopUp Display End-->
+                </div>
+            </div>
+
+            <script src="~/Content/plugins/datatables/jquery.dataTables.min.js"></script>
+            <script src="~/Content/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
+            <script src="~/Content/plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
+            <script src="~/Content/plugins/datatables-responsive/js/responsive.bootstrap4.min.js"></script>
+            <script src="~/Content/plugins/datatables-buttons/js/dataTables.buttons.min.js"></script>
+            <script src="~/Content/plugins/datatables-buttons/js/buttons.bootstrap4.min.js"></script>
+            <script src="~/Content/plugins/jszip/jszip.min.js"></script>
+            <script src="~/Content/plugins/pdfmake/pdfmake.min.js"></script>
+            <script src="~/Content/plugins/pdfmake/vfs_fonts.js"></script>
+            <script src="~/Content/plugins/datatables-buttons/js/buttons.html5.min.js"></script>
+            <script src="~/Content/plugins/datatables-buttons/js/buttons.print.min.js"></script>
+
+            <link href="~/Content/plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css " />
+
+
+
+            <script src="~/Content/plugins/daterangepicker/daterangepicker.js"></script>
+            <link href="~/Content/plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css" rel="stylesheet" />
+            <script src="~/Content/plugins/daterangepicker/daterangepicker.js"></script>
+            <link href="~/Content/plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css" rel="stylesheet" />
+            <script src="~/Content/Admin/js/Icon.js"></script>
+            <!-- Include SweetAlert CSS and JS files -->
+            <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+            <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+            <script src="~/Content/plugins/jquery-validation/jquery.validate.min.js"></script>
+
+            <script type="text/javascript">
+                $(document).ready(function () {
+                    $('.sectionEditLink2').click(function () {
+                         
+                        console.log("Clicked on .sectionEditLink2");
+                        var leaveAppliedId = $(this).data('id');
+                        var url = $(this).data('url');
+                        console.log("leaveAppliedId:", leaveAppliedId);
+                        console.log("url:", url);
+
+                        // Check if the url is not empty
+                        if (url) {
+                            $.ajax({
+                                url: url,
+                                type: 'GET',
+                                success: function (data) {
+                                    $('#LeaveRequestModal .modal-body').html(data);
+                                    $('#LeaveRequestModal').modal('show');
+                                },
+                                error: function (jqXHR, textStatus, errorThrown) {
+                                    console.error("AJAX error:", textStatus, errorThrown);
+                                }
+                            });
+                        } else {
+                            console.error("URL is not defined");
+                        }
+                    });
+                });
+            </script>
+</body>
+</html>

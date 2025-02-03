@@ -1,0 +1,284 @@
+﻿@model GSTEducationERPLibrary.Student.Student
+
+@{
+    ViewBag.Title = "ShowFeeReciptGJ";
+    Layout = "~/Views/Shared/Reciept.cshtml";
+}
+<button onclick="printReceipt();" class="print-button"><span class="print-icon"></span></button>
+<style>
+    button.print-button {
+        width: 80px;
+        height: 80px;
+        margin-left: 90%;
+        position: relative;
+        padding: 0;
+        border: none;
+        background: transparent;
+    }
+
+        span.print-icon, span.print-icon::before, span.print-icon::after, button.print-button:hover .print-icon::after {
+            border: solid 4px #333;
+            box-sizing: border-box;
+            background-color: #fff;
+        }
+
+    span.print-icon {
+        position: relative;
+        display: inline-block;
+        width: 60%;
+        height: 35%;
+        background: #fff;
+        border-radius: 20% 20% 0 0;
+        margin-top: 20%;
+    }
+
+        span.print-icon::before, span.print-icon::after {
+            content: "";
+            position: absolute;
+            left: 12%;
+            right: 12%;
+            transition: height .2s;
+        }
+
+        span.print-icon::before {
+            bottom: 100%;
+            height: 110%;
+            transition: height .2s .15s;
+        }
+
+        span.print-icon::after {
+            top: 55%;
+            height: 0;
+            background: #fff;
+            background-repeat: no-repeat;
+            background-size: 70% 90%;
+            background-position: center;
+            background-image: linear-gradient(to top, #fff 0, #fff 14%, #333 14%, #333 28%, #fff 28%, #fff 42%, #333 42%, #333 56%, #fff 56%, #fff 70%, #333 70%, #333 84%, #fff 84%, #fff 100%);
+        }
+
+    button.print-button:hover .print-icon::before {
+        height: 0;
+    }
+
+    button.print-button:hover .print-icon::after {
+        height: 120%;
+        transition: height .2s .15s, border-width 0s .16s;
+    }
+
+    button.print-button:hover {
+        cursor: pointer;
+    }
+
+    .receipt-voucher {
+        margin: 0 auto;
+        width: 80%;
+        padding: 20px;
+    }
+
+    .receipt-section {
+        text-align: center;
+        padding: 20px;
+    }
+
+        .receipt-section h2 {
+            padding-bottom: 10px;
+            display: inline-flex;
+            margin-right: 20px;
+        }
+
+    .receipt-data {
+        display: flex;
+        justify-content: space-between;
+        padding: 10px 0;
+        font-weight: bold;
+    }
+
+        .receipt-data p {
+            margin: 0;
+        }
+
+    .remark,
+    .note {
+        margin-top: 10px;
+    }
+
+    .authorized-signatory {
+        text-align: right;
+    }
+
+    img {
+        display: block;
+        margin: 0 auto;
+        width: 170px;
+        padding-bottom: 20px;
+    }
+
+    th {
+        background-color: #64bbc9;
+        color: #000;
+        text-align: center !important;
+    }
+
+    table {
+        margin: 0 auto;
+        width: 80%;
+        border-collapse: collapse;
+    }
+
+    td {
+        text-align: center;
+        color: black !important;
+        padding: 8px;
+    }
+
+    .dataTables_filter {
+        margin-top: -50px;
+    }
+</style>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<script>
+    async function downloadPDF() {
+        const { jsPDF } = window.jspdf;
+        const pdf = new jsPDF('p', 'pt', 'a4');
+        const element = document.body;
+
+        await html2canvas(element).then(canvas => {
+            const imgData = canvas.toDataURL('image/png');
+            const imgWidth = 595.28;
+            const pageHeight = 841.89;
+            const imgHeight = canvas.height * imgWidth / canvas.width;
+            let heightLeft = imgHeight;
+            let position = 0;
+
+            pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+            heightLeft -= pageHeight;
+
+            while (heightLeft >= 0) {
+                position = heightLeft - imgHeight;
+                pdf.addPage();
+                pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+                heightLeft -= pageHeight;
+            }
+            pdf.save('download.pdf');
+        });
+    }
+
+    function printReceipt() {
+        const printButton = document.querySelector('.print-button');
+        printButton.style.display = 'none';
+
+        window.print();
+        $('.print-button').none();
+        printButton.style.display = 'block';
+        $('.print-button').none();
+    }
+</script>
+
+<div class="receipt-voucher">
+    <div class="row">
+        <div class="col-md-12">
+            <img src="~/Content/StudentTemplate/images/rahi_logo-removebg-preview.png" />
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <p style="margin: 10px auto 0; width: 80%; text-align: center; padding-bottom: 20px;">
+                09, 3rd Floor, Upendra1, opp.Nisaraga Hotel, Nal Stop, Erandwane, Pune, Maharashtra 411004 <br />
+                &nbsp;|&nbsp;
+                +91 9960796660, 4421776337/47
+                &nbsp;|&nbsp;
+                Website - www.rahitech.com
+            </p>
+        </div>
+    </div>
+    <div class="receipt-section">
+        <h2><u>Receipt Voucher</u></h2>
+        <div class="flex-columns">
+            <div class="column">
+                <p><strong>Receipt no.</strong> : @Model.ReciptCode</p>
+                <p><strong>Course</strong> : @Model.CourseName</p>
+                <p><strong>Batch</strong> : @Model.BatchName</p>
+                <p><strong>Receipt Date</strong> : @Model.ReceiptDate.ToShortDateString()</p>
+            </div>
+
+            <div class="col-md-10">
+                <p><strong>Received By (Staff Name)</strong> : @Model.StaffName</p>
+                <p><strong>Total Amount</strong> : @Model.CreditAmount ₹</p>
+                <p><strong>Payment Mode</strong> : @Model.PaymentMode</p>
+                <p><strong>Transaction Id</strong> : @Model.TransactionId</p>
+
+            </div>
+        </div>
+    </div>
+     
+    <style>
+        .flex-columns {
+            display: flex;
+            justify-content: space-between; /* Adjust as needed */
+           
+        }
+
+        .column {
+            flex: 1; /* Equal width columns */
+            padding: 1px; /* O
+                ptional: Adjust padding as needed */
+            text-align: left; /* Align text to the left */
+            
+            margin-right: 10px; /* Add margin between columns */
+        }
+        .col-md-10 {
+           
+            text-align: left; /* Align text to the left */           
+        }
+
+        .column p strong {
+            font-weight: bold; /* Make the text bold */
+        }
+    </style>
+
+    @*<div class="receipt-data">
+            <p>Batch : @Model.BatchName</p>
+            <p>Transaction Id : @Model.TransactionId</p>
+        </div>
+        <div class="receipt-data">
+            <p>Receipt Date : @Model.ReceiptDate.ToShortDateString()</p>
+            <p>Payment Mode : @Model.PaymentMode</p>
+        </div>*@
+    <br />
+    <br />
+    <div>
+        <table border="1">
+            <tr>
+                <th>NAME</th>
+                <th>ADMISSION TYPE</th>
+                <th>COURSE DISCOUNT IN %</th>
+                <th>CREDIT AMOUNT</th>
+            </tr>
+            <tr>
+                <td>@Model.StudentName</td>
+                <td>@Model.AdmissionType</td>
+                <td>@Model.Discount</td>
+                <td>@Model.CreditAmount ₹</td>
+            </tr>
+        </table>
+    </div>
+    <br />
+    <br />
+    <div class="receipt-data">
+        <p>Remark :&nbsp; Total Fee - @Model.TotalFees ₹,  &nbsp; Remaining Fee - @Model.RemainingFees ₹</p>
+    </div>
+    <br />
+    <div class="receipt-data">
+        <ul>
+            Note -
+            <li>Receipt valid subject to realization of cheque.</li>
+            <li>Fees once paid are non-refundable.</li>
+        </ul>
+    </div>
+    <div class="authorized-signatory">
+        <p>Authorized Signatory</p>
+    </div>
+</div>

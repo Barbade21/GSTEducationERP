@@ -1,0 +1,770 @@
+﻿@model GSTEducationERPLibrary.Bind.Bind
+
+@{
+    ViewBag.Title = "DetailStaffProfile";
+
+}
+<head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+
+    <script src="~/Content/plugins/jquery/jquery.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+
+</head>
+
+@using (Html.BeginForm("DetailStaffProfile", "Bind", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken()
+
+
+<div id="accordion">
+    <div class="card card-primary">
+        <div class="card-header" style="background-color: #33CCCC; ">
+            <h4 class="card-title w-100">
+                <a class="d-block w-100" data-toggle="collapse" href="#collapseOne">
+                    Personal Details
+                    <i class="fas fa-plus"></i>
+                </a>
+            </h4>
+        </div>
+        <div id="collapseOne" class="collapse show" data-parent="#accordion">
+            <div class="card-body">
+                <div style="display: flex;">
+                    <div style="width: 53%;">
+                        <p style="">
+                            <b>Staff Name: </b><span style="color: #0c00ff;"> @Model.StaffName</span>
+
+                            <span onclick="myFunction(ReqStaffNameF)">
+                                <video id="myVideoforName21" width="20" height="20" playsinline loop>
+                                    <source src="~/Content/Admin/icon/edit.mp4" type="video/mp4">
+                                </video>
+                            </span>
+                        </p>
+
+                        <div id="ReqStaffNameF" class="collapsible " data-parent="#accordion">
+                            <div class="col-md-12">
+                                <div class="input-group">
+                                    <label> Update Staff Name</label>
+                                    <div class="col-md-8">
+                                        @Html.EditorFor(model => model.StaffName, new { htmlAttributes = new { @class = "form-control col-md-12", id = "StaffName", } })
+                                        @Html.ValidationMessageFor(model => model.StaffName, "", new { @class = "text-danger" })
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+
+
+
+
+                            <div class="container">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label class="control-label col-md-12">Upload File</label>
+                                            <div class="col-md-8">
+                                                <div id="fileInputs" class="file-container">
+                                                    <input type="file" id="Documents" class="form-control" accept=".pdf" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6 d-flex justify-content-center align-items-center">
+                                        <button type="button" value="Request" style="background-color: #007bff" class="btn btn-outline-info btnRequest" id="requestButton"data-param1="StaffName" data-param2="Documents" data-param3="StaffName" @*disabled*@>Request</button>
+                                    </div>
+                                   
+                                </div>
+                            </div>                      
+
+                        </div>
+
+                        <p style=""><b>Staff Position: </b><span style="color: #0c00ff;"> @Model.StaffPosition</span></p>
+                        <p style=""><b>Joining Date: </b><span style="color: #0c00ff;"> @Model.JoiningDate</span></p>
+                        @*<p style="border-bottom: 1px solid rgba(0,0,0,.125);"><b>Course Name: </b><span style="color: #0c00ff;"> @Model.CourseName</span></p>*@
+                        <p style="">
+                            <b>DOB: </b><span style="color: #0c00ff;"> @Model.DOB.ToShortDateString()</span>
+
+                            <span onclick="myFunction(ReqDOBF)">
+                                <video id="myVideoforName19" width="20" height="20" playsinline loop>
+                                    <source src="~/Content/Admin/icon/edit.mp4" type="video/mp4">
+                                </video>
+                            </span>
+                        </p>
+                        <div id="ReqDOBF" class="collapsible " data-parent="#accordion">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    @* @Html.LabelFor(model => model.DOB, htmlAttributes: new { @class = "control-label col-md-12" })*@
+                                    <label> Update DOB</label>
+                                    <div class="col-md-8">
+                                        @Html.EditorFor(model => model.DOB, new { htmlAttributes = new { @class = "form-control col-md-12", id = "DOB", } })
+                                        @Html.ValidationMessageFor(model => model.DOB, "", new { @class = "text-danger" })
+                                    </div>
+
+                                </div>
+                            </div>
+
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label class="control-label col-md-12">Upload File</label>
+                                    <div class="col-md-8">
+                                        <div id="fileInputs" class="file-container">
+                                            <input type="file" id="DocumentDOB" class="form-control" name="UploadDocument" accept=".pdf">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6 d-flex justify-content-center align-items-center">
+                                <button type="button" value="Request" style="background-color: #007bff" class="btn btn-outline-info btnRequest" id="requestButtonDOB" data-param1="DOB" data-param2="DocumentDOB" data-param3="StaffDOB" @*disabled*@>Request</button>
+                            </div>
+                           
+                        </div>
+
+                        <p style="">
+                            <b>Phone No: </b><span style="color: #0c00ff;"> @Model.PhoneNo </span>
+
+                            <span onclick="myFunction(ReqPhoneNoF)">
+                                <video id="myVideoforName18" width="20" height="20" playsinline loop>
+                                    <source src="~/Content/Admin/icon/edit.mp4" type="video/mp4">
+                                </video>
+                            </span>
+                        </p>
+
+                        <div id="ReqPhoneNoF" class="collapsible " data-parent="#accordion">
+                            <div class="col-md-8">
+                                <div class="input-group">
+                                    <label> Update Phone No</label>
+                                    <div class="col-md-8">
+                                        @Html.EditorFor(model => model.PhoneNo, new { htmlAttributes = new { @class = "form-control col-md-12", id = "PhoneNo", } })
+                                        @Html.ValidationMessageFor(model => model.PhoneNo, "", new { @class = "text-danger" })
+                                    </div>
+
+                                </div>
+
+                            </div>
+                            <br>
+                            <div class="col-md-6 d-flex justify-content-center align-items-center">
+                                <button type="button" value="Request" style="background-color: #007bff" class="btn btn-outline-info btnRequest" id="requestButton" data-param1="PhoneNo" data-param3="StaffPhoneNo">Request</button>
+                            </div>
+                        </div>
+
+
+                        <p style="">
+                            <b>Email: </b><span style="color: #0c00ff;"> @Model.EmailId</span>
+                            <span onclick="myFunction(ReqEMailF)">
+                                <video id="myVideoforName17" width="20" height="20" playsinline loop>
+                                    <source src="~/Content/Admin/icon/edit.mp4" type="video/mp4">
+                                </video>
+                            </span>
+                        </p>
+                        <div id="ReqEMailF" class="collapsible collapsed" data-parent="#accordion">
+                            <div class="col-md-8">
+                                <div class="input-group">
+                                    @*@Html.LabelFor(model => model.EMail, htmlAttributes: new { @class = "control-label col-md-12" })*@
+                                    <label> Update EMail</label>
+                                    <div class="col-md-8">
+                                        @Html.EditorFor(model => model.EmailId, new { htmlAttributes = new { @class = "form-control col-md-12", id = "EMail", } })
+                                        @Html.ValidationMessageFor(model => model.EmailId, "", new { @class = "text-danger" })
+                                    </div>
+
+                                </div>
+                            </div>
+                            <br>
+                            <div class="col-md-6 d-flex justify-content-center align-items-center">
+                                <button type="button" value="Request" style="background-color: #007bff" class="btn btn-outline-info btnRequest" id="requestButton" data-param1="EMail" data-param3="StaffEmailId">Request</button>
+                            </div>
+
+                        </div>
+
+
+                        <p style="">
+                            <b>Current Address: </b><span style="color: #0c00ff;"> @Model.CurrentAddress, @Model.currentCity, @Model.CurrentPinCode</span>
+                            <span onclick="myFunction(ReqCurrentAddF)">
+                                <video id="myVideoforName16" width="20" height="20" playsinline loop>
+                                    <source src="~/Content/Admin/icon/edit.mp4" type="video/mp4">
+                                </video>
+                            </span>
+                        </p>
+                        <div id="ReqCurrentAddF" class="collapsible collapsed" data-parent="#accordion">
+                            <div class="col-md-12">
+                                <div class="from-group">
+                                    @*@Html.LabelFor(model => model.CurrentAddress, htmlAttributes: new { @class = "control-label col-md-12" })*@
+                                    <label> Update CurrentAddress </label>
+                                    <div class="col-md-8">
+                                        @Html.EditorFor(model => model.CurrentAddress, new { htmlAttributes = new { @class = "form-control col-md-12", id = "CurrentAddress", } })
+                                        @Html.ValidationMessageFor(model => model.CurrentAddress, "", new { @class = "text-danger" })
+                                    </div>
+
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label class="control-label col-md-12">Upload File</label>
+                                    <div class="col-md-8">
+                                        <div id="fileInputs" class="file-container">
+                                            @Html.TextBoxFor(m => m.UploadDocument, new { type = "file", id = "DocumentCAddress", @class = "form-control", accept = ".pdf" })
+                                        </div>
+
+                                    </div>
+                                </div>
+                                <div class="col-md-6 d-flex justify-content-center align-items-center">
+                                    <button type="button" value="Request" style="background-color: #007bff; opacity: 1.0;" class="btn btn-outline-info btnRequest" id="requestButton" data-param1="CurrentAddress" data-param2="DocumentCAddress" data-param3="CurrentAddress" @*disabled*@>Request</button>
+                                </div>
+                            </div>                    
+
+
+                        </div>
+
+
+                        <p style=""><b>Permanent Address: </b><span style="color: #0c00ff;"> @Model.PermanentAddress, @Model.PermanentCity, @Model.PermanentPinCode</span></p>
+                        <p style="">
+                            <b>Marital Status: </b><span style="color: #0c00ff;"> @Model.MaritalStatus</span>
+                            <span onclick="myFunction(ReqMaritalStatusF)">
+                                <video id="myVideoforName15" width="20" height="20" playsinline loop>
+                                    <source src="~/Content/Admin/icon/edit.mp4" type="video/mp4">
+                                </video>
+                            </span>
+                        </p>
+                        <div id="ReqMaritalStatusF" class="collapsible collapsed" data-parent="#accordion">
+                            <div class="col-md-12">
+                                <div class="input-group">
+                                    @*@Html.LabelFor(model => model.MaritalStatus, htmlAttributes: new { @class = "control-label col-md-12" })*@
+                                    <label> Update MaritalStatus </label>
+                                    <div class="col-md-8">
+                                        @Html.EditorFor(model => model.MaritalStatus, new { htmlAttributes = new { @class = "form-control col-md-12", id = "MaritalStatus", } })
+                                        @Html.ValidationMessageFor(model => model.MaritalStatus, "", new { @class = "text-danger" })
+                                    </div>
+
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label class="control-label col-md-12">Upload File</label>
+                                    <div class="col-md-8">
+                                        <div id="fileInputs" class="file-container">
+                                            @Html.TextBoxFor(m => m.UploadDocument, new { type = "file", id = "DocumentMaritalStatus", @class = "form-control" , accept = ".pdf" })
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6 d-flex justify-content-center align-items-center">
+                                <button type="button" value="Request" style="background-color: #007bff" class="btn btn-outline-info btnRequest" id="requestButton" data-param1="MaritalStatus" data-param2="DocumentMaritalStatus" data-param3="StaffMaritalStatus"@*disabled*@>Request</button>
+                            </div>
+                        </div>
+
+                        <p style=""><b>Nationality: </b><span style="color: #0c00ff;"> @Model.Nationality</span></p>
+                        <p style=""><b>Blood Group: </b><span style="color: #0c00ff;"> @Model.BloodGroup</span></p>
+                    </div>
+
+
+
+                    <div style="width: 53%;">
+
+                        <p style=""><b>Gender: </b><span style="color: #0c00ff;"> @Model.Gender</span></p>
+                        <p style=""><b>Aadhar Card No: </b><span style="color: #0c00ff;"> @Model.AadharCardNo</span></p>
+                        <p style="">
+                            <b>Pan Card No: </b><span style="color: #0c00ff;"> @Model.PanCardNo</span>
+
+                        </p>
+
+                        <p style=""><b>Emergency Contact Name: </b><span style="color: #0c00ff;"> @Model.EmergencyContactName</span></p>
+                        <p style="">
+                            <b>Emergency Contact No: </b><span style="color: #0c00ff;"> @Model.EmergencyContactNo</span>
+                            <span onclick="myFunction(ReqEmergencyContactNoF)">
+                                <video id="myVideoforName14" width="20" height="20" playsinline loop>
+                                    <source src="~/Content/Admin/icon/edit.mp4" type="video/mp4">
+                                </video>
+                            </span>
+                        </p>
+                        <div id="ReqEmergencyContactNoF" class="collapsible collapsed" data-parent="#accordion">
+                            <div class="col-md-12">
+                                <div class="input-group">
+                                    @*@Html.LabelFor(model => model.MaritalStatus, htmlAttributes: new { @class = "control-label col-md-12" })*@
+                                    <label> Update Emergency Contact No </label>
+                                    <div class="col-md-8">
+                                        @Html.EditorFor(model => model.EmergencyContactNo, new { htmlAttributes = new { @class = "form-control col-md-12", id = "EmergencyContactNo", } })
+                                        @Html.ValidationMessageFor(model => model.EmergencyContactNo, "", new { @class = "text-danger" })
+                                    </div>
+
+                                </div>
+                            </div>
+                            <br>
+                            <div class="col-md-6 d-flex justify-content-center align-items-center">
+                                <button type="button" value="Request" style="background-color: #007bff" class="btn btn-outline-info btnRequest" id="requestButton" data-param1="EmergencyContactNo" data-param3="StaffEmergencyContactNo">Request</button>
+                            </div>
+                        </div>
+
+                        <p style="">
+                            <b>Emergency Contact Address: </b><span style="color: #0c00ff;"> @Model.EmergencyContactAddress</span>
+                            <span onclick="myFunction(ReqEmergencyContactAddressf)">
+                                <video id="myVideoforName13" width="20" height="20" playsinline loop>
+                                    <source src="~/Content/Admin/icon/edit.mp4" type="video/mp4">
+                                </video>
+                            </span>
+
+                        </p>
+                        <div id="ReqEmergencyContactAddressf" class="collapsible collapsed" data-parent="#accordion">
+                            <div class="col-md-12">
+                                <div class="input-group">
+
+                                    <label> Update Emergency Contact Address </label>
+                                    <div class="col-md-8">
+                                        @Html.EditorFor(model => model.EmergencyContactAddress, new { htmlAttributes = new { @class = "form-control col-md-12", id = "EmergencyContactAddress", } })
+                                        @Html.ValidationMessageFor(model => model.EmergencyContactAddress, "", new { @class = "text-danger" })
+                                    </div>
+
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label class="control-label col-md-12">Upload File</label>
+                                    <div class="col-md-8">
+                                        <div id="fileInputs" class="file-container">
+                                            @Html.TextBoxFor(m => m.UploadDocument, new { type = "file", id = "DocumentEmergencyContactAddress", @class = "form-control", accept = ".pdf" })
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6 d-flex justify-content-center align-items-center">
+                                <button type="button" value="Request" style="background-color: #007bff" class="btn btn-outline-info  btnRequest" id="requestButton" data-param1="EmergencyContactAddress" data-param2="DocumentEmergencyContactAddress" data-param3="StaffEmergencyContactAddress">Request</button>
+                            </div>
+                        </div>
+
+
+                        <p style="">
+                            <b>Father's Name: </b><span style="color: #0c00ff;"> @Model.FatherName</span>
+
+                        </p>
+                        <p style="">
+                            <b>Father's Contact No: </b><span style="color: #0c00ff;"> @Model.FatherContactNo</span>
+                            <span onclick="myFunction(ReqFathercontactnoF)">
+                                <video id="myVideoforName12" width="20" height="20" playsinline loop>
+                                    <source src="~/Content/Admin/icon/edit.mp4" type="video/mp4">
+                                </video>
+                            </span>
+                        </p>
+                        <div id="ReqFathercontactnoF" class="collapsible collapsed" data-parent="#accordion">
+                            <div class="col-md-12">
+                                <div class="input-group">
+
+                                    <label> Update Father Contact No </label>
+                                    <div class="col-md-8">
+                                        @Html.EditorFor(model => model.FatherContactNo, new { htmlAttributes = new { @class = "form-control col-md-12", id = "FatherContactNo", } })
+                                        @Html.ValidationMessageFor(model => model.FatherContactNo, "", new { @class = "text-danger" })
+                                    </div>
+
+                                </div>
+                            </div>
+                            <br>
+                            <div class="col-md-6 d-flex justify-content-center align-items-center">
+                                <button type="button" value="Request" style="background-color: #007bff" class="btn btn-outline-info btnRequest" id="requestButton" data-param1="FatherContactNo" data-param3="StaffFatherContactNo">Request</button>
+                            </div>
+                        </div>
+
+
+
+                        <p style=""><b>Mother's Name: </b><span style="color: #0c00ff;"> @Model.MotherName</span></p>
+                        <p style="">
+                            <b>Mother's Contact No: </b><span style="color: #0c00ff;"> @Model.MotherContactNo</span>
+                            <span onclick="myFunction(ReqMothercontactnoF)">
+                                <video id="myVideoforName10" width="20" height="20" playsinline loop>
+                                    <source src="~/Content/Admin/icon/edit.mp4" type="video/mp4">
+                                </video>
+                            </span>
+                        </p>
+                        <div id="ReqMothercontactnoF" class="collapsible collapsed" data-parent="#accordion">
+                            <div class="col-md-12">
+                                <div class="input-group">
+
+                                    <label> Update Mother Contact No </label>
+                                    <div class="col-md-8">
+                                        @Html.EditorFor(model => model.MotherContactNo, new { htmlAttributes = new { @class = "form-control col-md-12", id = "MotherContactNo", } })
+                                        @Html.ValidationMessageFor(model => model.MotherContactNo, "", new { @class = "text-danger" })
+                                    </div>
+
+                                </div>
+                            </div>
+                            <br>
+                            <div class="col-md-6 d-flex justify-content-center align-items-center">
+                                <button type="button" value="Request" style="background-color: #007bff" class="btn btn-outline-info btnRequest" id="requestButton" data-param1="MotherContactNo" data-param3="StaffMotherContactNo">Request</button>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+
+    <style>
+        .btn-outline-info {
+            color: aliceblue
+        }
+    </style>
+
+
+    <div class="card card-danger">
+        <div class="card-header" style="background-color: #33CCCC; ">
+            <h4 class="card-title w-100">
+                <a class="d-block w-100" data-toggle="collapse" href="#collapseTwo">
+                    Qualification Details & Experience Details
+                    <i class="fas fa-plus"></i>
+                </a>
+            </h4>
+        </div>
+        <div id="collapseTwo" class="collapse" data-parent="#accordion">
+            <div class="card-body">
+                <div style="display:flex;">
+                    <div style="width:53%;">
+                        @*<h2>Qualification Details</h2>
+                            <br>*@
+                        <p style=""><b>SSC Year: </b><span style="color: #0c00ff;"> @Model.SSCYear</span></p>
+                        <p style=""><b>HSC Year: </b><span style="color: #0c00ff;"> @Model.HSCYear</span></p>
+                        <p style=""><b>Diploma Year: </b><span style="color: #0c00ff;"> @Model.DiplomaYear</span></p>
+                        <p style=""><b>Graduation Name: </b><span style="color: #0c00ff;"> @Model.GraduationName</span></p>
+                        <p style=""><b>Graduation Year: </b><span style="color: #0c00ff;"> @Model.GraduationYear</span></p>
+                        <p style=""><b>Post Graduation Name: </b><span style="color: #0c00ff;"> @Model.PostGraduationName</span></p>
+                        <p style=""><b>Post Graduation Year: </b><span style="color: #0c00ff;"> @Model.PostGraduationYear</span></p>
+                    </div>
+                    <div style="width:47%;">
+                        @*<h2>Experience Details</h2>
+                            <br>*@
+                        <p style=""><b>Industry Name: </b><span style="color: #0c00ff;"> @Model.IndustryName</span></p>
+                        <p style=""><b>Designation Name: </b><span style="color: #0c00ff;"> @Model.DesignationName</span></p>
+                        <p style=""><b>Department Name: </b><span style="color: #0c00ff;"> @Model.DepartmentName</span></p>
+                        <p style=""><b>CTC: </b><span style="color: #0c00ff;"> @Model.CTC</span></p>
+                        <p style=""><b>Experience: </b><span style="color: #0c00ff;"> @Model.Experience</span></p>
+                        <p style=""><b>Total Experience Of Designation: </b><span style="color: #0c00ff;"> @Model.TotalExperienceOfDesignation</span></p>
+                        <p style=""><b>Job Type: </b><span style="color: #0c00ff;"> @Model.JobType</span></p>
+                        <p style=""><b>Company Name: </b><span style="color: #0c00ff;"> @Model.CompanyName</span></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card card-success">
+        <div class="card-header" style="background-color: #33CCCC;">
+            <h4 class="card-title w-100">
+                <a class="d-block w-100" data-toggle="collapse" href="#collapseThree">
+                    Bank Details
+                    <i class="fas fa-plus"></i>
+                </a>
+            </h4>
+        </div>
+        <div id="collapseThree" class="collapse" data-parent="#accordion">
+            <div class="card-body">
+                <div style="display:flex;">
+                    <div style="width:53%;">
+                        @*<h2>Bank Details</h2>
+                            <br>*@
+                        <p style=""><b>Bank Name: </b><span style="color: #0c00ff;"> @Model.BankName</span></p>
+                        <p style=""><b>Account Holder Name: </b><span style="color: #0c00ff;"> @Model.AccountHolderName</span></p>
+                        @*<p style=""><b>Account Number: </b><span style="color: #0c00ff;"> @Model.AccountNumber</span></p>*@
+                        <p style=""><b>Account Number: </b><span id="accountNumber" style="color: #0c00ff;"> @Model.AccountNumber</span></p>
+                        @* <p style=""><b>Account Number: </b><span style="color: #0c00ff;"> @Model.AccountNumber</span></p>*@
+                        <p style=""><b> Branch Name: </b><span style="color: #0c00ff;"> @Model.BankBranchName</span></p>
+                        <p style=""><b>IFSC Code: </b><span style="color: #0c00ff;"> @Model.IFSCCode</span></p>
+                        <p style=""><b>MICR Code: </b><span style="color: #0c00ff;"> @Model.MICRCode</span></p>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+}
+
+@*--------------------------------------------------Collaps Button Show And Hide -------------------------------------*@
+<script>
+    function myFunction(RequestedDiv) {
+
+        //var id = ocument.getElementById("collapseName1");
+        //var x = document.getElementById("collapseName1");
+        var id = RequestedDiv.getAttribute('id');
+        var x = document.getElementById(id);
+        if (x.style.display === "none") {
+            x.style.display = "block";
+        } else {
+            x.style.display = "none";
+        }
+    }
+
+</script>
+@*--------------------------------------------------Staff Name Validation-------------------------------------*@
+<script>
+    $(document).ready(function () {
+        $('#reqStaffName').on('input', function () {
+            var input = $(this).val();
+            if (!/^[a-zA-Z ]*$/.test(input)) {
+                $(this).val(input.replace(/[^a-zA-Z ]/g, ''));
+                $('#reqStaffName').next('.text-danger').text('The field can only contain alphabetic characters.');
+            } else {
+                $('#reqStaffName').next('.text-danger').text('');
+            }
+        });
+    });
+</script>
+@*--------------------------------------------------Phone No Validation-------------------------------------*@
+<script>
+    $(document).ready(function () {
+        $('#PhoneNo').on('input', function () {
+            var input = $(this).val();
+            // Remove non-digit characters
+            input = input.replace(/\D/g, '');
+            if (input.length > 16) {
+                input = input.slice(0, 16); // Limit to 16 characters
+                $('#PhoneNo').next('.text-danger').text('The field can only contain up to 16 digits.');
+            } else if (!/^\d*$/.test(input)) {
+                $('#PhoneNo').next('.text-danger').text('The field can only contain numeric characters.');
+            } else {
+                $('#PhoneNo').next('.text-danger').text('');
+            }
+            $(this).val(input); // Set the modified value back to the input
+        });
+    });
+</script>
+
+@*--------------------------------------------------Marital Status Validation-------------------------------------*@
+<script>
+    $(document).ready(function () {
+        $('#MaritalStatus').on('input', function () {
+            var input = $(this).val();
+            if (!/^[a-zA-Z]*$/.test(input)) {
+                $(this).val(input.replace(/[^a-zA-Z]/g, ''));
+                $('#MaritalStatus').next('.text-danger').text('The field can only contain alphabetic characters.');
+            } else {
+                $('#MaritalStatus').next('.text-danger').text('');
+            }
+        });
+    });
+</script>
+@*--------------------------------------------------Emergency Contact No Validation-------------------------------------*@
+<script>
+    $(document).ready(function () {
+        $('#EmergencyContactNo').on('input', function () {
+            var input = $(this).val();
+            // Remove non-digit characters
+            input = input.replace(/\D/g, '');
+            if (input.length > 16) {
+                input = input.slice(0, 16); // Limit to 16 characters
+                $('#EmergencyContactNo').next('.text-danger').text('The field can only contain up to 16 digits.');
+            } else if (!/^\d*$/.test(input)) {
+                $('#EmergencyContactNo').next('.text-danger').text('The field can only contain numeric characters.');
+            } else {
+                $('#EmergencyContactNo').next('.text-danger').text('');
+            }
+            $(this).val(input); // Set the modified value back to the input
+        });
+    });
+</script>
+@*--------------------------------------------------Father Contact No Validation-------------------------------------*@
+<script>
+    $(document).ready(function () {
+        $('#FatherContactNo').on('input', function () {
+            var input = $(this).val();
+            // Remove non-digit characters
+            input = input.replace(/\D/g, '');
+            if (input.length > 16) {
+                input = input.slice(0, 16); // Limit to 16 characters
+                $('#FatherContactNo').next('.text-danger').text('The field can only contain up to 16 digits.');
+            } else if (!/^\d*$/.test(input)) {
+                $('#FatherContactNo').next('.text-danger').text('The field can only contain numeric characters.');
+            } else {
+                $('#FatherContactNo').next('.text-danger').text('');
+            }
+            $(this).val(input); // Set the modified value back to the input
+        });
+    });
+</script>
+
+@*--------------------------------------------------Mother Contact No Validation-------------------------------------*@
+<script>
+    $(document).ready(function () {
+        $('#MotherContactNo').on('input', function () {
+            var input = $(this).val();
+            // Remove non-digit characters
+            input = input.replace(/\D/g, '');
+            if (input.length > 16) {
+                input = input.slice(0, 16); // Limit to 16 characters
+                $('#MotherContactNo').next('.text-danger').text('The field can only contain up to 16 digits.');
+            } else if (!/^\d*$/.test(input)) {
+                $('#MotherContactNo').next('.text-danger').text('The field can only contain numeric characters.');
+            } else {
+                $('#MotherContactNo').next('.text-danger').text('');
+            }
+            $(this).val(input); // Set the modified value back to the input
+        });
+    });
+</script>
+    @*//------------------------------------------------------Hide and show Toggle validation-----------------------------------*@
+<script>
+    $(document).ready(function () {
+
+        $('#ReqStaffNameF').hide();
+        $('#ReqDOBF').hide();
+        $('#ReqPhoneNoF').hide();
+        $('#ReqEMailF').hide();
+        $('#ReqCurrentAddF').hide();
+        $('#ReqMaritalStatusF').hide();
+
+        $('#ReqEmergencyContactNoF').hide();
+        $('#ReqEmergencyContactAddressf').hide();
+
+        $('#ReqFathercontactnoF').hide();
+        $('#ReqMothercontactnoF').hide();
+
+
+    });
+</script>
+
+<script>
+    //$("#requestButton").click(function () {
+    //    // Assuming ObjCo is already defined elsewhere in your script
+    //    $.post("/BindController/DetailStaffProfile1", ObjCo, function (response) {
+    //        // Handle the response here
+    //        console.log(response);
+    //    });
+    //});
+    $("#myVideoforName1").click(function () {
+        $("#ReqStaffNameF").toggle();
+    });
+
+    $("#myVideoforName2").click(function () {
+        $("#ReqDOBF").toggle();
+    });
+
+    $("#myVideoforName3").click(function () {
+        $("#ReqPhoneNoF").toggle();
+    });
+
+    $("#myVideoforName4").click(function () {
+        $("#ReqEMailF").toggle();
+    });
+
+    $("#myVideoforName5").click(function () {
+        $("#ReqCurrentAddF").toggle();
+    });
+
+    $("#myVideoforName6").click(function () {
+        $("#ReqMaritalStatusF").toggle();
+    });
+
+    $("#myVideoforName7").click(function () {
+        $("#ReqEmergencyContactNoF").toggle();
+    });
+
+    $("#myVideoforName8").click(function () {
+        $("#ReqEmergencyContactAddressf").toggle();
+    });
+
+    $("#myVideoforName9").click(function () {
+        $("#ReqFathercontactnoF").toggle();
+    });
+
+    $("#myVideoforName11").click(function () {
+        $("#ReqMothercontactnoF").toggle();
+    });
+
+
+</script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@10">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+
+
+
+<script>
+    jQuery(document).ready(function ($) {
+
+    });
+</script>
+
+<script>
+    document.getElementById('requestForm').addEventListener('submit', function (event) {
+        var fileInput = document.getElementById('file');
+        if (!fileInput.value) {
+            alert('Please select a file first.');
+            event.preventDefault(); // Prevent the form from submitting
+        }
+    });
+</script>
+<script>
+    // Assume accountNumber is fetched from your server-side code
+    let accountNumber = '@Model.AccountNumber';  // Replace this with actual account number value
+
+    // Mask all but the last 4 digits
+    let maskedAccountNumber = accountNumber.slice(-4).padStart(accountNumber.length, '*');
+
+    // Display the masked account number
+    document.getElementById('accountNumber').textContent = maskedAccountNumber;
+</script>
+
+
+
+
+
+<script>
+        $(document).ready(function () {
+
+            $('.btnRequest').click(function () {
+                  
+                 var param1 = $(this).data('param1');
+                 var valueId = '#' + param1;
+                 var value = $(valueId).val();
+                var param3 = $(this).data('param3');
+                var param2 = $(this).data('param2');
+                var DocumentId = '#' + param2;
+
+                    var fileInput = null;
+                       /* if ($(DocumentId).length && $(DocumentId)[0].files.length > 0) {*/
+                           // fileInput = $(DocumentId)[0].files[0];
+                        //}
+
+                 if (param2) {
+                     fileInput = $(DocumentId)[0].files[0];
+                 }
+
+                //if (!fileInput) {
+                //    alert('Please select a file to upload.');
+                //    return;
+                //}
+
+                var formData = new FormData();
+                formData.append('param1', value);
+                formData.append('param3', param3);
+                 if (fileInput) {
+                     formData.append('UploadDocument', fileInput);
+                 }
+
+
+                $.ajax({
+                    url: '@Url.Action("DetailStaffProfile", "Bind")',
+                    type: 'POST',
+                    data: formData,
+                    contentType: false, // Important: to ensure jQuery does not process the data
+                    processData: false, // Important: to ensure jQuery does not convert the data to a string
+                    success: function(response) {
+                        // Handle success
+                        toastr.success('Request Sent Successfully');
+                    },
+                    error: function(xhr, status, error) {
+                        // Handle error
+                        alert('Error: ' + error);
+                    }
+                });
+            });
+        });
+</script>
+<script>
+
+</script>

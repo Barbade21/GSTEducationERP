@@ -1,0 +1,365 @@
+﻿@model GSTEducationERPLibrary.Counsellor.Counsellor
+
+@{
+    ViewBag.Title = "UpdatestudentReferanceSS";
+    //Layout = "~/Views/Shared/_LayoutERP.cshtml";
+}
+<head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+</head>
+
+<br />
+
+
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+
+    <div id="accordion">
+        <div class="card-body">
+            <div class="card card-primary">
+                <div class="form-group form-inline" style="padding:5px;">
+                    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                    <div class="col-md-4">
+                        <h6><b>Candidate Name:</b> @Html.ValidationMessageFor(model => model.FullName, "*", new { @class = "text-danger" })</h6>
+                        <div class="col-md-10">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text"><i class="fas fa-address-card"></i></span>
+                                @Html.EditorFor(model => model.FullName, new
+                                {
+                                    htmlAttributes = new
+                           {
+                               @class = "form-control",
+                               @id = "FullName",
+                               @placeholder = "Enter Name",
+                               @required = "required",
+                               @pattern = "^[a-zA-Z\\s]+$",
+                               @title = "Only alphabets and spaces are allowed",
+                               onkeydown = "return (event.key === 'Backspace' ||  /^[a-zA-Z\\s]$/.test(event.key))"
+                           }
+                                })
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <h6><b>Gender:</b></h6>
+                        <div class="col-md-10">
+                            <p style=" "><span style="color: #33CCCC;"><b>@Model.Gender</b></span></p>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <h6><b>Present Address:</b> @Html.ValidationMessageFor(model => model.PresentAddress, "*", new { @class = "text-danger" })</h6>
+                        <div class="col-md-10">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text" id="presentaddressError"><i class="fas fa-home"></i></span>
+                                @Html.TextAreaFor(model => model.PresentAddress, new { htmlAttributes = new { @class = "form-control", @placeholder = "Present Address...", style = "width:300px; height:150px;", id = "PresentAddress" } })
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group form-inline" style="padding:5px;">
+                    <div class="col-md-4">
+                        <h6><b>Present Pincode: @Html.ValidationMessageFor(model => model.PresentPincode, null, new { @class = "text-danger" })</b></h6>
+                        <div class="col-md-10">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text" id="presentpincodeError"><i class="fas fa-circle-notch"></i></span>
+                                @Html.EditorFor(model => model.PresentPincode, new
+                            {
+                               htmlAttributes = new
+                               {
+                                   @class = "form-control",
+                                   @placeholder = "Enter Pincode",
+                                   style = "width:200px;",
+                                   id = "presentpincode",
+                                   @pattern = "\\d{6}",
+                                   @onkeydown = "return (event.key === 'Backspace' || /^[0-9]$/.test(event.key))",
+                                   @oninput = "validatePhoneNumber(this)"
+                               }
+                                })
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <h6><b>Contact:@Html.ValidationMessageFor(model => model.ContactNumber, "*", new { @class = "text-danger" })</b></h6>
+                        <div class="col-md-10">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text"><i class="fas fa-phone"></i></span>
+                                @Html.EditorFor(model => model.ContactNumber, new
+                           {
+                               htmlAttributes = new
+                               {
+                                   @class = "form-control",
+                                   @placeholder = "Contact Number",
+                                   style = "width:300px;",
+                                   id = "PhoneNo",
+                                   @pattern = "\\d{10}",
+                                   @title = "Enter a 10-digit mobile number",
+                                   @onkeydown = "return (event.key === 'Backspace' || /^[0-9]$/.test(event.key))",
+                                   @oninput = "validatePhoneNumber(this)"
+                               }
+                                })
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <h6><b>Email-ID: @Html.ValidationMessageFor(model => model.EmailId, "", new { @class = "text-danger" })</b></h6>
+                        <div class="col-md-10">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text"><i class="fas fa-envelope"></i></span>
+                                @Html.EditorFor(model => model.EmailId, new { htmlAttributes = new { @class = "form-control", @id = "EmailId", @placeholder = "Enter Email", Style = "width:250px;" } })
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="form-group form-inline" style="padding:5px;">
+                    <div class="col-md-4">
+                        <h6><b>Alternate Number:@Html.ValidationMessageFor(model => model.AlternateNumber, "", new { @class = "text-danger" })</b></h6>
+                        <div class="col-md-10">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text"><i class="fas fa-phone"></i></span>
+                                @Html.EditorFor(model => model.AlternateNumber, new
+                           {
+                               htmlAttributes = new
+                               {
+                                   @class = "form-control",
+                                   @placeholder = "Alternate Number",
+                                   Style = "width:300px;",
+                                   id = "AlterNo",
+                                   @pattern = "\\d{10}",
+                                   @title = "Enter a 10-digit mobile number",
+                                   onkeydown = "return (event.key === 'Backspace' || /^[0-9]$/.test(event.key))"
+                               }
+                                })
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <h6><b>Equiry Description:</b></h6>
+                        <div class="col-md-10">
+                            <p style=""><span style="color: #33CCCC;"><b>@Model.EquiryDescription</b></span></p>                           
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <h6><b>Lead Date:</b></h6>
+                        <div class="col-md-10">
+                            <p style=" "><span style="color: #33CCCC;"><b>@Model.EnquiryDate.ToShortDateString()</b></span></p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group form-inline" style="padding:5px;">
+                    <div class="col-md-4">
+                        <h6><b>Equiry For:</b></h6>
+                        <div class="col-md-10">
+                            <p style=""><span style="color: #33CCCC;"><b>@Model.EnquiryFor</b></span></p>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <h6><b>Source From:</b></h6>
+                        <div class="col-md-10">
+                            <p style=""><span style="color: #33CCCC;"><b>@Model.SourceName</b></span></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body" style="padding-top:10px; position:relative;">
+                <div class="container" style="margin-right:-320px">
+                    <nav>
+                        <input type="submit" class="btn btn-success" id="updateButton" value="Update" />
+                        <input type="button" class="btn btn-danger" value="Cancel" onclick="showCancelConfirmation()" />
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+
+<script src="~/Content/plugins/jquery-validation/additional-methods.min.js"></script>
+<script src="~/Content/plugins/jquery-validation/jquery.validate.js"></script>
+<script src="~/Content/plugins/jquery/jquery.min.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+<script>
+    jQuery(document).ready(function ($) {
+        $('#updateButton').on('click', function (e) {
+            e.preventDefault();
+            var FullName = $('#FullName').val();
+            if (!FullName == null || FullName === "") {
+                toastr.error('Please Enter Name.');
+                return;
+            }
+
+         //var presentpincode = $('#presentpincode').val();
+            //if (!presentpincode == null || presentpincode === "" || presentpincode === "undefined") {
+            //    toastr.error('Please Enter Present Pincode.');
+            //    return;
+            //}
+			
+			var presentpincode = $('#presentpincode').val();
+			if (presentpincode) {  // If user entered something in the pincode field
+				var pincodeRegex = /^\d{6}$/;  // Regex for exactly 6 digits
+				if (!pincodeRegex.test(presentpincode)) {
+					toastr.error('Please Enter a valid 6-digit Pincode.');
+					return;
+				}
+			}
+
+            var PresentAddress = $('#PresentAddress').val();
+            if (!PresentAddress == null || PresentAddress === "") {
+                toastr.error('Please Enter Present Address.');
+                return;
+            }
+
+            var PhoneNo = $('#PhoneNo').val();
+            if (!PhoneNo == null || PhoneNo === "" || PhoneNo === "undefined") {
+                toastr.error('Please Enter Contact Number.');
+                return;
+            }
+
+            var EmailId = $('#EmailId').val();
+            if (!EmailId == null || EmailId === "") {
+                toastr.error('Please Enter EmailId.');
+                return;
+            }
+            if (EmailId != "" && EmailId != null) {
+                var emailRegex = /^[a-zA-Z0-9._%+-]+@@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+                if (!emailRegex.test(EmailId)) {
+                    toastr.error('Please Enter Valid EmailId.');
+                    return;
+                }
+            }
+
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "Do you want to update this data?",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, update it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // If user confirms, submit the form
+                    $('form').submit();
+                }
+            });
+        });
+    });
+</script>
+
+<script>
+        function showCancelConfirmation() {
+        // Using SweetAlert for confirmation
+        Swal.fire({
+            title: 'Are you sure?',
+            //text: 'You will not be able to undo this action!',
+            icon: 'warning',
+            //showCancelButton: true,
+            confirmButtonColor: '#d33',
+            //cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Yes, cancel it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Add any form cancellation logic here if needed
+
+                // Redirect to the specified URL
+                window.location.href = '@Url.Action("ImportExcelFile", "Counsellor")';
+            }
+        });
+    }
+</script>
+
+<script>
+    $(document).ready(function () {
+        $('#PhoneNo').on('input', function () {
+            var inputValue = $(this).val().trim();
+            var sanitizedValue = inputValue.replace(/\D/g, ''); // Remove non-digit characters
+
+            // Limit input to 10 digits
+            if (sanitizedValue.length > 10 || sanitizedValue.length < 10) {
+                sanitizedValue = sanitizedValue.substr(0, 10);
+            }
+            // Update input value with sanitized version
+            $(this).val(sanitizedValue);
+
+            // Set validation message based on length
+            if (sanitizedValue.length !== 10) {
+                $(this)[0].setCustomValidity('Contact number must be exactly 10 digits.');
+            }
+
+            else {
+                $(this)[0].setCustomValidity('');
+            }
+        });
+    });
+</script>
+
+<script>
+    $(document).ready(function () {
+        $('#AlterNo').on('input', function () {
+            var inputValue = $(this).val().trim();
+            var sanitizedValue = inputValue.replace(/\D/g, ''); // Remove non-digit characters
+
+            // Limit input to 10 digits
+            if (sanitizedValue.length > 10) {
+                sanitizedValue = sanitizedValue.substr(0, 10);
+            }
+            if (sanitizedValue.length >= 10) {
+                sanitizedValue = sanitizedValue.substr(0, 10);
+            }
+
+            // Update input value with sanitized version
+            $(this).val(sanitizedValue);
+
+            // Set validation message based on length
+            if (sanitizedValue.length !== 10) {
+                $(this)[0].setCustomValidity('Contact number must be exactly 10 digits.');
+            }
+            if (sanitizedValue.length >= 10) {
+                $(this)[0].setCustomValidity('Contact number must be enter 10 digits.');
+            }
+            else {
+                $(this)[0].setCustomValidity('');
+            }
+        });
+    });
+</script>
+
+<script>
+    $(document).ready(function () {
+        $('#presentpincode').on('input', function () {
+            var val = $(this).val();
+            var numericVal = val.replace(/\D/g, ''); // Remove non-digit characters
+            $(this).val(numericVal);
+
+            // Optionally, you can add additional logic here for length checks, etc.
+            // Limit to 6 digits (optional)
+            if (numericVal.length > 6) {
+                $(this).val(numericVal.slice(0, 6));
+            }
+        });
+    });
+</script>
+
+

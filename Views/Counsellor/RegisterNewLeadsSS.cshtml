@@ -1,0 +1,584 @@
+﻿@model GSTEducationERPLibrary.Counsellor.Counsellor
+
+@{
+    ViewBag.Title = "RegisterNewLeadsSS";
+}
+<head>
+  <script src="~/Content/plugins/jquery/jquery.min.js"></script>
+<!-- Select2 -->
+<script src="~/Content/plugins/select2/js/select2.full.min.js"></script>
+<link href="~/Content/plugins/select2/css/select2.min.css" rel="stylesheet" />
+</head>
+<style>
+    h2 {
+        padding-top: 10px;
+        margin-bottom: 10px;
+        font-family: Verdana;
+        font-weight: bold;
+        font-size: medium;
+        color: #33CCCC;
+    }
+</style>
+<br />
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+    <form id="quickForm">
+        <div class="card-body">
+            <div class="card card-primary">
+                <div class="form-group form-inline">
+                    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                    <div class="col-md-4">
+                        <h6><b>Candidate Name:</b> @Html.ValidationMessageFor(model => model.FullName, "*", new { @class = "text-danger" })</h6>
+                        <div class="col-md-10">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text"><i class="fas fa-address-card"></i></span>
+                                @Html.EditorFor(model => model.FullName, new
+                                {
+                                    htmlAttributes = new
+                                    {
+                                        @class = "form-control",
+                                        @id = "FullName",
+                                        @placeholder = "Enter Name",
+                                        @required = "required",
+                                        @pattern = "^[a-zA-Z\\s]+$",
+                                        @title = "Only alphabets and spaces are allowed",
+                                        onkeydown = "return (event.key === 'Backspace' ||  /^[a-zA-Z\\s]$/.test(event.key))"
+                                    }
+                                })
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <h6><b>Gender:</b> <span id="genderError" class="text-danger">*</span></h6>
+                        <div class="form-group">
+                            <div class="form-group clearfix">
+                                <div class="radio icheck-primary d-inline">
+                                    <input type="radio" id="Male" name="Gender" value="Male">
+                                    <label for="Male" style="display: inline;">Male</label>
+                                </div>
+                                <div class="radio icheck-primary d-inline">
+                                    <input type="radio" id="Female" name="Gender" value="Female">
+                                    <label for="Female" style="display: inline;">Female</label>
+                                </div>
+                                <div class="radio icheck-primary d-inline">
+                                    <input type="radio" id="Other" name="Gender" value="Other">
+                                    <label for="Other" style="display: inline;">Other</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <h6><b>Present Address:</b> @Html.ValidationMessageFor(model => model.PresentAddress, "*", new { @class = "text-danger" })</h6>
+                        <div class="col-md-10">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text" id="presentaddressError"><i class="fas fa-home"></i></span>
+                                @Html.TextAreaFor(model => model.PresentAddress, new
+                               {
+                                 htmlAttributes = new
+                                 {
+                                       @class = "form-control",
+                                       @placeholder = "Present Address...",
+                                       style = "width:300px; height:150px;",
+                                       id = "PresentAddress"
+                                 }
+                              })
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group form-inline">
+                    <div class="col-md-4">
+                        <h6><b>Present Pincode: @Html.ValidationMessageFor(model => model.PresentPincode, "", new { @class = "text-danger" })</b></h6>
+                        <div class="col-md-10">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text" id="presentpincodeError"><i class="fas fa-circle-notch"></i></span>
+                                @Html.EditorFor(model => model.PresentPincode, new
+                           {
+                               htmlAttributes = new
+                               {
+                                   @class = "form-control",
+                                   @placeholder = "Enter Pincode",
+                                   style = "width:200px;",
+                                   id = "presentpincode",
+                                   @pattern = "\\d{6}",
+                                   @onkeydown = "return (event.key === 'Backspace' || /^[0-9]$/.test(event.key))",
+                                   @oninput = "validatePhoneNumber(this)"
+                               }
+                                })
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <h6><b>Email-ID:  @Html.ValidationMessageFor(model => model.EmailId, null, new { @class = "text-danger" })</b></h6>
+                         <div class="col-md-10">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text"><i class="fas fa-envelope"></i></span>
+                                @Html.EditorFor(model => model.EmailId, new { htmlAttributes = new { @class = "form-control", @id = "EmailId", @placeholder = "example@gmail.com", Style = "width:350px;" } })
+                                <div id="emailLoader" style="display:none;">
+                                    <img src="~/Content/Admin/img/loading-green-loading.gif" alt="loading" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <h6><b>Contact Number: @Html.ValidationMessageFor(model => model.ContactNumber, "*", new { @class = "text-danger" })</b></h6>
+                        <div class="col-md-10">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text"><i class="fas fa-phone"></i></span>
+                                @Html.EditorFor(model => model.ContactNumber, new
+                                {
+                                      htmlAttributes = new
+                                      {
+                                          @class = "form-control",
+                                          @placeholder = "Contact Number",
+                                          style = "width:300px;",
+                                          id = "PhoneNo",
+                                          @pattern = "\\d{10}",
+                                          @title = "Enter a 10-digit mobile number",
+                                          @onkeydown = "return (event.key === 'Backspace' || /^[0-9]$/.test(event.key))",
+                                          @oninput = "validatePhoneNumber(this)"
+                                     }
+                                 })
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group form-inline">
+                    <div class="col-md-4">
+                        <h6><b>Alternate Number: @Html.ValidationMessageFor(model => model.AlternateNumber, "", new { @class = "text-danger", })</b></h6>
+                        <div class="col-md-10">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text"><i class="fas fa-phone" id="AlternateNumberError"></i></span>
+                                @Html.EditorFor(model => model.AlternateNumber, new
+                                {
+                                    htmlAttributes = new
+                                    {
+                                        @class = "form-control",
+                                        @placeholder = "Alternate Number",
+                                        Style = "width:300px;",
+                                        id = "AlterNo",
+                                        @pattern = "\\d{10}",
+                                        @title = "Enter a 10-digit mobile number",
+                                        onkeydown = "return (event.key === 'Backspace' || /^[0-9]$/.test(event.key))"
+                                    }
+                               })
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <h6><b>Equiry Description:</b></h6>
+                        <div class="col-md-10">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text"><i class="fas fa-comment-dots" id="EquiryDescriptionError"></i></span>
+                                @Html.TextAreaFor(model => model.EquiryDescription, new { htmlAttributes = new { @class = "form-control", @placeholder = "Enter Description", Style = "width:250px;", id = "EquiryDescription" } })
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <h6><b>Lead Date:@Html.ValidationMessageFor(model => model.EnquiryDate, "*", new { @class = "text-danger" })</b></h6>
+                        <div class="col-md-10">
+
+                            @Html.EditorFor(model => model.EnquiryDate, new { htmlAttributes = new { @class = "form-control", id = "EnquiryDate", Style = "width:230px;", max = DateTime.Today.ToString("yyyy-MM-dd") } })
+                            <span class="text-danger" id="enquirydateError"></span>
+							@*min = DateTime.Now.AddDays(-5).ToString("yyyy-MM-dd"),*@ 
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group form-inline">
+                    <div class="col-md-6">
+                        <h6><b>Enquiry for:@Html.ValidationMessageFor(model => model.EnquiryFor, "*", new { @class = "text-danger" })</b></h6>
+                        <div class="col-md-10">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text"><i class="fas fa-pen-alt" id="enquiryforError"></i></span>
+                                @Html.DropDownListFor(model => model.EnquiryFor, new SelectList(ViewBag.Enqueryfor, "Value", "Text"), "---Select---", new { @class = "form-control", id = "EnquiryFor", Style = "width:300px;" })
+
+                            </div>
+                        </div>
+                    </div>
+					
+					<div class="col-md-6">
+						<h6><b>Course: @Html.ValidationMessageFor(model => model.CourseCode, "*", new { @class = "text-danger" })</b></h6>
+						<div class="col-md-10">
+							<div class="input-group-prepend">
+								<span class="input-group-text"><i class="fas fa-pen-alt" id="enquiryforError"></i></span>
+								@Html.DropDownListFor(
+									model => model.CourseCode,
+									(IEnumerable<SelectListItem>)ViewBag.Course,
+									"---Select Course---",
+									new { @class = "form-control", id = "CourseFilter" }
+								)
+							</div>
+						</div>
+					</div>
+
+                    <div class="col-md-6">
+                        <h6><b>Source From:@Html.ValidationMessageFor(model => model.SourceId, "*", new { @class = "text-danger" })</b></h6>
+                        <div class="col-md-10">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text"><i class="fas fa-hand-spock" id="enquiryfromError"></i></span>
+                                @Html.DropDownListFor(model => model.SourceId, new SelectList(ViewBag.EnquerySource, "Value", "Text"), "---Select---", new { @class = "form-control", id = "SourceFrom", Style = "width:300px;" })
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group form-inline">
+                    <div class="col-md-6" id="refbydiv">
+                        <h6><b>Ref From:@Html.ValidationMessageFor(model => model.RefCandStaff, "", new { @class = "text-danger" })</b></h6>
+                        <div class="col-md-10">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text"><i class="fas fa-user-friends"></i></span>
+                                <select id="ReferenceType" name="RefCandStaff" class="form-control" style="width:310px;">
+                                    <option value="">---Select Reference---</option>
+                                    <option value="Staff">Staff</option>
+                                    <option value="Candidate">Candidate</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6" id="reftodiv">
+						<h6><b>@Html.ValidationMessageFor(model => model.RefTo, "", new { @class = "text-danger" })</b></h6>
+						<div class="col-md-10">
+							<div class="input-group-prepend">
+								<span class="input-group-text"><i class="fas fa-chalkboard-teacher"></i></span>
+								<select class="form-control select2-container" name="RefTo" multiple="multiple"
+										style="width: 100%;"
+										id="ReferenceTo">
+									<option value=""></option>
+								</select>
+							</div>
+						</div>
+
+					</div>
+                </div>
+            </div>
+
+            <div class="container" style="margin-right:-310px">
+                <div class="checked icheck-primary d-inline">
+                    @Html.CheckBoxFor(model => model.isCheck, new { @id = "isCheck" })
+                    <label for="isCheck" style="display: inline;">Send Enquiry Form </label>
+                </div>
+            </div>
+
+            <div style="padding-top:10px; position:relative;">
+                <div class="container" style="margin-right:-310px">
+                    <input type="submit" class="btn btn-success" value="Register" id="saveButton" style="display: inline-block;" />
+                    <input type="button" class="btn btn-danger" value="Cancel" style="display: inline-block; margin-right: 10px;" onclick="showCancelConfirmation()" />
+                </div>
+            </div>
+        </div>
+    </form>
+
+}
+
+
+
+<script>
+    $('#SourceFrom').change(function () {
+        var id = $('#SourceFrom').val();
+        if (id == "1") {
+            refbydiv
+            reftodiv
+            $('#refbydiv').show();
+            $('#reftodiv').show();
+        }
+        else {
+            $('#refbydiv').hide();
+            $('#reftodiv').hide();
+        }
+    });
+</script>
+
+
+<script>
+
+    jQuery(document).ready(function ($) {
+
+        $('#saveButton').on('click', function (e) {
+            e.preventDefault();
+             
+            // Perform form validation here if needed
+            var FullName = $('#FullName').val();
+            if (!FullName == null || FullName === "") {
+                toastr.error('Please Enter Name.');
+                return;
+            }
+
+            var Gender = $('input[name="Gender"][type="radio"]:checked').val();
+            if (!Gender) {
+                toastr.error('Please Select Gender.');
+                return;
+            }
+
+            var PresentAddress = $('#PresentAddress').val();
+            if (!PresentAddress == null || PresentAddress === "") {
+                toastr.error('Please Enter Present Address.');
+                return;
+            }
+
+           var presentpincode = $('#presentpincode').val();
+if (presentpincode) {  // If user entered something in the pincode field
+    var pincodeRegex = /^\d{6}$/;  // Regex for exactly 6 digits
+    if (!pincodeRegex.test(presentpincode)) {
+        toastr.error('Please Enter a valid 6-digit Pincode.');
+        return;
+    }
+}
+
+  var PhoneNo = $('#PhoneNo').val();
+            if (!PhoneNo == null || PhoneNo === "" || PhoneNo === "undefined") {
+                toastr.error('Please Enter Contact Number.');
+                return;
+            }
+
+ var phoneRegex = /^\d{10}$/;
+ if (!phoneRegex.test(PhoneNo)) {
+     toastr.error('Please Enter a valid 10-digit Contact Number.');
+     return;
+ }
+
+          
+
+            //var EmailId = $('#EmailId').val();
+            //if (!EmailId == null || EmailId === "") {
+              //  toastr.error('Please Enter EmailId.');
+                //return;
+            //}
+          //  if (EmailId != "" && EmailId != null) {
+            //    var emailRegex = /^[a-zA-Z0-9._%+-]+@@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+              //  if (!emailRegex.test(EmailId)) {
+                //    toastr.error('Please Enter Valid EmailId.');
+                  //  return;
+               // }
+            //}            
+
+            var EnquiryDate = $('#EnquiryDate').val();
+            if (!EnquiryDate == null || EnquiryDate === "") {
+                toastr.error('Please Select Enquiry Date.');
+                return;
+            }
+
+            var EnquiryFor = $('#EnquiryFor').val();
+            if (!EnquiryFor == null || EnquiryFor === "") {
+                toastr.error('Please Select Enquiry For.');
+                return;
+            }
+
+            var SourceFrom = $('#SourceFrom').val();
+            if (!SourceFrom == null || SourceFrom === "") {
+                toastr.error('Please Select Source.');
+                return;
+            }
+
+            //var ReferenceType = $('#ReferenceType').val();
+            //if (!ReferenceType == null || ReferenceType === "") {
+            //    toastr.error('Please Select ReferenceType.');
+            //    return;
+            //}
+
+            //var ReferenceTo = $('#ReferenceTo').val();
+            //if (!ReferenceTo == null || ReferenceTo === "") {
+            //    toastr.error('Please Select ReferenceTo.');
+            //    return;
+            //}
+            /*if (validateForm()) {*/
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: "Do you want to save this data?",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes, save it!'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // If user confirms, submit the form
+                        $('form').submit();
+                    }
+                });
+            //}
+        });
+           
+
+        $("#ReferenceType").change(function () {
+             
+            var id = $(this).val();
+            $("#ReferenceTo").empty();
+            if (id == "Candidate") {
+                $.get("/Counsellor/SelectStudentReference", { Reference: id }, function (data) {
+                    var v = "<option>---Select---</option>";
+                    console.log(data);
+                    $.each(data, function (i, v1) {
+                        v += "<option value=" + v1.Value + ">" + v1.Text + "</option>";
+                    });
+                    $("#ReferenceTo").html(v);
+                });
+            }
+            if (id == "Staff") {
+                $.get("/Counsellor/SelectStaffReference", { Reference: id }, function (data) {
+                    var v = "<option>---Select---</option>";
+                    $.each(data, function (i, v1) {
+                        v += "<option value=" + v1.Value + ">" + v1.Text + "</option>";
+                    });
+                    $("#ReferenceTo").html(v);
+                });
+            }
+        });
+    });
+</script>
+
+
+
+
+<script>
+
+    function showCancelConfirmation() {
+        // Using SweetAlert for confirmation
+        Swal.fire({
+            title: 'Are you sure?',
+            //text: 'You will not be able to undo this action!',
+            icon: 'warning',
+            //showCancelButton: true,
+            confirmButtonColor: '#d33',
+            //cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Yes, cancel it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Add any form cancellation logic here if needed
+
+                // Redirect to the specified URL
+                window.location.href = '@Url.Action("ImportExcelFile", "Counsellor")';
+            }
+        });
+    }
+</script>
+<script>
+    $(document).ready(function () {
+        $('#PhoneNo').on('input', function () {
+            var inputValue = $(this).val().trim();
+            var sanitizedValue = inputValue.replace(/\D/g, ''); // Remove non-digit characters
+
+            // Limit input to 10 digits
+            if (sanitizedValue.length > 10 || sanitizedValue.length < 10) {
+                sanitizedValue = sanitizedValue.substr(0, 10);
+            }
+            // Update input value with sanitized version
+            $(this).val(sanitizedValue);
+
+            // Set validation message based on length
+            if (sanitizedValue.length !== 10) {
+                $(this)[0].setCustomValidity('Contact number must be exactly 10 digits.');
+            }
+
+            else {
+                $(this)[0].setCustomValidity('');
+            }
+        });
+    });
+</script>
+
+<script>
+    $(document).ready(function () {
+        $('#AlterNo').on('input', function () {
+            var inputValue = $(this).val().trim();
+            var sanitizedValue = inputValue.replace(/\D/g, ''); // Remove non-digit characters
+
+            // Limit input to 10 digits
+            if (sanitizedValue.length > 10) {
+                sanitizedValue = sanitizedValue.substr(0, 10);
+            }
+            if (sanitizedValue.length >= 10) {
+                sanitizedValue = sanitizedValue.substr(0, 10);
+            }
+
+            // Update input value with sanitized version
+            $(this).val(sanitizedValue);
+
+            // Set validation message based on length
+            if (sanitizedValue.length !== 10) {
+                $(this)[0].setCustomValidity('Contact number must be exactly 10 digits.');
+            }
+            if (sanitizedValue.length >= 10) {
+                $(this)[0].setCustomValidity('Contact number must be enter 10 digits.');
+            }
+            else {
+                $(this)[0].setCustomValidity('');
+            }
+        });
+    });
+</script>
+
+<script>
+    $(document).ready(function () {
+        $('#presentpincode').on('input', function () {
+            var val = $(this).val();
+            var numericVal = val.replace(/\D/g, ''); // Remove non-digit characters
+            $(this).val(numericVal);
+
+            // Optionally, you can add additional logic here for length checks, etc.
+            // Limit to 6 digits (optional)
+            if (numericVal.length > 6) {
+                $(this).val(numericVal.slice(0, 6));
+            }
+        });
+    });
+</script>
+<script>
+    $(document).ready(function () {
+        $('#ReferenceTo').select2({
+            placeholder: "Select a person",  
+            allowClear: true,                
+            maximumSelectionLength: 1,       
+            width: '100%'  
+        });
+    });
+</script>
+<script>
+    $(document).ready(function() {
+    $('#EmailId').on('blur', function() {
+     
+        var email = $(this).val();
+
+        if (email) {
+            $('#emailLoader').show();  
+            $('#emailError').hide();   
+
+            $.ajax({
+                url: '@Url.Action("ValidateEmailId", "Counsellor")', 
+                type: 'POST',
+                data: { email: email },
+                success: function(response) {
+                    $('#emailLoader').hide(); 
+                     
+                    if (response == "Email Already registered.") {
+                     //   $('#emailError').show(); 
+                        toastr.error('Email Id already exists!.');
+                        $('#EmailId').val('');
+                    }
+                    //else {
+                    //    $('#emailError').hide(); 
+                    //}
+                },
+                error: function() {
+                    $('#emailLoader').hide();  
+                    alert('Error occurred while checking email.');
+                }
+            });
+        }
+    });
+});
+
+</script>
+

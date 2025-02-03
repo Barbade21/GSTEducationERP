@@ -1,0 +1,352 @@
+﻿@model GSTEducationERPLibrary.Accountant.Accountant
+@using System.Globalization
+
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Staff Salary Management</title>
+    <link href="~/Content/Admin/css/UI.css" rel="stylesheet" />
+
+    <style>
+       
+
+            .payment-section p {
+                font-size: 18px;
+                font-weight: bold;
+                color: black;
+                margin: 0;
+            }
+
+        .staff-count-section p {
+            font-size: 18px;
+            font-weight: bold;
+            color: black;
+            margin: 5px 0;
+        }
+
+        .staff-count-section span {
+            font-size: 16px;
+            font-weight: normal;
+            color: black;
+        }
+
+        .btn-make-payment, .btn-select-all {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 5px;
+            margin-left: 10px;
+        }
+
+            .btn-make-payment:hover, .btn-select-all:hover {
+                background-color: #218838;
+            }
+
+        .badge {
+            padding: 5px 10px;
+            border-radius: 3px;
+            font-size: 14px;
+            font-weight: bold;
+            color: white;
+        }
+
+        .badge-paid {
+            background-color: #28a745;
+        }
+
+        .badge-not-paid {
+            background-color: #dc3545;
+        }
+
+        .green-text {
+            color: green;
+        }
+
+        .red-text {
+            color: red;
+        }
+
+        .payment-section {
+            justify-content: space-between; /* Ensure spacing between salary/staff count and button */
+          
+        }
+
+        /*.salary-and-staff-count {
+            display: flex;
+            align-items: center;*/ /* Align salary and staff count in the center horizontally */
+        /*}
+
+            .salary-and-staff-count p {
+                margin-right: 20px;*/ /* Add some space between the salary and staff count */
+            /*}*/
+
+        .amount {
+            color: green;
+            font-weight: bold;
+        }
+
+        p span {
+            color: green;
+        }
+
+        
+
+        #AddVoucher {
+            background-color: blue;
+            color: white;
+            font-weight: bold;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+            #AddVoucher:hover {
+                background-color: darkblue;
+            }
+    </style>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+</head>
+<body>
+   
+
+    
+            <table class="table table-bordered table-striped">
+                <thead>
+                    <tr>
+                        <th><input type="checkbox" id="selectAll" /></th>
+                        <th>Month Year</th>
+                        <th>Amount</th>
+                        <th>Status</th>
+                        @*<th>Action</th>*@
+                    </tr>
+                </thead>
+
+                <tbody id="staffList">
+                    @if (Model != null && Model.lstAllEmpAdvancePay != null)
+                    {
+                        for (int i = 0; i < Model.lstAllEmpAdvancePay.Count; i++)
+                        {
+                            var item = Model.lstAllEmpAdvancePay[i];
+                            <tr>
+                                <td>
+                                    <input type="checkbox" class="staffCheckbox"
+                                           data-SalaryMonthId="@item.SalaryMonthId"
+                                           data-Amount="@item.AdvanceAmount" />
+                                </td>
+                                <td>@Html.DisplayFor(modelItem => item.combinedMonthYear)</td>
+                                <td>@Html.DisplayFor(modelItem => item.AdvanceAmount)</td>
+                                <td>@Html.DisplayFor(modelItem => item.Status)</td>
+                                @*<td>
+                                    <a class="icon AddVoucher" title="View"
+                                       data-combinedMonthYear="@item.combinedMonthYear"
+                                       data-AdvanceAmount="@item.AdvanceAmount"
+                                       data-SalaryMonthId="@item.SalaryMonthId">
+                                        <video width="25" height="25" playsinline loop>
+                                            <source src="~/Content/Admin/icon/view.mp4" type="video/mp4" />
+                                        </video>
+                                    </a>
+                                </td>*@
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+       
+    <!-- Modal -->
+    <div class="modal fade" id="BankModal" tabindex="-1" role="dialog" aria-labelledby="BankModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="BankModalLabel">Add Voucher</h5>
+                    <button style="color: red;" type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Popper.js, required for Bootstrap's JavaScript plugins -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <!-- Bootstrap JS -->
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+
+    <!-- Bootstrap 4 -->
+    <script src="~/Content/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script type="text/javascript">
+    $(document).ready(function () {
+        function updateTotalSelectedSalary() {
+            var total = 0;
+            $('.staffCheckbox:checked').each(function() {
+                total += parseFloat($(this).data('amount')) || 0;
+            });
+            $('#totalSelectedSalary').text(total.toFixed(2)); // Ensure two decimal places
+        }
+
+        $('.staffCheckbox').on('change', updateTotalSelectedSalary);
+        $('#selectAll').on('change', function() {
+            $('.staffCheckbox').prop('checked', $(this).is(':checked'));
+            updateTotalSelectedSalary();
+        });
+
+        $('.AddVoucher').on('click', function () {
+            var combinedMonthYear = $(this).data('combinedmonthyear');
+            var advanceAmount = parseFloat($(this).data('advanceamount')) || 0; // Ensure it’s a number
+            var salaryMonthId = $(this).data('salarymonthid');
+
+            advanceAmount = advanceAmount.toFixed(2); // Format to two decimal places
+
+            $.ajax({
+                url: '@Url.Action("AddVoucherAsyncSGS", "Accountant")',
+                type: 'GET',
+                data: {
+                    voucherType: 4,
+                    amount: advanceAmount,
+                    salaryMonthIds: salaryMonthId.toString()
+                },
+                success: function (data) {
+                    if (data) {
+                        $('#BankModal .modal-body').html(data);
+                        $('#BankModal').modal('show');
+                    } else {
+                        Swal.fire('Error', 'No data received', 'error');
+                    }
+                },
+                error: function (xhr, status, error) {
+                    Swal.fire('Error', 'Failed to load content', 'error');
+                }
+            });
+        });
+
+        $('#ApproveSalary').on('click', function () {
+            var selectedSalaryMonthIds = [];
+            var totalAmount = 0;
+
+            $('.staffCheckbox:checked').each(function() {
+                selectedSalaryMonthIds.push($(this).data('salarymonthid'));
+                totalAmount += parseFloat($(this).data('amount')) || 0;
+            });
+
+            if (selectedSalaryMonthIds.length === 0) {
+                Swal.fire('Warning', 'Please select at least one salary to approve', 'warning');
+                return;
+            }
+
+            totalAmount = totalAmount.toFixed(2); // Format to two decimal places
+
+            $.ajax({
+                url: '@Url.Action("AddVoucherAsyncSGS", "Accountant")',
+                type: 'GET',
+                data: {
+                    voucherType: 4,
+                    amount: totalAmount,
+                    salaryMonthIds: selectedSalaryMonthIds.join(',')
+                },
+                success: function (data) {
+                    if (data) {
+                        $('#BankModal .modal-body').html(data);
+                        $('#BankModal').modal('show');
+                    } else {
+                        Swal.fire('Error', 'No data received', 'error');
+                    }
+                },
+                error: function (xhr, status, error) {
+                    Swal.fire('Error', 'Failed to approve salaries', 'error');
+                }
+            });
+        });
+    });
+    </script>
+
+    @*<script type="text/javascript">
+        $(document).ready(function () {
+            function updateTotalSelectedSalary() {
+                var total = 0;
+                $('.staffCheckbox:checked').each(function() {
+                    total += parseFloat($(this).data('amount')) || 0;
+                });
+                $('#totalSelectedSalary').text(total.toFixed(2));
+            }
+
+            $('.staffCheckbox').on('change', updateTotalSelectedSalary);
+            $('#selectAll').on('change', function() {
+                $('.staffCheckbox').prop('checked', $(this).is(':checked'));
+                updateTotalSelectedSalary();
+            });
+
+            $('.AddVoucher').on('click', function () {
+                var combinedMonthYear = $(this).data('combinedmonthyear');
+                var advanceAmount = $(this).data('advanceamount');
+                var salaryMonthId = $(this).data('salarymonthid');
+
+                $.ajax({
+                    url: '@Url.Action("AddVoucherAsyncSGS", "Accountant")',
+                    type: 'GET',
+                    data: {
+                        voucherType: 4,
+                        amount: advanceAmount,
+                        salaryMonthIds: salaryMonthId.toString()
+                    },
+                    success: function (data) {
+                        if (data) {
+                            $('#BankModal .modal-body').html(data);
+                            $('#BankModal').modal('show');
+                        } else {
+                            Swal.fire('Error', 'No data received', 'error');
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        Swal.fire('Error', 'Failed to load content', 'error');
+                    }
+                });
+            });
+
+            $('#ApproveSalary').on('click', function () {
+                var selectedSalaryMonthIds = [];
+                var totalAmount = 0;
+
+                $('.staffCheckbox:checked').each(function() {
+                    selectedSalaryMonthIds.push($(this).data('salarymonthid'));
+                    totalAmount += parseFloat($(this).data('amount')) || 0;
+                });
+
+                if (selectedSalaryMonthIds.length === 0) {
+                    Swal.fire('Warning', 'Please select at least one salary to approve', 'warning');
+                    return;
+                }
+
+                $.ajax({
+                    url: '@Url.Action("AddVoucherAsyncSGS", "Accountant")',
+                    type: 'GET',
+                    data: {
+                        voucherType: 4,
+                        amount: totalAmount,
+                        salaryMonthIds: selectedSalaryMonthIds.join(',')
+                    },
+                    success: function (data) {
+                        if (data) {
+                            $('#BankModal .modal-body').html(data);
+                            $('#BankModal').modal('show');
+                        } else {
+                            Swal.fire('Error', 'No data received', 'error');
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        Swal.fire('Error', 'Failed to approve salaries', 'error');
+                    }
+                });
+            });
+        });
+        </script>*@
+</body>
+</html>

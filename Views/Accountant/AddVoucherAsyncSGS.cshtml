@@ -1,0 +1,1471 @@
+﻿@using System.Web.Mvc.Ajax
+@model GSTEducationERPLibrary.Accountant.Accountant
+
+@{
+    ViewBag.Title = "AddVoucherAsyncSGS";
+}
+<html>
+<head>
+
+    <link href="~/Content/plugins/bs-stepper/css/bs-stepper.min.css" rel="stylesheet" />
+    <link href="~/Content/plugins/bs-stepper/css/bs-stepper.css" rel="stylesheet" />
+    <script src="~/Content/plugins/bs-stepper/js/bs-stepper.min.js"></script>
+    <script src="~/Content/plugins/bs-stepper/js/bs-stepper.js"></script>
+
+
+    <!-- Toastr CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet" />
+
+    <!-- Toastr JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+
+    <style>
+        label.required {
+            display: inline-block; /* Ensure label stays in one line */
+        }
+
+        .required::after {
+            content: " *";
+            color: red;
+            margin-left: 2px; /* Ensure some space between the label text and the asterisk */
+            display: inline; /* Keep it inline with the label text */
+            vertical-align: middle; /* Align it to the middle of the text */
+        }
+
+        .readonly-style {
+            background-color: #e9ecef; /* Disabled appearance */
+            pointer-events: none; /* Prevent interaction */
+            cursor: not-allowed; /* Change cursor to not-allowed */
+        }
+
+        .is-invalid {
+            border-color: #dc3545;
+            background-color: #f8d7da;
+        }
+    </style>
+</head>
+<body>
+    <form id="AddVoucherForm">
+        @Html.AntiForgeryToken()
+        <div class="bs-stepper" id="VoucherStepper">
+            <div class="bs-stepper-header" role="tablist">
+                <!-- your steps here -->
+                <div class="step" data-target="#Voucher-part">
+                    <button type="button" class="step-trigger" role="tab" aria-controls="Voucher-part" id="Voucher-part-trigger">
+                        <span class="bs-stepper-circle">1</span>
+                        <span class="bs-stepper-label">Voucher information</span>
+                    </button>
+                </div>
+                @*<div class="line"></div>
+                    <div class="step" data-target="#Receiver-part">
+                        <button type="button" class="step-trigger" role="tab" aria-controls="Receiver-part" id="Receiver-part-trigger">
+                            <span class="bs-stepper-circle">2</span>
+                            <span class="bs-stepper-label">Receiver's information</span>
+                        </button>
+                    </div>*@
+                <div class="line"></div>
+                <div class="step" data-target="#VoucherPayment-part">
+                    <button type="button" class="step-trigger" role="tab" aria-controls="VoucherPayment-part" id="VoucherPayment-part-trigger">
+                        <span class="bs-stepper-circle">2</span>
+                        <span class="bs-stepper-label">Payment information</span>
+                    </button>
+                </div>
+            </div>
+            <div class="bs-stepper-content">
+                <!-- Step 1 -->
+                <div id="Voucher-part" class="content row" role="tabpanel" aria-labelledby="Voucher-part-trigger">
+                    <div class="row">
+                        <!-- Left side (Voucher Code, Voucher Type, Voucher Receiver) -->
+                        <div class="col-md-6 card-body">
+                            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                            <div id="VoucherCode" class="form-group row" hidden>
+                                @Html.LabelFor(model => model.VoucherCode, htmlAttributes: new { @class = "control-label col-md-4 text-md-right" })
+                                <div class="col-md-8">
+                                    @Html.TextBoxFor(model => model.VoucherCode, new { @class = "form-control", @readonly = "readonly" })
+                                    @Html.ValidationMessageFor(model => model.VoucherCode, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <!-- Label for Voucher Type -->
+                                @Html.LabelFor(model => model.VoucherType, htmlAttributes: new { @class = "col-md-4 col-form-label text-md-right required" })
+                                <div class="col-md-8">
+                                    @Html.DropDownListFor(model => model.VoucherType, new SelectList(ViewBag.VoucherTypeList, "Value", "Text"), "--Select Voucher Type--", new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.VoucherType, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label for="AmountPaidTo" class="control-label col-md-4 text-md-right required">Voucher Receiver</label>
+                                <div class="col-md-8">
+                                    @{
+                                        var AmmountPaidToList = new List<SelectListItem>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            {
+                            new SelectListItem { Value = "Vendor", Text = "Vendor" },
+                            new SelectListItem { Value = "Staff", Text = "Staff" }
+                        };
+                                    }
+                                    @Html.DropDownListFor(model => model.AmountReceiver, new SelectList(AmmountPaidToList, "Value", "Text"), "--Select Voucher Receiver--", new { @class = "form-control", id = "AmountPaidTo" })
+                                    @Html.ValidationMessageFor(model => model.AmountReceiver, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Right side (Voucher Date, Staff/Vendor Selection) -->
+                        <div class="col-md-6 card-body">
+                            <div id="VoucherDateField" class="form-group row">
+                                @Html.LabelFor(model => model.VoucherDate, htmlAttributes: new { @class = "col-md-4 col-form-label text-md-right required" })
+                                <div class="col-md-8">
+                                    <input class="form-control"
+                                           id="VoucherDatePicker"
+                                           name="VoucherDate"
+                                           type="datetime-local"
+                                           value="@(Model.VoucherDate != null ? Model.VoucherDate.ToString("yyyy-MM-ddTHH:mm") : "")" />
+                                    @Html.ValidationMessageFor(model => model.VoucherDate, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+
+
+                            <div id="StaffNameField" class="form-group row" style="display: none;">
+                                <label for="StaffMember" class="control-label col-md-4 text-md-right required">Select Staff</label>
+                                <div class="col-md-8">
+                                    @{
+                                        // Initially populate the dropdown with the staff list from the controller
+                                        var staffList = ViewBag.combinedReportingList ?? new List<SelectListItem>();
+                                    }
+                                    @Html.DropDownListFor(
+                                                       model => model.StaffName,
+                                                       new SelectList(staffList, "Value", "Text"),
+                                                       "--Select Staff--",
+                                                       new { @class = "form-control", id = "StaffName" }
+                                                   )
+                                    @Html.ValidationMessageFor(model => model.StaffName, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+
+
+
+                            <div id="VendorNameField" class="form-group row" style="display: none;">
+                                <!-- Vendor Label -->
+                                <label for="VendorName" class="control-label col-md-4 text-md-right required">Vendor</label>
+                                <div class="col-md-8">
+                                    @Html.DropDownListFor(model => model.VendorName, new SelectList(ViewBag.VendorList, "Value", "Text"), "--Select Vendor--", new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.VendorName, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Description and Next Button below -->
+                    <div class="row">
+                        <div class="col-md-12 card-body">
+                            <div id="Description" class="form-group row">
+                                @Html.LabelFor(model => model.Description, htmlAttributes: new { @class = "control-label col-md-2 text-md-right required" })
+                                <div class="col-md-10">
+                                    @Html.TextAreaFor(model => model.Description, new { @class = "form-control", id = "Desc", rows = "3" })
+                                    @Html.ValidationMessageFor(model => model.Description, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="form-group" style="text-align: center;">
+                                <button class="btn btn-primary" id="NextTo2" style="margin-right:30px; width:25%;">Next</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <!-- Step 2 -->
+                <!--<div id="Receiver-part" class="content" role="tabpanel" aria-labelledby="Receiver-part-trigger">
+                    <div class="row justify-content-center">
+                        <div class="col-md-6 card-body">
+
+                            <div class="form-group" style="text-align: center;">
+                                <button class="btn btn-outline-primary" id="PrevTo1" style="margin-right:30px; width:25%;">Previous</button>
+                                <button class="btn btn-outline-primary" id="NextTo3" style="margin-right:30px; width:25%;">Next</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>-->
+                <!-- Step 3 -->
+                <div id="VoucherPayment-part" class="content" role="tabpanel" aria-labelledby="VoucherPayment-part-trigger">
+                    <div class="row justify-content-center">
+                        <!-- Left Side Fields -->
+                        <div class="col-md-6 card-body">
+                            <div class="form-group row">
+                                @Html.Label("PaymentMode", "Payment Mode", htmlAttributes: new { @class = "col-md-4 col-form-label text-md-right required" })
+                                <div class="col-md-8">
+                                    @{
+                                        var TransactionTypeToList = new List<SelectListItem>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        {
+                                            new SelectListItem { Value = "Cash", Text = "Cash" },
+                                            new SelectListItem { Value = "Bank", Text = "Bank" },
+                                            new SelectListItem { Value = "Cheque", Text = "Cheque" }
+                                        };
+                                    }
+                                    @Html.DropDownListFor(model => model.PaymentMode, new SelectList(TransactionTypeToList, "Value", "Text"), "--Select Payment Mode--", new { @class = "form-control", id = "PaymentMode" })
+                                </div>
+                            </div>
+
+
+                            <div id="BankNameField" class="form-group row" style="display: none;">
+                                @Html.Label("ReceiverBankName", "Bank Name", htmlAttributes: new { @class = "col-md-4 col-form-label text-md-right required" })
+                                <div class="col-md-8">
+                                    @Html.EditorFor(model => model.ReceiverBankName, new { htmlAttributes = new { @class = "form-control", id = "ReceiverBankName", @readonly = "readonly" } })
+                                    @Html.ValidationMessageFor(model => model.ReceiverBankName, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+
+                            <div id="BankAccHolderNameField" class="form-group row" style="display: none;">
+                                @Html.Label("ReceiverBankAccountHolderName", "Acc Holder Name", htmlAttributes: new { @class = "col-md-4 col-form-label text-md-right required" })
+                                <div class="col-md-8">
+                                    @Html.EditorFor(model => model.ReceiverBankAccountHolderName, new { htmlAttributes = new { @class = "form-control", id = "ReceiverBankAccountHolderName", @readonly = "readonly" } })
+                                    @Html.ValidationMessageFor(model => model.ReceiverBankAccountHolderName, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+
+                            <div id="BankAccIFSCCodeField" class="form-group row" style="display: none;">
+                                @Html.Label("ReceiverBankIFSCCode", "IFSC Code", htmlAttributes: new { @class = "col-md-4 col-form-label text-md-right required" })
+                                <div class="col-md-8">
+                                    @Html.EditorFor(model => model.ReceiverBankIFSCCode, new { htmlAttributes = new { @class = "form-control", id = "ReceiverBankIFSCCode", @readonly = "readonly" } })
+                                    @Html.ValidationMessageFor(model => model.ReceiverBankIFSCCode, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Right Side Fields -->
+                        <div class="col-md-6 card-body">
+
+                            <div id="PaymentTypeField" class="form-group row" style="display: none;">
+                                @Html.Label("PaymentType", "Payment Type", htmlAttributes: new { @class = "col-md-4 col-form-label text-md-right required" })
+                                <div class="col-md-8">
+                                    @{
+                                        var PaymentTypeToList = new List<SelectListItem>
+                                                                                                                                                                                                                                                                                                                                                                                                                                {
+                                            new SelectListItem { Value = "UPI", Text = "UPI" },
+                                            new SelectListItem { Value = "NEFT", Text = "NEFT" },
+                                            new SelectListItem { Value = "RTGS", Text = "RTGS" },
+                                            new SelectListItem { Value = "IMPS", Text = "IMPS" }
+                                        };
+                                    }
+                                    @Html.DropDownListFor(model => model.PaymentType, new SelectList(PaymentTypeToList, "Value", "Text"), "--Select Payment Type--", new { @class = "form-control", required = "required", id = "PaymentType" })
+                                </div>
+                            </div>
+
+                            <div id="DebitFromField" class="form-group row" style="display: none;">
+                                @Html.Label("BankId", "Debit From", htmlAttributes: new { @class = "col-md-4 col-form-label text-md-right required" })
+                                <div class="col-md-8">
+                                    @{
+                                        var bankList = ViewBag.BankAccountList;
+                                    }
+                                    @Html.DropDownListFor(model => model.BankId, new SelectList(bankList, "Value", "Text"), "--Select Bank Account--", new { @class = "form-control", id = "BankId" })
+                                    @Html.ValidationMessageFor(model => model.BankId, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div>
+                                <label id="bank-label" style="display:none;"></label>
+                                <div>
+                                    <label id="BankBalance" style="display:none;"></label>
+                                </div>
+                            </div>
+                            <div id="AmountField" class="form-group row" style="display: none;">
+                                <!-- Label for Amount -->
+                                @Html.LabelFor(model => model.Amount, htmlAttributes: new { @class = "col-md-4 col-form-label text-md-right required" })
+                                <div class="col-md-8">
+                                    <input class="form-control"
+                                           id="VCHAmount"
+                                           name="Amount"
+                                           type="number"
+                                           min="1"
+                                           step="0.01"
+                                           placeholder="Enter Amount"
+                                           value="@(Model.Amount > 0 ? Model.Amount.ToString("F2") : "")" />
+                                    <span id="AmountValidationMessage" class="text-danger"></span>
+                                </div>
+                            </div>
+
+
+
+                            <div id="TransactionIdField" class="form-group row" style="display: none;">
+                                @Html.Label("TransactionId", "TransactionId", htmlAttributes: new { @class = "col-md-4 col-form-label text-md-right required" })
+                                <div class="col-md-8">
+                                    @Html.EditorFor(model => model.TransactionId, new { htmlAttributes = new { @class = "form-control", id = "TransactionId", required = "required" } })
+                                    @Html.ValidationMessageFor(model => model.TransactionId, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+
+                            <div id="ChequeDateField" class="form-group row" style="display: none;">
+                                @Html.LabelFor(model => model.ChequeDate, htmlAttributes: new { @class = "col-md-4 col-form-label text-md-right required" })
+                                <div class="col-md-8">
+                                    @Html.EditorFor(model => model.ChequeDate, new { htmlAttributes = new { @class = "form-control", id = "ChequeDate" } })
+                                    @Html.ValidationMessageFor(model => model.ChequeDate, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <input type="hidden" id="CashInHandValue" value="@ViewBag.CashInHand" />
+                    <input type="hidden" id="Context" value="@ViewBag.Context" />
+
+
+                    <!-- Description and Buttons -->
+                    <div class="form-group text-center">
+                        <button class="btn btn-primary" id="PrevTo1" style="margin-right:30px; width:25%;">Previous</button>
+                        <button type="submit" class="btn btn-success" id="SubmitForm" style="margin-right:30px; width:25%;">Submit</button>
+                    </div>
+                </div>
+
+
+            </div>
+        </div>
+    </form>
+
+    @*<div id="toast-container" class="toast-top-right"></div>*@
+
+    <!-- jQuery for validations -->
+    <script src="~/Scripts/jquery-3.6.0.min.js"></script>
+
+
+    <script>
+            $(document).ready(function () {
+                // Hide "Purchase" (Value: 1), "Expense" (Value: 2), and "Salary" (Value: 4)
+                $('#VoucherType option[value="1"]').hide();
+                $('#VoucherType option[value="2"]').hide();
+                $('#VoucherType option[value="4"]').hide();
+                $('#VoucherType option').each(function () {
+                    if ($(this).text().trim() === "Other") {
+                        $(this).text("Petty Cash"); // Update the text to "Petty Cash"
+                    }
+                });
+            });
+            $(document).ready(function () {
+    const amountField = $("#VCHAmount");
+    const submitButton = $("#SubmitForm");
+    const cashInHand = parseFloat($("#CashInHandValue").val()) || 0; // Fetch Cash In Hand value
+    const preFilledAmount = parseFloat(@Html.Raw(Json.Encode(ViewBag.Amount))) || 0; // Fetch amount from ViewBag
+    let currentBalance = 0; // To store the current balance (bank or cash)
+    let amountTouched = false; // Track if the amount field has been interacted with
+
+    const voucherTypeDropdown = $("#VoucherType");
+    const hiddenVoucherType = $("<input>")
+        .attr({
+            type: "hidden",
+            name: "VoucherType", // Same name as the dropdown
+            id: "HiddenVoucherType"
+        })
+        .appendTo("form"); // Append hidden input for VoucherType
+
+    // Add hidden input for Voucher Receiver
+    const voucherReceiverDropdown = $("#AmountPaidTo");
+    const hiddenVoucherReceiver = $("<input>")
+        .attr({
+            type: "hidden",
+            name: "AmountPaidTo", // Same name as the dropdown
+            id: "HiddenVoucherReceiver"
+        })
+        .appendTo("form"); // Append hidden input for Voucher Receiver
+
+    // Sync hidden inputs with dropdown values
+    function syncHiddenFields() {
+        hiddenVoucherType.val(voucherTypeDropdown.val());
+        hiddenVoucherReceiver.val(voucherReceiverDropdown.val());
+    }
+
+    // Handle Voucher Type selection and hide Voucher Receiver for Salary
+    function handleVoucherTypeChange() {
+        const selectedText = voucherTypeDropdown.find('option:selected').text();
+
+        if (selectedText === "Salary" || selectedText === "Advance Salary") {
+            // Disable and hide the voucher receiver field for "Salary" or "Advance Salary"
+            voucherTypeDropdown.prop("disabled", true);
+            voucherReceiverDropdown.val("Staff").change();
+            hiddenVoucherReceiver.val("Staff");
+            $("#VoucherReceiverField").hide(); // Hide the field
+        } else {
+            // Show the Voucher Receiver field for other types
+            voucherTypeDropdown.prop("disabled", false);
+            $("#VoucherReceiverField").show();
+        }
+
+        // Sync hidden inputs with the dropdown values
+        syncHiddenFields();
+    }
+
+    voucherTypeDropdown.change(function () {
+        handleVoucherTypeChange();
+    });
+
+    // Initialize the form fields on page load
+    function initializeForm() {
+        if (preFilledAmount > 0) {
+            amountField.val(preFilledAmount.toFixed(2));
+            amountTouched = true;
+            validateAndToggleSubmit();
+        }
+        handleVoucherTypeChange();
+    }
+
+    initializeForm();
+
+    // Real-time validation for amount input
+    amountField.on("input", function () {
+        amountTouched = true;
+        validateAndToggleSubmit();
+    });
+
+    // Fetch Bank Balance via AJAX
+    function fetchBankBalance(bankId) {
+        $.ajax({
+            url: '/Accountant/GetBankBalanceVoucherSGS',
+            type: 'GET',
+            data: { accountId: bankId },
+            success: function (response) {
+                if (response.success) {
+                    currentBalance = parseFloat(response.balance) || 0;
+                    $("#BankBalance").text(
+                        `Bank Balance: ${currentBalance.toLocaleString("en-IN", { style: "currency", currency: "INR" })}`
+                    ).show();
+                    if (amountTouched) validateAndToggleSubmit();
+                } else {
+                    toastr.error("Failed to fetch Bank Balance.");
+                    currentBalance = 0;
+                    if (amountTouched) validateAndToggleSubmit();
+                }
+            },
+            error: function () {
+                toastr.error("Error fetching Bank Balance.");
+                currentBalance = 0;
+                if (amountTouched) validateAndToggleSubmit();
+            }
+        });
+    }
+
+    // Update balance and validate on payment mode change
+    $("#PaymentMode").change(function () {
+        const paymentMode = $(this).val();
+        if (paymentMode === "Cash") {
+            currentBalance = cashInHand;
+            $("#BankBalance").text(
+                `Cash In Hand: ${cashInHand.toLocaleString("en-IN", { style: "currency", currency: "INR" })}`
+            ).show();
+            if (amountTouched) validateAndToggleSubmit();
+        } else if (paymentMode === "Bank" || paymentMode === "Cheque") {
+            const bankId = $("#BankId").val();
+            if (bankId) {
+                fetchBankBalance(bankId);
+            } else {
+                $("#BankBalance").text("Select a bank account to view balance.").show();
+                currentBalance = 0;
+                if (amountTouched) validateAndToggleSubmit();
+            }
+        } else {
+            currentBalance = 0;
+            $("#BankBalance").hide();
+            if (amountTouched) validateAndToggleSubmit();
+        }
+    });
+
+    // Update balance when a bank account is selected
+    $("#BankId").change(function () {
+        const bankId = $(this).val();
+        if (bankId) {
+            fetchBankBalance(bankId);
+        }
+    });
+
+    // Disable submit button initially
+    submitButton.prop("disabled", true);
+
+    // Validation for amount and toggle submit button
+    function validateAndToggleSubmit() {
+        const value = parseFloat(amountField.val());
+        const paymentMode = $("#PaymentMode").val();
+        const voucherType = $("#VoucherType option:selected").text();
+
+        if (isNaN(value) || value < 1) {
+            $("#AmountValidationMessage").text("Minimum amount required is ₹1.00.").show();
+            amountField.addClass("is-invalid");
+            submitButton.prop("disabled", true);
+            return false;
+        }
+
+        if ((voucherType === "Salary" || voucherType === "Advance Salary") && value > currentBalance) {
+            $("#AmountValidationMessage").text("Entered amount exceeds the current balance.").show();
+            amountField.addClass("is-invalid");
+            submitButton.prop("disabled", true);
+            return false;
+        } else if (paymentMode === "Cash" && value > cashInHand) {
+            $("#AmountValidationMessage").text("Entered amount exceeds the available Cash In Hand.").show();
+            amountField.addClass("is-invalid");
+            submitButton.prop("disabled", true);
+            return false;
+        } else if ((paymentMode === "Bank" || paymentMode === "Cheque") && value > currentBalance) {
+            $("#AmountValidationMessage").text("Entered amount exceeds the available Bank Balance.").show();
+            amountField.addClass("is-invalid");
+            submitButton.prop("disabled", true);
+            return false;
+        }
+
+        amountField.removeClass("is-invalid");
+        $("#AmountValidationMessage").text("").hide();
+        submitButton.prop("disabled", false);
+        return true;
+    }
+});
+
+
+
+
+
+            $(document).ready(function () {
+            const voucherTypeDropdown = $('#VoucherType');
+            const staffNameField = $('#StaffNameField');
+            const staffNameDropdown = $('#StaffName');
+            const amountField = $('#VCHAmount');
+            const amountPaidToDropdown = $('#AmountPaidTo');
+
+            // Function to handle Voucher Type changes
+            function handleVoucherTypeChange() {
+                const selectedText = voucherTypeDropdown.find('option:selected').text();
+
+                if (selectedText === 'Salary' || selectedText === 'Advance Salary') {
+                    // Automatically select "Staff"
+                    amountPaidToDropdown.val('Staff').change(); // Automatically select "Staff"
+                    amountPaidToDropdown.prop('readonly', true).addClass('readonly-style').off('mousedown touchstart'); // Make it non-editable
+
+                    // Fetch and populate staff list dynamically
+                    $.ajax({
+                        url: '/Accountant/GetAdminStaff', // Adjust to your API endpoint
+                        type: 'GET',
+                        success: function (response) {
+                            if (response.success) {
+                                const $staffDropdown = staffNameDropdown;
+                                $staffDropdown.empty(); // Clear existing options
+                                $staffDropdown.append('<option value="">--Select Staff--</option>'); // Add default option
+                                response.data.forEach(function (staff, index) {
+                                    $staffDropdown.append('<option value="' + staff.StaffCode + '">' + staff.StaffName + '</option>');
+                                    if (index === 0) {
+                                        $staffDropdown.val(staff.StaffCode); // Automatically select the first person
+                                    }
+                                });
+
+                                staffNameField.hide(); // Hide the field visually but retain its value
+                            } else {
+                                toastr.error('Failed to fetch staff data: ' + response.message);
+                            }
+                        },
+                        error: function () {
+                            toastr.error('Error fetching staff data.');
+                        }
+                    });
+                } else {
+                    // Reset the fields for non-salary voucher types
+                    amountPaidToDropdown.val('').change();
+                    amountPaidToDropdown.prop('readonly', false).removeClass('readonly-style').off('mousedown touchstart');
+                    staffNameDropdown.val(''); // Clear the staff selection
+                    staffNameField.hide(); // Hide the field for other voucher types
+                }
+            }
+
+            // Attach the change event for the Voucher Type dropdown
+            voucherTypeDropdown.change(function () {
+                handleVoucherTypeChange();
+            });
+
+            // Call the function on page load to apply the conditions for the pre-selected Voucher Type
+            handleVoucherTypeChange();
+
+            // Validation logic for the receiver field
+            //$('#SubmitForm').click(function (e) {
+            //    const selectedText = voucherTypeDropdown.find('option:selected').text();
+            //    const receiverValue = staffNameDropdown.val();
+
+            //    if ((selectedText !== 'Salary' && selectedText !== 'Advance Salary') && !receiverValue) {
+            //        e.preventDefault(); // Prevent form submission
+            //        toastr.error('Please select a Receiver.');
+            //    }
+            //});
+        });
+
+
+
+            $(document).ready(function () {
+                const today = new Date(); // Get today's date and time
+
+                // Format the current date and time as YYYY-MM-DDTHH:mm for local time
+                const formattedToday = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}T${String(today.getHours()).padStart(2, '0')}:${String(today.getMinutes()).padStart(2, '0')}`;
+
+                // Calculate the date and time 7 days ago
+                const pastDate = new Date(today);
+                pastDate.setDate(today.getDate() - 7); // Subtract 7 days
+
+                // Format the past date and time as YYYY-MM-DDTHH:mm for local time
+                const formattedPastDate = `${pastDate.getFullYear()}-${String(pastDate.getMonth() + 1).padStart(2, '0')}-${String(pastDate.getDate()).padStart(2, '0')}T${String(pastDate.getHours()).padStart(2, '0')}:${String(pastDate.getMinutes()).padStart(2, '0')}`;
+
+                // Set the default value and constraints for the datetime-local picker
+                const datePicker = $('#VoucherDatePicker');
+                datePicker.val(formattedToday); // Set default value to today
+                datePicker.attr('min', formattedPastDate); // Set min date-time to 7 days ago
+                datePicker.attr('max', formattedToday); // Set max date-time to today
+
+                // Function to validate the voucher date and time
+                function validateVoucherDate() {
+                    const selectedValue = datePicker.val(); // Get the selected value in 'YYYY-MM-DDTHH:mm' format
+                    const selectedDateTime = new Date(selectedValue); // Parse the selected value as a Date object
+                    const minDateTime = new Date(formattedPastDate);
+                    const maxDateTime = new Date(formattedToday);
+
+                    // Check if the selected date-time is within range
+                    if (selectedDateTime >= minDateTime && selectedDateTime <= maxDateTime) {
+                        datePicker.removeClass('is-invalid');
+                        return true;
+                    } else {
+                        datePicker.addClass('is-invalid'); // Highlight the field in red if invalid
+                        toastr.error('Voucher Date and Time must be within the past week and not a future date.');
+                        return false;
+                    }
+                }
+
+                // Validate the date-time on button click
+                $('#NextTo2').click(function (e) {
+                    if (!validateVoucherDate()) {
+                        e.preventDefault(); // Prevent navigation to the next step
+                    }
+                });
+
+                // Real-time validation on date-time change
+                datePicker.change(function () {
+                    validateVoucherDate();
+                });
+            });
+
+
+
+
+            //function showToast(message, type = 'info') {
+            //    $(document).Toasts('create', {
+            //        class: `bg-${type}`,
+            //        title: 'Validation',
+            //        body: message
+            //    });
+            //}
+
+            $(document).ready(function () {
+                const cashInHand = @Html.Raw(Json.Encode(ViewBag.CashInHand)); // Get Cash In Hand value from the controller
+                let currentBalance = cashInHand; // Default balance is Cash In Hand initially
+
+                //// Real-time amount validation function
+                //function validateAndCapAmount() {
+                //    let amountField = $("#VCHAmount");
+                //    let enteredAmount = amountField.val().replace(/[^0-9.]/g, ""); // Allow only numbers and decimal point
+                //    enteredAmount = enteredAmount.replace(/^0+(\d)|\.(?=.*\.)/g, "$1"); // Remove leading zeros and extra decimal points
+
+                //    // Update the cleaned value back to the field
+                //    amountField.val(enteredAmount);
+
+                //    let numericValue = parseFloat(enteredAmount);
+
+                //    // Validation logic
+                //    if (isNaN(numericValue) || numericValue <= 0) {
+                //        amountField.addClass("is-invalid");
+                //        toastr.error("Please enter a valid amount greater than 0.");
+                //        return false;
+                //    }
+
+                //    // Cap the amount at the current balance
+                //    if (numericValue > currentBalance) {
+                //        amountField.val(currentBalance.toFixed(2)); // Limit to available balance
+                //        toastr.info("Amount capped at the available balance.");
+                //        return false;
+                //    }
+
+                //    amountField.removeClass("is-invalid");
+                //    return true;
+                //}
+
+                //// Real-time validation on input
+                //$("#VCHAmount").on("input", function () {
+                //    validateAndCapAmount();
+                //});
+
+                //// Format amount on blur
+                //$("#VCHAmount").on("blur", function () {
+                //    let amountField = $(this);
+                //    let enteredAmount = parseFloat(amountField.val());
+
+                //    if (!isNaN(enteredAmount) && enteredAmount > 0) {
+                //        amountField.val(enteredAmount.toFixed(2)); // Add two decimal places
+                //    } else {
+                //        amountField.val(""); // Clear invalid input
+                //    }
+                //});
+
+                // Fetch Bank Balance via AJAX
+                function fetchBankBalance(bankId) {
+                    $.ajax({
+                        url: '/Accountant/GetBankBalanceVoucherSGS', // Replace with your actual API endpoint
+                        type: 'GET',
+                        data: { accountId: bankId },
+                        success: function (response) {
+                            if (response.success) {
+                                currentBalance = parseFloat(response.balance) || 0; // Update current balance
+                                minimumAccountBalance = parseFloat(response.minimumBalance) || 0; // Update minimum balance
+
+                                // Update the Bank Balance label
+                                $("#BankBalance").text(
+                                    `Bank Balance: ${currentBalance.toLocaleString("en-IN", { style: "currency", currency: "INR" })}`
+                                ).show(); // Ensure the label is visible
+                            } else {
+                                toastr.error("Failed to fetch Bank Balance.");
+                                currentBalance = 0;
+                                minimumAccountBalance = 0;
+                                $("#BankBalance").text("Error fetching balance.").show(); // Ensure the label is visible
+                            }
+                        },
+                        error: function () {
+                            toastr.error("Error fetching Bank Balance.");
+                            currentBalance = 0;
+                            minimumAccountBalance = 0;
+                            $("#BankBalance").text("Error fetching balance.").show(); // Ensure the label is visible
+                        }
+                    });
+                }
+
+                // Bank Account Selection Change
+                $("#BankId").change(function () {
+                    const bankId = $(this).val();
+
+                    if (bankId) {
+                        $("#BankBalance").text("Fetching bank balance...").show(); // Ensure the label is visible
+                        fetchBankBalance(bankId);
+                    } else {
+                        $("#BankBalance").text("Select an account to view balance.").show(); // Ensure the label is visible
+                    }
+                });
+
+                // Payment Mode Change Logic
+                $("#PaymentMode").change(function () {
+                    const paymentMode = $(this).val();
+
+                    if (paymentMode === "Bank" || paymentMode === "Cheque") {
+
+                        const bankId = $("#BankId").val();
+                        if (bankId) {
+                            fetchBankBalance(bankId);
+                        } else {
+                            $("#BankBalance").text("Select a bank account to view balance.").show(); // Ensure the label is visible
+                        }
+                    } else if (paymentMode === "Cash") {
+                        $("#BankBalance").text(`Cash In Hand: ${cashInHand.toLocaleString("en-IN", {
+                            style: "currency",
+                            currency: "INR"
+                        })}`).show(); // Ensure the label is visible
+                    } else {
+                        $("#BankBalance").text("").hide(); // Hide the label for other payment modes
+                    }
+                });
+                $("#PaymentType").change(function () {
+                    const paymentType = $(this).val();
+
+                    if (paymentType === "UPI") {
+
+                        const bankId = $("#BankId").val();
+                        if (bankId) {
+                            fetchBankBalance(bankId);
+                        } else {
+                            $("#BankBalance").text("Select a bank account to view balance.").show(); // Ensure the label is visible
+                        }
+                    } else {
+                        $("#BankBalance").text("").hide(); // Hide the label for other payment modes
+                    }
+                });
+
+
+                //// Validate on Submit
+                //$("#SubmitForm").click(function (e) {
+                //    let paymentMode = $("#PaymentMode").val();
+
+                //    if (paymentMode === "Cash" || paymentMode === "Bank") {
+                //        if (!validateAndCapAmount()) {
+                //            e.preventDefault(); // Prevent form submission if validation fails
+                //            toastr.error("Please ensure the amount is within the available balance.");
+                //        }
+                //    }
+                //});
+
+                // Initialize Payment Mode UI
+                $("#PaymentMode").trigger("change");
+            });
+
+            $(document).ready(function () {
+                const cashInHand = @Html.Raw(Json.Encode(ViewBag.CashInHand)); // Fetch Cash In Hand value
+
+                $('#PaymentMode').change(function () {
+                    const selectedValue = $(this).val();
+
+                    // Helper function to show or hide fields
+                    function toggleFields(showFields = [], hideFields = [], transactionLabel = 'Transaction Id') {
+                        showFields.forEach(fieldId => $('#' + fieldId).show());
+                        hideFields.forEach(fieldId => $('#' + fieldId).hide());
+                        $('#Tra_cheque').text(transactionLabel);
+                    }
+
+                    switch (selectedValue) {
+                        case "Bank":
+                            toggleFields(
+                                ['DebitFromField', 'BankAccNumberField', 'BankAccHolderNameField', 'BankAccIFSCCodeField', 'BankNameField', 'AmountField', 'DescriptionField', 'TransactionIdField', 'PaymentTypeField'],
+                                ['ChequeDateField', 'BankBalance'],
+                                'Transaction Id'
+                            );
+                            $('#BankBalance').text('Select a bank account to view balance.');
+                            break;
+
+                        case "Cheque":
+                            toggleFields(
+                                ['TransactionIdField', 'ChequeDateField', 'DebitFromField', 'AmountField'],
+                                ['BankAccNumberField', 'BankAccHolderNameField', 'BankAccIFSCCodeField', 'BankNameField', 'PaymentTypeField', 'BankBalance'],
+                                'Cheque Number'
+                            );
+                            $('#ChequeDate').val(new Date().toISOString().split('T')[0]); // Set today's date
+                            $('#BankBalance').text('');
+                            break;
+
+                        case "Cash":
+                            toggleFields(
+                                ['AmountField', 'BankBalance'],
+                                ['DebitFromField', 'BankAccNumberField', 'BankAccHolderNameField', 'BankAccIFSCCodeField', 'BankNameField', 'TransactionIdField', 'ChequeDateField', 'PaymentTypeField'],
+                                'Transaction Id'
+                            );
+                            $('#BankBalance').text(`Cash In Hand: ${cashInHand.toLocaleString('en-IN', {
+                                style: 'currency',
+                                currency: 'INR'
+                            })}`);
+                            break;
+
+                        default:
+                            // Reset fields for other or invalid payment modes
+                            toggleFields(
+                                [],
+                                ['AmountField', 'DebitFromField', 'BankAccNumberField', 'BankAccHolderNameField', 'BankAccIFSCCodeField', 'BankNameField', 'TransactionIdField', 'ChequeDateField', 'PaymentTypeField', 'BankBalance'],
+                                'Transaction Id'
+                            );
+                            $('#BankBalance').text('');
+                            break;
+                    }
+                });
+                $('#PaymentType').change(function () {
+                    const selectedValue = $(this).val();
+
+                    // Helper function to show or hide fields
+                    function toggleFields(showFields = [], hideFields = [], transactionLabel = 'Transaction Id') {
+                        showFields.forEach(fieldId => $('#' + fieldId).show());
+                        hideFields.forEach(fieldId => $('#' + fieldId).hide());
+                        $('#Tra_cheque').text(transactionLabel);
+                    }
+
+                    switch (selectedValue) {
+                        case "UPI":
+                            toggleFields(
+                                ['TransactionIdField', 'DebitFromField', 'AmountField', 'PaymentTypeField'],
+                                ['BankAccNumberField', 'BankAccHolderNameField', 'BankAccIFSCCodeField', 'BankNameField', 'ChequeDateField', 'BankBalance'],
+                                'Transaction Id'
+                            );
+                            $('#BankBalance').text('');
+                            break;
+
+                        default:
+                            // Reset fields for other or invalid payment modes
+                            toggleFields(
+                                ['DebitFromField', 'BankAccNumberField', 'BankAccHolderNameField', 'BankAccIFSCCodeField', 'BankNameField', 'AmountField', 'DescriptionField', 'TransactionIdField', 'PaymentTypeField'],
+                                ['ChequeDateField', 'BankBalance'],
+                                'Transaction Id'
+                            );
+                            $('#BankBalance').text('Select a bank account to view balance.');
+                            break;
+                    }
+                });
+
+                // Trigger change event to initialize fields on page load
+                $('#PaymentMode').trigger('change');
+            });
+
+
+            $(document).ready(function () {
+                 $('#VoucherType').change(function () {
+                    const selectedText = $('#VoucherType option:selected').text();
+
+                    if (selectedText === 'Salary' || selectedText === 'Advance Salary') {
+                        isSalaryVoucher = true; // Set the flag
+                        preFilledAmount = parseFloat(@Html.Raw(Json.Encode(ViewBag.Amount))) || 0;
+
+                        // Automatically select "Staff" and disable the dropdown
+                        $('#AmountPaidTo').val('Staff').change();
+                        $('#AmountPaidTo').prop('readonly', true).addClass('readonly-style').off('mousedown touchstart');
+                        $('#VCHAmount').val(preFilledAmount.toFixed(2)); // Set pre-filled amount
+                        $('#VCHAmount').prop('readonly', true).addClass('readonly-style').off('mousedown touchstart');
+
+                        // Fetch staff data dynamically
+                        $.ajax({
+                            url: '/Accountant/GetAdminStaff', // Adjust URL to your controller's action
+                            type: 'GET',
+                            success: function (response) {
+                                if (response.success) {
+                                    const $staffDropdown = $('#StaffName');
+                                    $staffDropdown.empty();
+                                    $staffDropdown.append('<option value="">--Select Staff--</option>');
+                                    response.data.forEach(function (staff) {
+                                        $staffDropdown.append('<option value="' + staff.StaffCode + '">' + staff.StaffName + '</option>');
+                                    });
+                                    $('#StaffNameField').show();
+                                    $('#VendorNameField').hide();
+                                } else {
+                                    toastr.error('Failed to fetch staff data: ' + response.message);
+                                }
+                            },
+                            error: function () {
+                                toastr.error('Error fetching admin staff data.');
+                            }
+                        });
+                    } else {
+                        isSalaryVoucher = false; // Reset the flag
+                        preFilledAmount = 0; // Clear pre-filled amount
+                        $('#AmountPaidTo').val('').change();
+                        $('#AmountPaidTo').prop('readonly', false).removeClass('readonly-style').off('mousedown touchstart');
+                        $('#VCHAmount').val('');
+                        $('#VCHAmount').prop('readonly', false).removeClass('readonly-style').off('mousedown touchstart');
+                        $('#StaffNameField').hide();
+                        $('#VendorNameField').hide();
+                    }
+                });
+
+
+
+                var $paymentModeSelect = $('#PaymentMode');
+                var $transactionIdField = $('#TransactionIdField');
+                var $transactionIdInput = $('#TransactionId');
+                var $transactionIdLabel = $('label[for="TransactionId"]'); // Select label by its 'for' attribute
+
+                $paymentModeSelect.change(function () {
+                    if ($(this).val() === 'Cheque') {
+                        $transactionIdLabel.text('Cheque Number'); // Change label to 'Cheque Number'
+                        //$transactionIdField.show(); // Show the transaction ID field
+                        $transactionIdInput.val(''); // Clear previous input
+                        attachChequeValidation(); // Attach validation specific to cheque number
+                    } else {
+                        $transactionIdLabel.text('Transaction ID'); // Revert label to 'Transaction ID'
+                        //$transactionIdField.hide(); // Hide the transaction ID field
+                        $transactionIdInput.val(''); // Clear the input
+                        detachChequeValidation(); // Remove cheque validation to avoid unnecessary checks
+                    }
+                });
+
+                // Attach a cheque validation that only allows numeric inputs of exactly 6 digits
+                function attachChequeValidation() {
+                    $transactionIdInput.on('input', function () {
+                        // Get the current value of the input
+                        var currentValue = $(this).val();
+
+                        // Check if the current value matches the pattern of exactly 6 digits
+                        var isValidChequeNumber = /^[0-9]{1,6}$/.test(currentValue);
+
+                        // If the current value is valid, update the last valid value
+                        if (isValidChequeNumber || currentValue === "") {
+                            this.lastValidValue = currentValue;
+                        } else {
+                            // If the current value is not valid, revert to the last valid value
+                            $(this).val(this.lastValidValue || '');
+                        }
+                    });
+                }
+
+                // Detach cheque validation to revert to normal input behavior
+                function detachChequeValidation() {
+                    $transactionIdInput.off('input');
+                }
+
+
+
+
+                $('#AmountPaidTo').change(function () {
+                    var selectedValue = $(this).val();
+                    if (selectedValue === "Vendor") {
+                        $('#VendorNameField').show();
+                        $('#StaffNameField').hide();
+                    } else if (selectedValue === "Staff") {
+                        $('#VendorNameField').hide();
+                        $('#StaffNameField').show();
+                    } else {
+                        $('#VendorNameField').hide();
+                        $('#StaffNameField').hide();
+                    }
+                });
+
+
+
+
+
+
+                // Initializing Stepper
+                var voucherStepper = new Stepper(document.querySelector('#VoucherStepper'));
+
+                function validateForm() {
+                    // Step 1 validations
+                    let voucherType = $('#VoucherType').val();
+                    let desc = $('#Desc').val();
+                    let isDescValid = desc.length >= 1 && desc.length <= 200;
+
+                    // Step 2 validations
+                    let amountPaidTo = $('#AmountPaidTo').val();
+                    let vendorName = $('#VendorName').val();
+                    let staffName = $('#StaffName').val();
+                    let paymentMode = $('#PaymentMode').val(); // Add PaymentMode validation
+                    let isStaffNameSelected = staffName !== "";
+
+                    // Combine validations
+                    let isValidStep1 = voucherType !== ""  && isDescValid;
+                    let isValidStep2 = amountPaidTo !== ""; // Ensure PaymentMode is validated
+
+                    if (amountPaidTo === "Vendor") {
+                        isValidStep2 = isValidStep2 && vendorName !== "";
+                    } else if (amountPaidTo === "Staff") {
+                        isValidStep2 = isValidStep2 && isStaffNameSelected;
+                    }
+
+                    let isValid = isValidStep1 && isValidStep2;
+
+                    // Display error messages if invalid
+                    if (!isValid) {
+                        if (!isDescValid) {
+                            toastr.error("Description must be between 10 and 200 characters.");
+                        }
+                        if (amountPaidTo === "") {
+                            toastr.error("Please select a Receiver.");
+                        } else if (amountPaidTo === "Vendor" && vendorName === "") {
+                            toastr.error("Please enter a valid Vendor Name.");
+                        } else if (amountPaidTo === "Staff" && !isStaffNameSelected) {
+                            toastr.error("Please select a Staff member.");
+                        }
+                        if (voucherType === "") {
+                            toastr.error("Please select a Voucher Type.");
+                        }
+
+
+                        // Step 2 error messages
+
+
+                    }
+
+                    // Return final validation result
+                    return isValid;
+                }
+
+                // Replace calls to validateStep1() or validateStep2() with validateForm() wherever applicable.
+
+
+
+                function validateStep2() {
+                    let paymentMode = $('#PaymentMode').val();
+                    let paymentType = $('#PaymentType').val();
+                    let bankId = $('#BankId').val();
+                    let transactionId = $('#TransactionId').val();
+                    var amount = $('#VCHAmount').val();
+                    console.log("Current amount:", amount);
+
+                    // Validations for amount and payment mode selection
+                    let isAmountValid = /^[0-9]+(\.[0-9]{1,2})?$/.test(amount) && amount !== "0" && amount !== "0.00" && amount !== '';
+                    let isPaymentModeSelected = paymentMode !== "";  // Custom validation for payment mode
+
+                    // Additional validation flags
+                    let isTransactionIdValid = false;
+                    let isChequeNumberValid = false;
+                    let isChequeDateValid = false;
+
+                    let isValid = isPaymentModeSelected && isAmountValid;
+
+                    if (paymentMode === "Bank") {
+                        isTransactionIdValid = transactionId !== "";  // Transaction ID should not be empty
+                        isValid = isValid && isTransactionIdValid && paymentType !== '' && bankId !== '';
+                    } else if (paymentType === "UPI") {
+                        isTransactionIdValid = /^[a-zA-Z0-9@@._]{5,100}$/.test(transactionId);
+                        isValid = isValid && isTransactionIdValid && transactionId !== "";
+                    } else if (paymentMode === "Cheque") {
+                        let chequeNumber = transactionId;
+                        isChequeNumberValid = /^[0-9]{6}$/.test(chequeNumber) && chequeNumber !== "";  // Cheque number should be exactly 6 digits
+
+                        // Assuming the chequeDate is being input through a form field with an id of "ChequeDate"
+                        let chequeDateInput = document.getElementById("ChequeDate").value;
+                        let chequeDateObj = new Date(chequeDateInput);
+
+                        let currentDate = new Date(); // current date
+                        let pastDate = new Date(currentDate.getTime()); // clone current date
+                        pastDate.setDate(pastDate.getDate() - 90); // set 90 days back
+
+                        let futureDate = new Date(currentDate.getTime()); // clone current date again
+                        futureDate.setDate(futureDate.getDate() + 180); // set 180 days ahead
+
+                        // Update the existing `isChequeDateValid` instead of re-declaring it
+                        isChequeDateValid = chequeDateObj >= pastDate && chequeDateObj <= futureDate;
+
+                        isValid = isValid && isChequeNumberValid && isChequeDateValid;
+
+                        if (!isChequeDateValid) {
+                            console.error("The cheque date is not valid. It must be within 90 days past and 180 days future from today.");
+                        }
+                    } else if (paymentMode === "Cash") {
+                        isValid = isAmountValid;
+                    }
+
+                    // Display appropriate error messages if the validation fails
+                    if (!isValid) {
+                        toastr.clear();
+                        if (!isPaymentModeSelected) {
+                            toastr.error("Please select a Payment Mode.");
+                        }
+                        if (!isAmountValid) {
+                            toastr.error("Please enter a valid Amount.");
+                        }
+                        if (paymentMode === "Bank") {
+                            if (paymentType == '') {
+                                toastr.error("Please select Payment Type.");
+                            }
+                            if (bankId == '') {
+                                toastr.error("Please select Bank Account.");
+                            }
+                        }
+
+                        if (paymentMode === "Bank" && !isTransactionIdValid && transactionId !== "") {
+                            toastr.error("Please enter a valid Transaction Id.");
+                        }
+                        if (paymentType === "UPI" && !isTransactionIdValid && transactionId !== "") {
+                            toastr.error("Please enter a valid Transaction Id.");
+                        }
+                        if (paymentMode === "Cheque") {
+                            if (!isChequeNumberValid) {
+                                toastr.error("Please enter a valid Cheque Number.");
+                            }
+                            if (!isChequeDateValid) {
+                                toastr.error("Please enter a valid Cheque Date.");
+                            }
+                        }
+                    }
+
+                    return isValid;
+                }
+
+
+                //// Real-time validation
+                //$('#VoucherType, #Amount, #Desc').on('input change', validateStep1);
+                //$('#AmountPaidTo, #VendorName, #StaffName').on('input change', validateStep2);
+                //$('#PaymentMode, #ReceiverBankAccountNumber, #ReceiverBankAccountHolderName, #ReceiverBankIFSCCode, #ReceiverBankName, #TransactionId, #ChequeDate').on('input change', validateStep3);
+
+                var stepper = new Stepper(document.querySelector('#VoucherStepper'));
+
+                 const context = $('#Context').val(); // Get context value from the hidden field
+
+                // Next and Previous button functionality for the stepper
+                $('#NextTo2').click(function () {
+                    if (validateForm()) {
+                        stepper.next();
+                        toastr.success('Step 1 completed successfully!');
+                    }
+                });
+
+                $('#PrevTo1').click(function () {
+                    stepper.previous();
+                });
+
+                // Handle form submission for both contexts
+                $('#SubmitForm').click(function (e) {
+                    e.preventDefault(); // Prevent default form submission
+                    const formSelector = '#AddVoucherForm';
+                    const modalSelector = (context === 'matchVoucher') ? '#BankModal' : null;
+
+                    handleVoucherFormSubmission(formSelector, context, modalSelector);
+                });
+            });
+
+
+            $(document).ready(function () {
+                $('#PaymentMode').change(function () {
+                    // Check if PaymentMode is set to 'Bank'
+                    var paymentMode = $('#PaymentMode').val();
+
+                    if (paymentMode === 'Bank') {  // Only proceed if PaymentMode is 'Bank'
+                        // Determine if the payment is for a Vendor or Staff based on the 'AmountPaidTo' field
+
+                        var amountPaidTo = $('#AmountPaidTo').val();
+                        var selectedId = '';
+                        var ifscCode = $('#IFSCCode').val() ? $('#IFSCCode').val().trim() : ''; // Ensure IFSC code is properly handled
+
+                        if (amountPaidTo === 'Vendor') {
+                            selectedId = $('#VendorName').val();
+
+                            if (selectedId) { // Ensure Vendor is selected
+                                // Fetch Vendor Bank Details
+                                $.ajax({
+                                    url: '@Url.Action("GetVendorBankDetailsAsync", "Accountant")',
+                                    type: 'GET',
+                                    data: { vendorId: selectedId },
+                                    dataType: 'json',
+                                    success: function (response) {
+                                        console.log("Vendor Bank Details Response:", response); // Log response for debugging
+
+                                        if (response && response.accountNumber && response.accountHolderName && response.ifscCode) {
+                                            $('#ReceiverBankAccountNumber').val(response.accountNumber);
+                                            $('#ReceiverBankAccountHolderName').val(response.accountHolderName);
+                                            $('#ReceiverBankIFSCCode').val(response.ifscCode);
+                                            $('#BankNameField').show(); // Show the Bank Name field
+                                            if (response.ifscCode) { // If IFSC code is available, fetch bank details using IFSC code
+                                                var apiUrl = 'https://ifsc.razorpay.com/' + response.ifscCode;
+
+                                                $.ajax({
+                                                    url: apiUrl,
+                                                    method: 'GET',
+                                                    success: function (data) {
+                                                        console.log("Bank Details Response:", data); // Log response for debugging
+
+                                                        if (data && data.BANK) {
+                                                            $('#ReceiverBankName').val(data.BANK);
+                                                            $('#ReceiverBankIFSCCode').val(response.ifscCode);
+                                                            $('#BankNameField').show();
+                                                        } else {
+                                                            toastr.error("Invalid IFSC code or no details found.");
+                                                            clearBankDetails();
+                                                        }
+                                                    },
+                                                    error: function (xhr, status, error) {
+                                                        toastr.error("Error fetching bank details. Please try again.");
+                                                        console.error("Error fetching bank details:", error);
+                                                        clearBankDetails();
+                                                    }
+                                                });
+                                            } else {
+                                                toastr.error("Please enter an IFSC code.");
+                                            }
+                                        } else {
+                                            toastr.error("Received data is invalid. Please check the server response.");
+                                        }
+                                    },
+                                    error: function (xhr, status, error) {
+                                        toastr.error("Error fetching Vendor Bank Details. Please try again.");
+                                        console.error("Error fetching Vendor Bank Details:", error);
+                                    }
+                                });
+                            }
+                        } else if (amountPaidTo === 'Staff') {
+                            selectedId = $('#StaffName').val();
+
+                            if (selectedId) { // Ensure Staff is selected
+                                // Fetch Staff Bank Details
+                                $.ajax({
+                                    url: '@Url.Action("GetStaffBankDetailsAsync", "Accountant")',
+                                    type: 'GET',
+                                    data: { staffId: selectedId },
+                                    dataType: 'json',
+                                    success: function (response) {
+                                        console.log("Staff Bank Details Response:", response); // Log response for debugging
+
+                                        if (response) {
+                                            $('#ReceiverBankName').val(response.bankName);
+                                            $('#ReceiverBankAccountNumber').val(response.accountNumber);
+                                            $('#ReceiverBankAccountHolderName').val(response.accountHolderName);
+                                            $('#ReceiverBankIFSCCode').val(response.ifscCode);
+                                            $('#BankNameField').show(); // Show the Bank Name field
+                                        } else {
+                                            toastr.error("Received data is invalid. Please check the server response.");
+                                        }
+                                    },
+                                    error: function (xhr, status, error) {
+                                        toastr.error("Error fetching Staff Bank Details. Please try again.");
+                                        console.error("Error fetching Staff Bank Details:", error);
+                                    }
+                                });
+                            }
+                        }
+                    } else {
+                        // If PaymentMode is not 'Bank', clear the bank details fields
+                        clearBankDetails();
+                    }
+                });
+
+                function clearBankDetails() {
+                    $('#ReceiverBankName').val('');
+                    $('#ReceiverBankAccountNumber').val('');
+                    $('#ReceiverBankAccountHolderName').val('');
+                    $('#ReceiverBankIFSCCode').val('');
+                    $('#BankNameField').val('');
+                }
+
+                //// Handle successful AJAX response
+                //function onVoucherSubmitSuccess(response) {
+                //    if (response.success) {
+                //        if (response.redirectUrl) {
+                //            // Redirect for the voucher module
+                //            Swal.fire('Success', response.message, 'success').then(() => {
+                //                window.location.href = response.redirectUrl;
+                //            });
+                //        } else if (response.voucherCode) {
+                //            // Handle dropdown updates for matchVoucher
+                //            Swal.fire('Success', response.message, 'success');
+                //            $('#VoucherCode').append(`<option value="${response.voucherCode}" selected>${response.voucherText}</option>`);
+                //            $('#VoucherCode').trigger('change'); // Refresh Select2 if used
+                //        } else {
+                //            Swal.fire('Success', response.message, 'success');
+                //        }
+                //    } else {
+                //        Swal.fire('Error', response.message, 'error');
+                //    }
+                //}
+
+                //// Handle AJAX error
+                //function onVoucherSubmitError(xhr) {
+                //    Swal.fire('Error', 'An error occurred while processing your request.', 'error');
+                //    console.error(xhr);
+                //}
+
+            });
+    </script>
+    <script>
+       function handleVoucherFormSubmission(formSelector, context, modalSelector = null) {
+            const formData = $(formSelector).serialize();
+
+            $.ajax({
+                url: '@Url.Action("AddVoucherAsyncSGS", "Accountant")',
+                type: 'POST',
+                data: formData + `&context=${context}`,
+                success: function (response) {
+                    if (response.success) {
+                        // Close the modal immediately
+                        if (modalSelector) {
+                            debugger;
+                            $(modalSelector).modal('hide');
+                        }
+
+                        Swal.fire('Success', response.message, 'success').then(() => {
+                            if (context === 'voucherModule' && response.redirectUrl) {
+                                // Redirect for voucherModule context
+                                window.location.href = response.redirectUrl;
+                            } else if (context === 'matchVoucher') {
+                                // Call fetchvoucher to refresh the list
+                                fetchvoucher();
+                            }
+                            else if (context === 'matchVoucherMB') {
+                                // Call fetchvoucher to refresh the list
+                                fetchvoucherMB();
+                            }
+                        });
+                    } else {
+                        Swal.fire('Error', response.message, 'error');
+                    }
+                },
+                error: function () {
+                    Swal.fire('Error', 'An error occurred while processing your request.', 'error');
+                }
+            });
+        }
+        function fetchvoucherMB() {
+            debugger;
+            const VendorCode = $('#VendorName option:selected').val();
+            const staffcode = $('#StaffName option:selected').val();
+            const ExpTypeID = $('#VoucherType option:selected').val();
+
+
+            $.ajax({
+                url: '@Url.Action("ListVoucherAsyncMB", "Accountant")',
+                type: 'GET',
+                data: { VendorCode: VendorCode, staffcode: staffcode, ExpTypeID: ExpTypeID },
+                success: function (response) {
+                    if (response.success) {
+                        debugger;
+                        const $voucherSelect = $('#VoucherCode');
+                        $voucherSelect.empty();
+                        $voucherSelect.append('<option>-select voucher-</option>');
+
+                        let newVoucherValue = null;
+
+                        // Populate the dropdown with fetched vouchers
+                        $.each(response.data, function (i, voucher) {
+                            $voucherSelect.append('<option value="' + voucher.Value + '">' + voucher.Text + '</option>');
+                            if (voucher.IsNew) {
+                                newVoucherValue = voucher.Value;
+                            }
+                        });
+
+                        // Auto-select the newly created voucher if present
+                        if (newVoucherValue) {
+                            $voucherSelect.val(newVoucherValue).trigger('change');
+                        }
+                        $('#BankModal').modal('hide');
+                        displayToast("Fetched vouchers successfully.", "success");
+                    } else {
+                        displayToast("An error occurred while fetching vouchers.", "error");
+                    }
+                },
+                error: function (xhr, status, error) {
+                    displayToast("An error occurred while fetching the vouchers.", "error");
+                }
+            });
+        }
+        function fetchvoucher() {
+            let VendorName = '';
+            if ('@Model.IsitEdit'.toString() === 'True') {
+                VendorName = $('#VendorName').val();
+            }
+            if (!VendorName) {
+                VendorName = $('#VendorCode option:selected').text();
+            }
+
+            $.ajax({
+                url: '@Url.Action("ListVoucherAsyncVP", "Accountant")',
+                type: 'GET',
+                data: { VendorName: VendorName },
+                success: function (response) {
+                    if (response.success) {
+                        const $voucherSelect = $('#VoucherCode');
+                        $voucherSelect.empty();
+                        $voucherSelect.append('<option>-select voucher-</option>');
+
+                        let newVoucherValue = null;
+
+                        // Populate the dropdown with fetched vouchers
+                        $.each(response.data, function (i, voucher) {
+                            $voucherSelect.append('<option value="' + voucher.Value + '">' + voucher.Text + '</option>');
+                            if (voucher.IsNew) {
+                                newVoucherValue = voucher.Value;
+                            }
+                        });
+
+                        // Auto-select the newly created voucher if present
+                        if (newVoucherValue) {
+                            $voucherSelect.val(newVoucherValue).trigger('change');
+                        }
+
+                        displayToast("Fetched vouchers successfully.", "success");
+                    } else {
+                        displayToast("An error occurred while fetching vouchers.", "error");
+                    }
+                },
+                error: function (xhr, status, error) {
+                    displayToast("An error occurred while fetching the vouchers.", "error");
+                }
+            });
+        }
+
+
+
+    $(document).ready(function () {
+        // Attach the form submission logic for Add Voucher
+        const context = $('#Context').val(); // Get context value from the hidden field
+
+        $('#BankModal').on('hidden.bs.modal', function () {
+            $(this).find('.modal-body').empty(); // Clear modal content on close
+            $(this).find('form').off(); // Unbind all events related to the modal
+        });
+        $(document).on('change', '#VoucherCode', function () {
+            updateTotalAmount();
+        });
+
+
+    });
+    </script>
+
+
+
+</body>
+</html>

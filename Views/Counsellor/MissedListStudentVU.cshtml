@@ -1,0 +1,139 @@
+﻿@model GSTEducationERPLibrary.Counsellor.Counsellor
+
+<head>
+
+</head>
+<table class="table table-bordered dataTable no-footer dtr-inline " style="width:102% !important;">
+    <thead>
+        <tr>
+            <th>Sr.No.</th>
+            <th hidden>Candidate Code</th>
+            <th>Full Name</th>
+            <th>Mobile No.</th>
+            <th>FollowUp Note</th>
+            <th>Last Followup Date</th>
+            <th>Next FollowUp Date</th>
+            <th>Enquiry Status</th>
+            <th>FollowUp Status</th>
+            <th>Consellor Name</th>
+            <th>Action</th>
+            <th hidden>Enquiry For</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model.lstEnquiryfollowup != null && Model.lstEnquiryfollowup.Any())
+        {
+            int i = 1; // Initialize the counter
+            foreach (var item in Model.lstEnquiryfollowup)
+            {
+                <tr>
+                    <td>@i</td> <!-- Add serial number -->
+                    <td hidden>
+                        @Html.DisplayFor(modelItem => item.CandidateCode)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.FullName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.ContactNumber)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.FollowUpNote)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.FollowUpTakenDate)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.NextFollowUpDate)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Status)
+                    </td>
+                    <td>
+                        @if (item.FollowUpStatus == "Hot")
+                        {
+                            <span class="badge bg-danger">@Html.DisplayFor(modelItem => item.FollowUpStatus)</span>
+                        }
+                        @if (item.FollowUpStatus == "Cold")
+                        {
+                            <span class="badge bg-blue">@Html.DisplayFor(modelItem => item.FollowUpStatus)</span>
+                        }
+                        @if (item.FollowUpStatus == "Worm")
+                        {
+                            <span class="badge bg-warning">@Html.DisplayFor(modelItem => item.FollowUpStatus)</span>
+                        }
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.StaffName)
+                    </td>
+                    <td>
+                        <a href="#" class="addfollowup icon" data-id="@item.CandidateCode" data-url="@Url.Action("EnquiryFollowUpVU", "Counsellor", new { id = item.CandidateCode })" data-toggle="modal" data-target="#detailsModal" title="Add FollowUp">
+                            <video width="25" height="25" playsinline loop>
+                                <source src="~/Content/Admin/icon/add.mp4" type="video/mp4">
+                            </video>
+                        </a>
+                    </td>
+                    <td hidden>
+                        @Html.HiddenFor(modelItem => item.EnquiryFor)
+                    </td>
+                </tr>
+                i++; // Increment the counter
+            }
+        }
+        else
+        {
+            <tr>
+                <td colspan="11">No Data Available</td> <!-- Adjusted colspan to match number of columns -->
+            </tr>
+        }
+    </tbody>
+</table>
+
+
+
+<!-- Bootstrap Modal -->
+<div class="modal fade" id="detailsModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content" style="width:58vw;">
+            <div class="modal-body">
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+<script src="~/Content/Admin/js/Icon.js"></script>
+
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('.addfollowup').click(function () {
+             
+            console.log("Clicked on .addfollowup");
+
+            var candidatecode = $(this).data('id');
+            var url = $(this).data('url');
+            console.log("CandidateCode:", candidatecode);
+            console.log("URL:", url);
+
+            // Check if the URL and candidate code are not empty or undefined
+            if (url && candidatecode) {
+                $.ajax({
+                    url: url,
+                    type: 'GET',
+                    data: { CandidateCode: candidatecode },
+                    success: function (data) {
+                        $('#detailsModal .modal-body').html(data);
+                        $('#detailsModal').modal('show');
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        console.error("AJAX error:", textStatus, errorThrown);
+                    }
+                });
+            } else {
+                console.error("URL or candidate code is not defined");
+            }
+        });
+    });
+</script>

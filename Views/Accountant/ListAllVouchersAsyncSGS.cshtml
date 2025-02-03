@@ -1,0 +1,556 @@
+﻿@model GSTEducationERPLibrary.Accountant.Accountant
+
+@{
+    ViewBag.Title = "ListAllVouchersAsyncSGS";
+    Layout = "~/Views/Shared/_LayoutERP.cshtml";
+}
+<html lang="en" style="height: auto;">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    @*<link href="~/Content/Admin/css/Loading.css" rel="stylesheet" />*@
+    <link href="~/Content/plugins/fontawesome-free/css/all.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="~/Content/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+    <link rel="stylesheet" href="~/Content/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
+    <link rel="stylesheet" href="~/Content/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <style>
+        h2 {
+            padding-top: 10px;
+            margin-bottom: 10px;
+            font-family: Verdana;
+            font-weight: bold;
+            font-size: large;
+            color: #33CCCC;
+            margin-left: 15px;
+        }
+
+        .dataTables_wrapper .btn-secondary {
+            color: #235;
+            background-color: transparent !important;
+            border-color: transparent;
+            font-size: x-large;
+            margin: 0px !important;
+        }
+
+        .card-primary.card-outline-tabs > .card-header a.active {
+            border-top: 3px solid #33CCCC;
+        }
+
+        a {
+            color: #33CCCC;
+        }
+
+        .card.card-outline-tabs .card-header a:hover {
+            color: #33CCCC;
+        }
+
+        .card-primary.card-outline-tabs > .card-header a.active,
+        .card-primary.card-outline-tabs > .card-header a.active:hover {
+            border-top: 3px solid #33CCCC;
+        }
+
+        .card-body {
+            font-family: Calibri !important;
+            padding-bottom: 0px !important;
+            background-color: #ffffff;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        th {
+            background-color: #33CCCC;
+            color: #000;
+            text-align: center !important;
+        }
+
+        td {
+            text-align: center;
+            color: black !important;
+        }
+
+        .table td,
+        .table th {
+            padding: 8px !important;
+            font-size: 14px !important;
+        }
+
+        table.dataTable {
+            border-collapse: separate !important;
+            border-spacing: 0;
+        }
+
+        /* Removing gap between tabs and table */
+        .nav-tabs {
+            margin-bottom: 0;
+            /*border-bottom: 2px solid #33CCCC;*/
+            background-color: white; /* Set the background of tabs to white */
+        }
+
+        /* Make tabs and table width match */
+        .card.card-outline-tabs {
+            border: none;
+            margin-bottom: 0;
+            width: 100%; /* Ensure the width of the tabs is 100% */
+        }
+
+        .card-header {
+            background-color: white;
+            padding: 0;
+            margin-bottom: 0;
+            border-bottom: 2px solid #33CCCC;
+        }
+
+        /* Set active tab's background and border */
+        .card-outline-tabs .nav-tabs .nav-link.active {
+            background-color: white;
+            border-color: #33CCCC #33CCCC white;
+        }
+
+        /* Ensuring table and tabs connect visually */
+        .card-body {
+            background-color: #ffffff;
+            padding-top: 0;
+        }
+
+        /* Aligning table and tab containers */
+        .connected-container {
+            border-top: 2px solid #33CCCC;
+            margin-top: 0;
+            width: 100%; /* Ensure full width */
+        }
+
+        /* Modal Styles */
+        .modal-title {
+            font-size: 20px;
+            color: #33CCCC;
+            text-align: center;
+        }
+
+        .modal-content {
+            background-color: #ffffff;
+            border: 2px solid #428bca;
+            border-radius: 5px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .modal-body {
+            font-family: 'Times New Roman';
+            font-weight: bold;
+        }
+
+        /* Style adjustments for tabs to table connection */
+        .tabs-connected .nav-tabs {
+            background-color: white; /* Tabs background color */
+            border-bottom: none;
+        }
+
+        .tabs-connected .nav-link.active {
+            background-color: white;
+            color: #33CCCC;
+            border-color: #33CCCC #33CCCC white;
+        }
+
+        /* Adjusting table wrapper to connect better */
+        .dataTables_wrapper {
+            margin-top: 0;
+            width: 100%; /* Ensure table fits the width */
+        }
+
+        #ExamList {
+            border-top: none;
+            width: 100%; /* Make the table take full width */
+        }
+        /* Loading Overlay */
+        #loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Loader GIF */
+        #loader-gif {
+            width: auto; /* Adjust size as needed */
+            height: auto;
+        }
+
+        .tableContent {
+            margin-top: 20px;
+        }
+    </style>
+
+
+
+</head>
+<body style="margin: 0; padding: 0;">
+    <br />
+    <div class="card " style="padding:5px;margin-right:20px;margin-left:10px; margin-top:-15px">
+        <h2>Vouchers List</h2>
+        <div class="add-buttons" style="margin-top:-40px">
+
+            <button class="btn btn-custom" style="font-weight:bold; float:right" id="AddVoucher">
+                <img src="~/Content/Admin/icon/add-button.png" title="Add Voucher" alt="Add Voucher" height="30" width="30" />
+            </button>
+            @*<button class="btn btn-custom" style="font-weight:bold; float:right" id="AddCash">
+                    <img src="~/Content/Admin/img/add-button.png" title="Add Cash Voucher" alt="view" height="30" width="30" /> CASH
+                </button>*@
+
+        </div>
+        <hr />
+        <div class="card-body">
+            <div class="row mt-3">
+                <div class="col-md-4 form-group" style="width:fit-content; display:flex">
+                    <label for="voucherTypeFilter" class="col-md-4" style="padding-right: 10px; padding-left: 10px">Voucher Type</label>
+                    <select id="voucherTypeFilter" class="form-control col-md-7">
+                        <option value="selectall">Select All</option>
+                        @foreach (var item in ViewBag.VoucherTypeList)
+                        {
+                            <option value="@item.Value">@item.Text</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="col-md-4 form-group" style="width:fit-content;display:flex">
+                    <label for="paymentModeFilter" class="col-md-4" style="padding-right: 10px; padding-left: 10px">Payment Mode</label>
+                    <select id="paymentModeFilter" class="form-control col-md-7">
+                        <option value="selectall">Select All</option>
+                        <option value="CASH">CASH</option>
+                        <option value="BANK">BANK</option>
+                        <option value="CHEQUE">CHEQUE</option>
+                        <option value="UPI">UPI</option>
+                    </select>
+                </div>
+            </div>
+            <div class="card card-primary card-outline card-outline-tabs">
+                <div class="card-header p-0 border-bottom-0">
+                    <ul class="nav nav-tabs" id="custom-tabs-four-tab" role="tablist">
+                        <li class="nav-item">
+                            <a class="nav-link active" data-toggle="pill" href="@Url.Action("ListVoucherAsyncSGS", "Accountant")" role="tab" aria-controls="custom-tabs-four-home" aria-selected="true">Vouchers</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-toggle="pill" href="@Url.Action("ListPendingVoucherAsyncSGS", "Accountant")" role="tab" aria-controls="custom-tabs-four-profile" aria-selected="false">Pending Vouchers</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-toggle="pill" href="@Url.Action("ListCompletedVoucherAsyncSGS", "Accountant")" role="tab" aria-controls="custom-tabs-four-messages" aria-selected="false">Completed Vouchers</a>
+                        </li>
+
+                    </ul>
+                </div>
+
+                <div class="card-body tableContent">
+                    <div id="ExamList" class="icon-container"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Loader Overlay -->
+    <div id="loading-overlay" style="display: none;">
+
+        <img src="~/Content/Admin/icon/AccountantLoader.gif" alt="Loading" id="loader-gif">
+    </div>
+    <div id="resultContainer"></div>
+
+
+    <div class="modal fade" id="BankModal" tabindex="-1" role="dialog" aria-labelledby="BankModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="BankModalLabel">Add Voucher</h5>
+                    <button style="color: red;" type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="~/Content/plugins/jquery/jquery.min.js" type="text/javascript"></script>
+    <script src="~/Content/plugins/bootstrap/js/bootstrap.min.js"></script>
+    <script src="~/Content/plugins/datatables/jquery.dataTables.min.js"></script>
+    <script src="~/Content/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
+    <script src="~/Content/plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
+    <script src="~/Content/plugins/datatables-responsive/js/responsive.bootstrap4.min.js"></script>
+    <script src="~/Content/plugins/datatables-buttons/js/dataTables.buttons.min.js"></script>
+    <script src="~/Content/plugins/datatables-buttons/js/buttons.bootstrap4.min.js"></script>
+    <script src="~/Content/plugins/jszip/jszip.min.js"></script>
+    <script src="~/Content/plugins/pdfmake/pdfmake.min.js"></script>
+    <script src="~/Content/plugins/pdfmake/vfs_fonts.js"></script>
+    <script src="~/Content/plugins/datatables-buttons/js/buttons.html5.min.js"></script>
+    <script src="~/Content/plugins/datatables-buttons/js/buttons.print.min.js"></script>
+    <script src="~/Content/plugins/datatables-buttons/js/buttons.colVis.min.js"></script>
+    <script src="~/Content/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+
+            function showLoadingOverlay() {
+                // Always start progress from 0
+                var progress = 0;
+
+                // Reset progress bar and text
+                $('#progress-bar').css('width', '0%');
+                $('#progress-percentage').text('0%');
+                $('#loading-overlay').css('opacity', '1').show(); // Show the overlay
+
+                // Function to simulate steady progress increment
+                var interval = setInterval(function () {
+                    if (progress < 100) { // Keep incrementing until 100%
+                        progress += Math.floor(Math.random() * 5) + 2; // Increment by a random value between 2 and 5
+                        if (progress > 100) progress = 100; // Ensure it does not exceed 100%
+                    }
+
+                    // Update the width of the progress bar and percentage text
+                    $('#progress-bar').css('width', progress + '%');
+                    $('#progress-percentage').text(progress + '%');
+
+                    // Stop the interval when progress reaches 100%
+                    if (progress >= 100) {
+                        clearInterval(interval);
+                        $('#progress-bar').css('width', '100%'); // Ensure it reaches 100%
+                        $('#progress-percentage').text('100%'); // Display 100% text
+                    }
+                }, 300); // Interval duration in milliseconds
+
+                // Return the interval ID for potential future reference
+                return interval;
+            }
+
+            // Function to finalize and hide the loading overlay
+            function hideLoadingOverlay(interval) {
+                // Ensure the progress bar is at 100% when hiding
+                $('#progress-bar').css('width', '100%');
+                $('#progress-percentage').text('100%');
+                $('#loading-overlay').fadeOut(500, function () {
+                    $(this).hide();
+                });
+                clearInterval(interval); // Clear the interval to stop progress increment
+            }
+
+    let table;
+
+    // Function to initialize DataTable and handle its buttons
+    function initializeDataTable() {
+        table = $('#ExamList table').DataTable({
+            "responsive": true,
+            "lengthChange": false,
+            "autoWidth": false,
+            "paging": true,
+            /* "info": false, */   // Remove info (Showing X to Y of Z entries)
+            "ordering": false, // Disable sorting
+            "stateSave": true,
+            "dom": 'Bfrtip',
+            "buttons": [
+                {
+                    extend: 'copy',
+                    text: '<img src="/Content/Admin/icon/copy.png" title="Copy" alt="Copy" height="20" width="20" />',
+                    titleAttr: 'Copy',
+                    title: function () {
+                        return "Voucher Details";
+                    },
+                    messageTop: function () {
+                        return 'Filtered Date Range: ' +
+                            new Date($('#startDateFilter').val()).toLocaleDateString('en-GB') + ' to ' +
+                            new Date($('#endDateFilter').val()).toLocaleDateString('en-GB');
+                    },
+                    messageBottom: function () {
+                        return 'Company Name';
+                    },
+                    exportOptions: {
+
+                        columns: ':visible:not(:last-child)' // Export only visible columns, excluding the last one
+                    }
+                },
+                {
+                    extend: 'csv',
+                    text: '<img src="/Content/Admin/icon/csv.jpg" title="CSV" alt="CSV" height="20" width="20" />',
+                    titleAttr: 'CSV',
+                    title: function () {
+                        return "Voucher Details";
+                    },
+                    messageTop: function () {
+                        return 'Filtered Date Range: ' +
+                            new Date($('#startDateFilter').val()).toLocaleDateString('en-GB') + ' to ' +
+                            new Date($('#endDateFilter').val()).toLocaleDateString('en-GB');
+                    },
+                    messageBottom: function () {
+                        return 'Company Name';
+                    },
+                    exportOptions: {
+                        columns: ':visible:not(:last-child)' // Export only visible columns, excluding the last one
+                    }
+                },
+                {
+                    extend: 'excel',
+                    text: '<img src="/Content/Admin/icon/xls-file.png" title="xls" alt="xls" height="20" width="20" />',
+                    titleAttr: 'Excel',
+                    title: function () {
+                        return "Voucher Details";
+                    },
+                    messageTop: function () {
+                        return 'Filtered Date Range: ' +
+                            new Date($('#startDateFilter').val()).toLocaleDateString('en-GB') + ' to ' +
+                            new Date($('#endDateFilter').val()).toLocaleDateString('en-GB');
+                    },
+                    messageBottom: function () {
+                        return 'Company Name';
+                    },
+                    exportOptions: {
+                        columns: ':visible:not(:last-child)' // Export only visible columns, excluding the last one
+                    }
+                },
+                {
+                    extend: 'pdf',
+                    text: '<img src="/Content/Admin/icon/pdf-file.png" title="pdf" alt="pdf" height="20" width="20" />',
+                    titleAttr: 'PDF',
+                    title: function () {
+                        return "Voucher Details";
+                    },
+                    customize: function (doc) {
+                        // Check the number of columns or specific table width condition
+                        if ($('#ExpenseList table').width() > 500) {
+                            doc.pageOrientation = 'landscape'; // Switch to landscape if table is too wide
+                        }
+
+                        doc.content.splice(0, 0, {
+                            text: 'GayaSoft\nFiltered Date Range: ' +
+                                new Date($('#startDateFilter').val()).toLocaleDateString('en-GB') + ' to ' +
+                                new Date($('#endDateFilter').val()).toLocaleDateString('en-GB') +
+                                '\nExported on: ' + new Date().toLocaleDateString('en-GB'),
+                            margin: [0, 0, 0, 12],
+                            alignment: 'center',
+                            fontSize: 10
+                        });
+
+                        doc.footer = function (currentPage, pageCount) {
+                            return {
+                                columns: [
+                                    { text: 'Company Name', alignment: 'left', margin: [20, 0] },
+                                    { text: 'Page ' + currentPage.toString() + ' of ' + pageCount, alignment: 'right', margin: [0, 0, 20] }
+                                ],
+                                margin: [0, 0, 0, 12],
+                                fontSize: 10
+                            };
+                        };
+                    },
+                    exportOptions: {
+                        columns: ':visible:not(:last-child)' // Export only visible columns, excluding the last one
+                    }
+                },
+                {
+                    extend: 'print',
+                    text: '<img src="/Content/Admin/icon/printer.png" title="printer" alt="printer" height="20" width="20" />',
+                    titleAttr: 'Print',
+                    title: function () {
+                        return "Voucher Details";
+                    },
+                    messageTop: function () {
+                        return 'Filtered Date Range: ' +
+                            new Date($('#startDateFilter').val()).toLocaleDateString('en-GB') + ' to ' +
+                            new Date($('#endDateFilter').val()).toLocaleDateString('en-GB') +
+                            '\nExported on: ' + new Date().toLocaleDateString('en-GB');
+                    },
+                    messageBottom: function () {
+                        return 'Company Name';
+                    },
+                    exportOptions: {
+                        columns: ':visible:not(:last-child)' // Export only visible columns, excluding the last one
+                    }
+                },
+                {
+                    extend: 'colvis',
+                    text: '<img src="/Content/Admin/icon/column.jpg" title="column" alt="column" height="20" width="20" />',
+                    titleAttr: 'Columns'
+                }
+            ]
+        });
+        table.buttons().container().appendTo('#ExamList .col-md-4:eq(0)');
+    }
+
+    // Function to load content for tabs
+        function loadTabContent(url) {
+            showLoadingOverlay();
+            $.ajax({
+                url: url,
+                type: 'GET',
+                success: function (data) {
+                    $('#ExamList').html(data);
+                    initializeDataTable();
+                },
+                error: function () {
+                    alert('Error loading content.');
+                },
+                complete: function () {
+
+                    hideLoadingOverlay();
+                }
+            });
+        }
+
+    // Load default tab content
+    const defaultTabUrl = '@Url.Action("ListVoucherAsyncSGS", "Accountant")';
+    loadTabContent(defaultTabUrl);
+
+    // Handle tab changes
+    $('#custom-tabs-four-tab').on('click', '.nav-link', function (e) {
+        e.preventDefault();
+        loadTabContent($(this).attr('href'));
+    });
+
+    // Example AJAX setup for adding vouchers or cash
+    function setupModalAction(buttonId, actionUrl, modalSelector) {
+        $(buttonId).on('click', function () {
+            showLoadingOverlay();
+            $.ajax({
+                url: actionUrl,
+                type: 'GET',
+                success: function (data) {
+                    $(modalSelector + ' .modal-body').html(data);
+                    $(modalSelector).modal('show');
+                },
+                error: function () {
+                    Swal.fire('Error', 'Failed to load content', 'error');
+                },
+                complete: function () {
+
+                    hideLoadingOverlay();
+                }
+            });
+        });
+    }
+
+    setupModalAction('#AddVoucher', '@Url.Action("AddVoucherAsyncSGS", "Accountant")', '#BankModal');
+    setupModalAction('#AddCash', '@Url.Action("AddCashVoucherAsyncSGS", "Accountant")', '#CashModal');
+        });
+        $(document).on('click', '.icon', function () {
+            var url = $(this).data('url'); // Get the URL from the `data-url` attribute
+            var modal = $($(this).data('target')); // Get the modal element
+
+            $.ajax({
+                url: url,
+                type: 'GET',
+                success: function (response) {
+                    modal.find('.modal-body').html(response); // Load response content into the modal body
+                    modal.modal('show'); // Show the modal
+                },
+                error: function () {
+                    alert('Error loading content.');
+                }
+            });
+        });
+    </script>
+
+
+</body>
+</html>

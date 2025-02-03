@@ -1,0 +1,1487 @@
+﻿@model GSTEducationERPLibrary.Accountant.Accountant
+@using System.Globalization
+@{
+    ViewBag.Title = "AccountantDashboardAsyncSGS";
+    Layout = "~/Views/Shared/_LayoutERP.cshtml";
+}
+
+@section Styles {
+    <link href="~/Content/adminlte.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.css" rel="stylesheet" />
+    <style>
+        /* Card Styling */
+        .card {
+            border: 1px solid #ddd;
+            border-radius: 12px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+            .card:hover {
+                transform: translateY(-3px);
+                box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+            }
+
+        /* Card Header */
+        .card-header {
+            background-color: #f0f2f5;
+            padding: 10px 15px;
+            border-bottom: 1px solid #ddd;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top-left-radius: 12px;
+            border-top-right-radius: 12px;
+        }
+
+            .card-header span {
+                font-size: 1.1rem;
+                font-weight: bold;
+                color: #343a40;
+            }
+
+            .card-header .filter-button {
+                font-size: 0.9rem;
+                color: #007bff;
+                cursor: pointer;
+                border: none;
+                background: none;
+                transition: color 0.2s;
+            }
+
+                .card-header .filter-button:hover {
+                    color: #0056b3;
+                }
+
+        /* Card Body */
+        .card-body {
+            padding: 15px;
+            background-color: #ffffff;
+            border-bottom-left-radius: 12px;
+            border-bottom-right-radius: 12px;
+        }
+
+        /* Progress Bar */
+        .progress {
+            border-radius: 8px;
+            background-color: #e9ecef;
+            height: 12px;
+            margin-bottom: 10px;
+            overflow: hidden;
+            display: flex; /* Ensure child progress bars are aligned horizontally */
+        }
+
+        .progress-bar {
+            transition: width 0.4s ease-in-out;
+            border-radius: 0; /* Remove rounded corners for all bars */
+        }
+
+            .progress-bar:first-child {
+                border-top-left-radius: 8px; /* Add rounded corners to the start of the first bar */
+                border-bottom-left-radius: 8px;
+            }
+
+            .progress-bar:last-child {
+                border-top-right-radius: 8px; /* Add rounded corners to the end of the last bar */
+                border-bottom-right-radius: 8px;
+            }
+
+
+        /* Specific Progress Bar Colors */
+        .bg-success {
+            background-color: #28a745;
+        }
+
+        .bg-danger {
+            background-color: #dc3545;
+        }
+
+        .bg-warning {
+            background-color: #ffc107;
+        }
+
+        /* Text Colors */
+        .text-primary {
+            color: #007bff;
+        }
+
+        .text-danger {
+            color: #dc3545;
+        }
+
+        .text-success {
+            color: #28a745;
+        }
+
+        /* Typography */
+        h4 {
+            margin: 0;
+            font-size: 1.2rem;
+        }
+
+        .fw-bold {
+            font-weight: bold;
+        }
+
+        .dashboard-row {
+            /* Use Bootstrap's grid flex layout */
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .col-md-6 {
+            padding: 10px;
+            box-sizing: border-box;
+        }
+
+        .dashboard-col {
+            flex: 1;
+            min-width: 300px;
+            padding: 10px;
+            box-sizing: border-box;
+        }
+
+        .half-width-col {
+            flex: 0 0 48%;
+            max-width: 50%;
+            max-width: 50%;
+            padding: 10px;
+            box-sizing: border-box;
+        }
+
+        .full-width-col {
+            flex: 0 0 100%;
+            max-width: 100%;
+            padding: 10px;
+            box-sizing: border-box;
+        }
+
+        .full-height-card {
+            height: 100%;
+        }
+
+        /* Consistent Height for Bank and Top Expenses Cards */
+        .same-height-card {
+            height: 300px;
+        }
+
+        /* Responsive Layout */
+        @@media (max-width: 992px) {
+            .dashboard-col,
+            .half-width-col,
+            .full-width-col {
+                flex: 1 0 48%;
+                max-width: 48%;
+            }
+        }
+
+        @@media (max-width: 768px) {
+            .dashboard-col,
+            .half-width-col,
+            .full-width-col {
+                flex: 1 0 100%;
+                max-width: 100%;
+            }
+        }
+
+        /* Hover Effect for Interactive Elements */
+        .filter-button:hover {
+            text-decoration: underline;
+            color: #0056b3;
+        }
+        /* Ensure the Bank Card Body is scrollable */
+        .card-body.scrollable {
+            max-height: 300px; /* Set a maximum height for the card body */
+            overflow-y: auto; /* Add vertical scrolling when content exceeds height */
+            padding-right: 15px; /* Ensure padding to avoid scrollbar overlap */
+        }
+
+            /* Optional: Hide scrollbar for aesthetic purposes */
+            .card-body.scrollable::-webkit-scrollbar {
+                width: 8px; /* Adjust width as needed */
+            }
+
+            .card-body.scrollable::-webkit-scrollbar-thumb {
+                background-color: #ccc; /* Scrollbar color */
+                border-radius: 4px; /* Rounded edges for the scrollbar */
+            }
+
+        .table {
+            width: 100%;
+            text-align: left;
+        }
+
+            .table th, .table td {
+                padding: 10px;
+                vertical-align: middle;
+            }
+
+        .thead-light {
+            background-color: #f8f9fa;
+        }
+        /* Ensure consistent row height for balance cells */
+        #bankAccountsTable td {
+            vertical-align: middle; /* Vertically center the text */
+            height: 40px; /* Set a fixed height for all rows */
+            text-align: center; /* Center-align text horizontally */
+        }
+
+        /* Ensure the toggle text does not change cell height */
+        .check-balance-text,
+        .balance-text {
+            display: inline-block; /* Inline-block ensures consistent spacing */
+            height: 100%; /* Match the cell height */
+            line-height: 40px; /* Align text vertically within the cell */
+        }
+
+        .cashflow-details span {
+            display: block;
+            margin-bottom: 8px; /* Add spacing between lines */
+            font-size: 1rem; /* Adjust font size for readability */
+        }
+
+            .cashflow-details span strong {
+                margin-right: 5px; /* Space between label and value */
+            }
+
+        .date-picker {
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 5px 10px;
+            font-size: 0.9rem;
+            color: #495057;
+            transition: border-color 0.3s;
+        }
+
+            .date-picker:focus {
+                border-color: #007bff;
+                outline: none;
+                box-shadow: 0 0 5px rgba(0, 123, 255, 0.25);
+            }
+        /* Fix for Top Expenses Chart */
+        #topExpensesChart {
+            height: 250px;
+            max-height: 250px;
+            width: 100%;
+            max-width: 100%;
+        }
+
+        /* Ensure consistent chart container sizing */
+        .chart-container {
+            height: 250px;
+            max-height: 250px;
+            overflow: hidden; /* Prevent overflow causing expansion */
+        }
+
+        /* Fix for Bank Details Table */
+        .card-body.scrollable {
+            max-height: 300px; /* Constrain the height */
+            overflow-y: auto; /* Add vertical scrolling */
+            overflow-x: hidden; /* Hide horizontal scrolling */
+        }
+
+        /* Table column sizing and layout */
+        #bankAccountsTable {
+            table-layout: fixed; /* Fix column sizes */
+            width: 100%; /* Ensure full width */
+        }
+
+            #bankAccountsTable th,
+            #bankAccountsTable td {
+                text-align: center; /* Center-align text */
+                vertical-align: middle; /* Vertically align text */
+                white-space: nowrap; /* Prevent wrapping of content */
+                overflow: hidden; /* Hide overflowing content */
+                text-overflow: ellipsis; /* Add ellipsis for overflowing text */
+            }
+
+            #bankAccountsTable th {
+                font-weight: bold;
+                background-color: #f8f9fa;
+            }
+
+        /* Responsive fixes for table */
+        .scrollable::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .scrollable::-webkit-scrollbar-thumb {
+            background-color: #ccc;
+            border-radius: 4px;
+        }
+
+        /* Consistent card heights for charts and tables */
+        .card {
+            height: 100%;
+        }
+
+        #cashFlowChart,
+        #incomeExpenseChart {
+            height: 250px;
+            max-height: 250px;
+            width: 100%;
+        }
+
+        /* Prevent card-body overflow */
+        .card-body {
+            overflow: hidden; /* Restrict content overflow */
+        }
+
+        /* Ensure chart container doesn't expand */
+        .income-expense-chart-container {
+            height: 250px; /* Match the canvas height */
+            max-height: 250px; /* Prevent expansion */
+            width: 100%; /* Ensure container takes full width */
+            overflow: hidden; /* Prevent overflowing content */
+        }
+    </style>
+
+}
+
+<div class="container-fluid">
+    <!-- Top Space for Header -->
+    <div class="row mb-4">
+
+    </div>
+
+    <!-- Top Cards -->
+    <div class="row mb-4">
+        <!-- Total Receivables Card -->
+        <div class="col-md-4">
+            <div class="card shadow-sm rounded-lg border-0 h-100">
+                <div class="card-header text-black d-flex justify-content-between align-items-center">
+                    <span class="card-title mb-0">Total Receivables</span>
+                </div>
+                <div class="card-body">
+                    <p>Total Fees: <strong id="totalReceivables">₹0.00</strong></p>
+                    <div class="progress">
+                        <div id="receivablesPaidBar" class="progress-bar bg-success" style="width: 0%;"></div>
+                        <div id="receivablesOverdueBar" class="progress-bar" style="background-color: #ffc107; width: 0%;"></div>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <div><span class="text-success">Received</span><h5 id="totalReceived">₹0.00</h5></div>
+                        <div><span style="color: #ffc107;">Outstanding</span><h5 id="overdueReceivables">₹0.00</h5></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Total Payables Card -->
+        <div class="col-md-4">
+            <div class="card shadow-sm rounded-lg border-0 h-100">
+                <div class="card-header text-black d-flex justify-content-between align-items-center">
+                    <span class="card-title mb-0">Total Payables</span>
+                </div>
+                <div class="card-body">
+                    <p>Total Bills: <strong id="totalPayables">₹0.00</strong></p>
+                    <div class="progress">
+                        <div id="payablesPaidBar" class="progress-bar bg-danger" style="width: 0%;"></div>
+                        <div id="payablesOverdueBar" class="progress-bar" style="background-color: #ffc107; width: 0%;"></div>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <div><span class="text-danger">Paid</span><h5 id="totalPaid">₹0.00</h5></div>
+                        <div><span style="color: #ffc107;">Unpaid</span><h5 id="overduePayables">₹0.00</h5></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Vouchers Details Card -->
+        <div class="col-md-4">
+            <div class="card shadow-sm rounded-lg border-0 h-100">
+                <div class="card-header text-black d-flex justify-content-between align-items-center">
+                    <span class="card-title mb-0">Vouchers Details</span>
+                </div>
+                <div class="card-body">
+                    <p>Total Vouchers Created: <strong id="totalVouchersCreated">₹0.00</strong></p>
+                    <div class="progress">
+                        <div id="usedVouchersBar" class="progress-bar bg-success" style="width: 0%;"></div>
+                        <div id="unusedVouchersBar" class="progress-bar bg-warning" style="width: 0%;"></div>
+                    </div>
+                    <div class="d-flex justify-content-between mt-3">
+                        <div>
+                            <span class="text-success">Used Vouchers</span>
+                            <p>Count: <strong id="usedVoucherCount">0</strong></p>
+                            <p>Amount: <strong id="usedVoucherAmount">₹0.00</strong></p>
+                        </div>
+                        <div>
+                            <span class="text-warning">Unused Vouchers</span>
+                            <p>Count: <strong id="unusedVoucherCount">0</strong></p>
+                            <p>Amount: <strong id="unusedVoucherAmount">₹0.00</strong></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Top 5 Expenses and Tabs in One Row -->
+    <div class="row mb-4">
+
+        <!-- Tabs for Daily Cash Details and Bank Details -->
+        <div class="col-md-6">
+            <div class="card shadow-sm h-100">
+                <div class="card-header">
+                    <ul class="nav nav-tabs card-header-tabs" id="detailsTabs" role="tablist">
+                        <li class="nav-item">
+                            <a class="nav-link active" id="daily-cash-tab" data-bs-toggle="tab" href="#daily-cash" role="tab" aria-controls="daily-cash" aria-selected="true">Daily Cash Details</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="bank-details-tab" data-bs-toggle="tab" href="#bank-details" role="tab" aria-controls="bank-details" aria-selected="false">Bank Details</a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="card-body">
+                    <div class="tab-content" id="detailsTabsContent">
+                        <!-- Daily Cash Details Tab -->
+                        <div class="tab-pane fade show active" id="daily-cash" role="tabpanel" aria-labelledby="daily-cash-tab">
+                            <div class="d-flex align-items-center mb-4">
+                                <span class="text-muted me-2">Cash as on:</span>
+                                <input type="date" class="form-control form-control-sm" id="cashFlowDatePicker" name="cashFlowDate" style="width: auto;" />
+                            </div>
+                            <div class="mb-3">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="text-muted">Opening Balance:</span>
+                                    <span id="startingCash" class="text-dark fw-bold">₹0.00</span>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="text-muted">Credit:</span>
+                                    <span id="incomingCash" class="text-success fw-bold">₹0.00</span>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="text-muted">Debit:</span>
+                                    <span id="outgoingCash" class="text-danger fw-bold">₹0.00</span>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="text-muted">Closing Balance:</span>
+                                    <span id="endingCash" class="text-primary fw-bold">₹0.00</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Bank Details Tab -->
+                        <div class="tab-pane fade" id="bank-details" role="tabpanel" aria-labelledby="bank-details-tab">
+                            <div class="scrollable">
+                                <table id="bankAccountsTable" class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Bank Name</th>
+                                            <th>Account Type</th>
+                                            <th>Account Number</th>
+                                            <th>Balance</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- Dynamic content -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Top 5 Expenses -->
+        <div class="col-md-6">
+            <div class="card shadow-sm h-100">
+                <div class="card-header">
+                    <span>Top 5 Expenses</span>
+                    <div class="input-group">
+                        <button type="button" class="btn btn-default" id="daterange-btn-exp">
+                            <i class="far fa-calendar-alt"></i> <span>Select Date Range</span>
+                            <i class="fas fa-caret-down"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <canvas id="topExpensesChart" style="height: 250px;"></canvas>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+<div class="row mb-4">
+    <div class="col-md-12">
+        <div class="card shadow-sm">
+            <div class="card-header">
+                <ul class="nav nav-tabs card-header-tabs" id="chartsTab" role="tablist">
+                    <li class="nav-item">
+                        <a class="nav-link active" id="cash-flow-tab" data-bs-toggle="tab" href="#cash-flow" role="tab" aria-controls="cash-flow" aria-selected="true">Cash Flow</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="income-expense-tab" data-bs-toggle="tab" href="#income-expense" role="tab" aria-controls="income-expense" aria-selected="false">Income vs Expense</a>
+                    </li>
+                </ul>
+            </div>
+            <div class="card-body">
+                <div class="tab-content" id="chartsTabContent">
+                    <!-- Cash Flow Tab -->
+                    <div class="tab-pane fade show active" id="cash-flow" role="tabpanel" aria-labelledby="cash-flow-tab">
+                        <div class="chart-container" style="height: 250px;">
+                            <canvas id="cashFlowChart" style="height: 100%; width: 100%;"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Income and Expense Tab -->
+                    <div class="tab-pane fade" id="income-expense" role="tabpanel" aria-labelledby="income-expense-tab">
+                        <div class="chart-container" style="height: 250px;">
+                            <canvas id="incomeExpenseChart" style="height: 100%; width: 100%;"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
+
+    <script src="~/Scripts/adminlte.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.8.0/dist/chart.min.js"></script>
+
+
+    <script>
+        // Disable future dates in the date picker
+        document.addEventListener('DOMContentLoaded', function () {
+            const today = new Date();
+            const formattedDate = today.toISOString().split('T')[0]; // Get today's date in YYYY-MM-DD format
+            const datePicker = document.getElementById('cashFlowDatePicker');
+            datePicker.setAttribute('max', formattedDate); // Set the max attribute to today
+        });
+        $(document).ready(function () {
+            // Fetch data when date is selected
+            $('#cashFlowDatePicker').on('change', function () {
+                const selectedDate = $(this).val(); // Get selected date
+                if (selectedDate) {
+                    fetchDailyCashFlowData(selectedDate); // Fetch data for the selected date
+                }
+            });
+
+            // Fetch data for today's date by default
+            fetchDailyCashFlowData(moment().format('YYYY-MM-DD'));
+
+            function fetchDailyCashFlowData(date) {
+                $.ajax({
+                    url: '/Accountant/GetDailyCashFlowDataAsync', // Controller route
+                    type: 'GET',
+                    data: { selectedDate: date },
+                    success: function (response) {
+                        if (response.success && response.data) {
+                            const cashFlow = response.data;
+
+                            // Update cash flow details
+                            $('#startingCash').text(`₹${cashFlow.StartingBalance.toLocaleString('en-IN')}`);
+                            $('#incomingCash').text(`₹${cashFlow.Incoming.toLocaleString('en-IN')} `);
+                            $('#outgoingCash').text(`₹${cashFlow.Outgoing.toLocaleString('en-IN')} `);
+                            $('#bankTransfer').text(`₹${cashFlow.Banktransfer.toLocaleString('en-IN')} `);
+                            $('#endingCash').text(`₹${cashFlow.EndingBalance.toLocaleString('en-IN')} `);
+
+                            updateCashDetails({
+                                OpeningBalance: cashFlow.StartingBalance,
+                                Credit: cashFlow.Incoming,
+                                Debit: cashFlow.Outgoing,
+                                BankTransfer: cashFlow.Banktransfer,
+                                ClosingBalance: cashFlow.EndingBalance
+                            });
+                        } else {
+                            console.error("Failed to fetch cash flow data.");
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('AJAX error:', status, error);
+                    }
+                });
+            }
+
+            function updateCashDetails(data) {
+                const { OpeningBalance, Credit, Debit, BankTransfer, ClosingBalance } = data;
+
+                // Update Text Fields
+                $('#startingCash').text(`₹${OpeningBalance.toLocaleString('en-IN')}`);
+                $('#incomingCash').text(`₹${Credit.toLocaleString('en-IN')}`);
+                $('#outgoingCash').text(`₹${Debit.toLocaleString('en-IN')}`);
+                $('#bankTransfer').text(`₹${BankTransfer.toLocaleString('en-IN')}`);
+                $('#endingCash').text(`₹${ClosingBalance.toLocaleString('en-IN')}`);
+
+                // Calculate Progress Bar Widths
+                const total = Credit + Debit + BankTransfer;
+                const creditPercentage = (Credit / total) * 100 || 0;
+                const debitPercentage = (Debit / total) * 100 || 0;
+                const bankTransferPercentage = (BankTransfer / total) * 100 || 0;
+
+                // Update Progress Bar Widths
+                $('#creditProgressBar').css('width', `${creditPercentage}%`);
+                $('#debitProgressBar').css('width', `${debitPercentage}%`);
+                $('#bankTransferProgressBar').css('width', `${bankTransferPercentage}%`);
+            }
+
+            // Example usage with sample data
+
+
+
+            // Dynamically calculate the current financial year dates
+            const today = new Date();
+            const currentYear = today.getFullYear();
+
+            // Correct financial year calculation
+            const startOfFinancialYear = new Date(today.getMonth() > 2 ? currentYear : currentYear - 1, 4, 1); // April 1
+            console.log(startOfFinancialYear);
+            const endOfFinancialYear = new Date(today.getMonth() > 2 ? currentYear + 1 : currentYear, 2, 31); // March 31
+
+            // Set the default date in the date picker to today
+            const formattedToday = today.toISOString().split('T')[0]; // Format: YYYY-MM-DD
+            const datePicker = document.getElementById('cashFlowDatePicker');
+            datePicker.value = formattedToday; // Set default value
+            datePicker.setAttribute('max', formattedToday); // Set the max date to today
+
+            // Fetch Cash Flow Chart data for the current financial year
+            fetchCashFlowChart(startOfFinancialYear, endOfFinancialYear);
+
+
+            // Fetch cash flow chart data for the financial year
+            function fetchCashFlowChart(startDate, endDate) {
+                $.getJSON('/Accountant/CashFlowChartAsyncSGS', {
+                    startDate: startDate.toISOString().split('T')[0],
+                    endDate: endDate.toISOString().split('T')[0]
+                }, function (response) {
+                    if (response.success) {
+                        const cashFlowData = response.data;
+
+                        // Extract data for the chart
+                        const months = cashFlowData.map(item => item.Month);
+                        const totalIncomeData = cashFlowData.map(item => item.TotalIncome);
+                        const totalExpenseData = cashFlowData.map(item => item.TotalExpense);
+                        const grandTotalData = cashFlowData.map(item => item.GrandTotal);
+
+                        // Additional data for tooltips
+                        const cashData = cashFlowData.map(item => item.Cash);
+                        const bankData = cashFlowData.map(item => item.Bank);
+                        const chequeData = cashFlowData.map(item => item.Cheque);
+                        const otherData = cashFlowData.map(item => item.Other);
+
+                        // Initialize the Cash Flow Chart context
+                        const cashFlowCtx = document.getElementById('cashFlowChart').getContext('2d');
+
+                        // Check if the chart instance exists and destroy it before creating a new one
+                        if (window.cashFlowChart && typeof window.cashFlowChart.destroy === 'function') {
+                            window.cashFlowChart.destroy();
+                        }
+
+                        // Create the Cash Flow Chart
+                        window.cashFlowChart = new Chart(cashFlowCtx, {
+                            type: 'line',
+                            data: {
+                                labels: months,
+                                datasets: [
+                                    {
+                                        label: 'Total Income',
+                                        data: totalIncomeData,
+                                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                                        borderColor: 'rgba(75, 192, 192, 1)',
+                                        borderWidth: 2,
+                                        fill: true,
+                                        tension: 0.4
+                                    },
+                                    {
+                                        label: 'Total Expense',
+                                        data: totalExpenseData,
+                                        backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                                        borderColor: 'rgba(255, 99, 132, 1)',
+                                        borderWidth: 2,
+                                        fill: true,
+                                        tension: 0.4
+                                    },
+                                    {
+                                        label: 'Grand Total',
+                                        data: grandTotalData,
+                                        backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                                        borderColor: 'rgba(54, 162, 235, 1)',
+                                        borderWidth: 2,
+                                        fill: true,
+                                        tension: 0.4
+                                    }
+                                ]
+                            },
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: true,
+                                scales: {
+                                    x: {
+                                        title: {
+                                            display: true,
+                                            text: 'Month'
+                                        },
+                                        grid: {
+                                            display: false
+                                        }
+                                    },
+                                    y: {
+                                        beginAtZero: true,
+                                        title: {
+                                            display: true,
+                                            text: 'Amount (INR)'
+                                        },
+                                        ticks: {
+                                            callback: function (value) {
+                                                return '₹' + value.toLocaleString('en-IN');
+                                            }
+                                        },
+                                        grid: {
+                                            color: '#e0e0e0'
+                                        }
+                                    }
+                                },
+                                plugins: {
+                                    tooltip: {
+                                        callbacks: {
+                                            label: function (tooltipItem, data) {
+                                                const index = tooltipItem.dataIndex;
+                                                const modeData = {
+                                                    Cash: cashData[index],
+                                                    Bank: bankData[index],
+                                                    Cheque: chequeData[index],
+                                                    Other: otherData[index]
+                                                };
+
+                                                const modeInfo = Object.entries(modeData)
+                                                    .map(([mode, amount]) => `${mode}: ₹${amount.toLocaleString('en-IN')}`)
+                                                    .join('\n');
+
+                                                return `${tooltipItem.dataset.label}: ₹${tooltipItem.raw.toLocaleString('en-IN')}\n${modeInfo}`;
+                                            }
+                                        }
+                                    },
+                                    legend: {
+                                        position: 'top'
+                                    }
+                                }
+                            }
+                        });
+                    } else {
+                        console.error('Failed to fetch cash flow data.');
+                    }
+                });
+            }
+
+        });
+
+       $(document).ready(function () {
+    // Fetch Receivables, Payables, and Vouchers Data
+    $.ajax({
+        url: '@Url.Action("GetReceivablesPayablesDataAsyncSGS")',
+        type: 'GET',
+        dataType: 'json',
+        success: function (response) {
+            if (response.success) {
+                const data = response.data;
+
+                // Helper function to format currency
+                const formatCurrency = (amount) => {
+                    return `₹${amount.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+                };
+
+                // Update Receivables Card
+                $('#totalReceivables').text(formatCurrency(data.TotalReceivables));
+                $('#totalReceived').text(formatCurrency(data.TotalReceived));
+                $('#overdueReceivables').text(formatCurrency(data.OverdueReceivables));
+
+                // Update Payables Card
+                $('#totalPayables').text(formatCurrency(data.TotalPayables));
+                $('#totalPaid').text(formatCurrency(data.TotalPaid));
+                $('#overduePayables').text(formatCurrency(data.OverduePayables));
+
+                // Update Voucher Card
+                $('#totalVouchersCreated').text(formatCurrency(data.TotalVoucherAmount));
+                $('#usedVoucherCount').text(data.UsedVoucherCount);
+                $('#usedVoucherAmount').text(formatCurrency(data.UsedVoucherAmount));
+                $('#unusedVoucherCount').text(data.UnusedVoucherCount);
+                $('#unusedVoucherAmount').text(formatCurrency(data.UnusedVoucherAmount));
+
+                // Calculate Progress for Receivables
+                const receivablesPaidPercentage = data.TotalReceivables > 0
+                    ? (data.TotalReceived / data.TotalReceivables) * 100
+                    : 0;
+                const receivablesOverduePercentage = data.TotalReceivables > 0
+                    ? (data.OverdueReceivables / data.TotalReceivables) * 100
+                    : 0;
+
+                // Update Receivables Progress Bars
+                $('#receivablesPaidBar').css('width', `${receivablesPaidPercentage}%`);
+                $('#receivablesOverdueBar').css('width', `${receivablesOverduePercentage}%`);
+
+                // Calculate Progress for Payables
+                const payablesPaidPercentage = data.TotalPayables > 0
+                    ? (data.TotalPaid / data.TotalPayables) * 100
+                    : 0;
+                const payablesOverduePercentage = data.TotalPayables > 0
+                    ? (data.OverduePayables / data.TotalPayables) * 100
+                    : 0;
+
+                // Update Payables Progress Bars
+                $('#payablesPaidBar').css('width', `${payablesPaidPercentage}%`);
+                $('#payablesOverdueBar').css('width', `${payablesOverduePercentage}%`);
+
+                // Calculate Progress for Vouchers
+                const totalVoucherCount = data.TotalVouchers;
+                const usedVoucherPercentage = totalVoucherCount > 0
+                    ? (data.UsedVoucherCount / totalVoucherCount) * 100
+                    : 0;
+                const unusedVoucherPercentage = totalVoucherCount > 0
+                    ? (data.UnusedVoucherCount / totalVoucherCount) * 100
+                    : 0;
+
+                // Update Voucher Progress Bars
+                $('#usedVouchersBar').css('width', `${usedVoucherPercentage}%`);
+                $('#unusedVouchersBar').css('width', `${unusedVoucherPercentage}%`);
+            } else {
+                console.error("Failed to fetch data:", response.message);
+            }
+        },
+        error: function (error) {
+            console.error("AJAX error:", error);
+        }
+    });
+});
+
+
+        $(document).ready(function () {
+            // Fetch bank balances
+            fetchBankBalances();
+
+            function fetchBankBalances() {
+                $.ajax({
+                    url: '/Accountant/GetCurrentBankBalancesAsyncSGS',
+                    type: 'GET',
+                    success: function (response) {
+                        if (response.success) {
+                            const bankBalances = response.data;
+                            const tableBody = $("#bankAccountsTable tbody");
+                            tableBody.empty();
+
+                            // Populate table rows
+                            bankBalances.forEach(bank => {
+                                const rowId = `balance-row-${bank.BankName.replace(/\s+/g, '')}`;
+
+                                const row = `
+                            <tr id="${rowId}">
+                                <td>${bank.BankName}</td>
+                                <td>${bank.AccountType}</td>
+                                <td>${bank.AccountNumber}</td>
+                                <td>
+                                    <span class="check-balance-text" style="color: blue; cursor: pointer;">Check Balance</span>
+                                    <span class="balance-text" style="display: none; cursor: pointer;">₹${bank.CurrentBalance.toLocaleString('en-IN')}</span>
+                                </td>
+                            </tr>`;
+                                tableBody.append(row);
+
+                                // Add click event to toggle balance display
+                                $(`#${rowId} .check-balance-text`).on('click', function () {
+                                    $(this).hide(); // Hide "Check Balance" text
+                                    $(this).siblings('.balance-text').fadeIn(); // Show balance text
+                                });
+
+                                $(`#${rowId} .balance-text`).on('click', function () {
+                                    $(this).hide(); // Hide balance text
+                                    $(this).siblings('.check-balance-text').fadeIn(); // Show "Check Balance" text
+                                });
+                            });
+                        } else {
+                            console.error("Failed to fetch bank balances.");
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('AJAX error:', status, error);
+                    }
+                });
+            }
+        });
+
+        $(document).ready(function () {
+            // Initialize Date Range Pickers
+            initializeDateRangePickers();
+            initializeCharts();
+            updateTopExpensesData('2024-04-01','2025-03-31');
+
+            // Clear Individual Filters
+            $('#clear-totalIncExp-btn').click(function () {
+                clearDateRangeFilter();
+            });
+
+            $('#clear-cashdate-btn').click(function () {
+                clearCashDateFilter();
+            });
+
+            $('#clear-bank-btn').click(function () {
+                clearBankFilter();
+            });
+
+            $('#clear-incvsexp-btn').click(function () {
+                clearIncVsExpFilter();
+            });
+
+            $('#clear-exp-btn').click(function () {
+                clearExpFilter();
+            });
+
+            $('#clear-cashflow-btn').click(function () {
+                clearCashFlowFilter();
+            });
+
+            // Functions Definitions
+
+            function initializeDateRangePickers() {
+                const ranges = {
+                    'This Month': [moment().startOf('month'), moment().endOf('month')],
+                    'Three Months': [moment().subtract(2, 'months').startOf('month'), moment().endOf('month')],
+                    'Six Months': [moment().subtract(5, 'months').startOf('month'), moment().endOf('month')],
+                    'One Year': [moment().startOf('year'), moment().endOf('year')],
+                    'Quarterly': [moment().startOf('quarter'), moment().endOf('quarter')],
+                    'Fiscal Year': [moment().month(3).startOf('month'), moment().month(2).endOf('month').add(1, 'year')],
+                    'Previous Fiscal Year': [moment().subtract(1, 'year').month(3).startOf('month'), moment().month(2).endOf('month')]
+                };
+
+                const locale = {
+                    format: 'MMM D, YYYY',
+                    cancelLabel: 'Clear',
+                    applyLabel: 'Apply'
+                };
+
+                const monthYearLocale = {
+                    format: 'MMMM YYYY',
+                    cancelLabel: 'Clear'
+                };
+
+                // Main Date Range Picker
+                setupDaterangePicker('#daterange-btn', ranges, locale, updateDataBasedOnDateRange);
+
+                // Income vs Expense Date Range Picker (Month-Year Format)
+                setupDaterangePicker('#daterange-btn-incvsexp', ranges, monthYearLocale, updateIncomeVsExpenseChart);
+
+
+                // Top Expenses Date Range Picker
+                setupDaterangePicker('#daterange-btn-exp', ranges, locale, updateTopExpensesData);
+
+                // Cash Flow Date Range Picker
+                setupDaterangePicker('#daterange-btn-cashflow', null, locale, updateCashFlowData);
+
+                // Cash Date Picker (Single Date)
+                $('#cashDateFilter').daterangepicker({
+                    singleDatePicker: true,
+                    showDropdowns: true,
+                    autoUpdateInput: false,
+                    locale: {
+                        cancelLabel: 'Clear'
+                    }
+                }).on('apply.daterangepicker', function (ev, picker) {
+                    var selectedDate = picker.startDate.format('YYYY-MM-DD');
+                    $(this).val(picker.startDate.format('MMMM D, YYYY'));
+                    $('#cashdate-label').html('Selected Date: ' + picker.startDate.format('MMMM D, YYYY')).show();
+
+                    // AJAX call to fetch CashInHand data
+                    $.ajax({
+                        url: '/Accountant/GetCashInHandAsyncSGS', // Replace with your actual controller route
+                        type: 'GET',
+                        data: { date: selectedDate },
+                        success: function (response) {
+                            if (response.success) {
+                                // Update the UI with the CashInHand data
+                                if (response && response.objac) {
+                                    const cashInHand = response.objac.CashInHand ? response.objac.CashInHand.toLocaleString('hi-IN', { style: 'currency', currency: 'INR' }) : '₹0.00';
+                                    $('#cashInHand').text(cashInHand);
+                                } else {
+                                    console.error("Data is undefined or missing objac property");
+                                }
+                            } else {
+                                // Handle failure
+                                console.error('Failed to fetch CashInHand data.');
+                            }
+                        },
+                        error: function (xhr, status, error) {
+                            // Handle error
+                            console.error('AJAX error:', status, error);
+                        }
+                    });
+                }).on('cancel.daterangepicker', function (ev, picker) {
+                    clearCashDateFilter();
+                });
+
+
+                // Bank Dropdown Change
+                $('#BankId').change(function () {
+                    var selectedBank = $(this).find('option:selected').text();
+                    var bankId = $(this).val();
+
+                    if (bankId) {
+                        // Update the label to show the selected bank
+                        $('#bank-label').html('Selected Bank: ' + selectedBank).show();
+
+                        // Make an AJAX call to get the bank balance
+                        $.ajax({
+                            url: '/Accountant/GetBankBalanceSGS',  // Replace with your actual controller and action name
+                            type: 'GET',
+                            data: { accountId: bankId },
+                            success: function (response) {
+                                // Update the BankBalance card with the fetched balance
+                                $('#BankBalance').text(response.toLocaleString('en-IN', { style: 'currency', currency: 'INR' }));
+                            },
+                            error: function (xhr, status, error) {
+                                console.error('Error fetching bank balance:', error);
+                            }
+                        });
+                    } else {
+                        $('#bank-label').hide();
+                        $('#BankBalance').text('Select Account'); // Clear the Bank Balance when no bank is selected
+                    }
+                });
+
+            }
+            function setupDaterangePicker(selector, ranges, locale, callback) {
+                $(selector).daterangepicker({
+                    ranges: ranges,
+                    autoUpdateInput: false,
+                    showDropdowns: true,
+                    minYear: 2000,
+                    maxYear: parseInt(moment().format('YYYY'), 10),
+                    startDate: moment().startOf('year'),
+                    endDate: moment().endOf('year'),
+                    locale: locale
+                }, function (start, end, label) {
+                    // Correctly pass the selector to getDisplayText
+                    const displayText = getDisplayText(label, start, end, selector);
+                    $(selector).find('span').html(displayText);  // Update the correct span with displayText
+
+                    // Call the callback function with the start and end dates
+                    callback(start.format('YYYY-MM-DD'), end.format('YYYY-MM-DD'));
+                }).on('apply.daterangepicker', function (ev, picker) {
+                    // When applying the date range, use the correct selector
+                    const displayText = picker.startDate.format('MMM D, YYYY') + ' - ' + picker.endDate.format('MMM D, YYYY');
+                    $(selector).find('span').html(displayText);
+                    $(selector + '-label').html('Selected Range: ' + displayText).show();
+
+                    highlightSelectedRange(picker, picker.chosenLabel);
+
+                    // Trigger the callback when the range is applied
+                    callback(picker.startDate.format('YYYY-MM-DD'), picker.endDate.format('YYYY-MM-DD'));
+                }).on('cancel.daterangepicker', function (ev, picker) {
+                    clearFilter(selector);
+                });
+            }
+
+            function getDisplayText(label, start, end, selector) {
+                let displayText;
+
+                if (label == 'This Month') {
+                    displayText = start.format('MMMM YYYY');
+                } else if (['Three Months', 'Six Months', 'One Year', 'Quarterly', 'Fiscal Year', 'Previous Fiscal Year'].includes(label)) {
+                    displayText = start.format('MMM YYYY') + ' - ' + end.format('MMM YYYY');
+                } else {
+                    displayText = start.format('MMM D, YYYY') + ' - ' + end.format('MMM D, YYYY');
+                }
+
+                // Dynamically update the correct span within the provided selector
+                $(selector).find('span').html(displayText);  // Ensure text is set correctly
+
+                return displayText;
+            }
+
+
+            function highlightSelectedRange(picker, label) {
+                $('.daterangepicker .ranges li').removeClass('active');
+                $('.daterangepicker .ranges li').filter(function () {
+                    return $(this).text().trim() === label;
+                }).addClass('active');
+            }
+
+            function clearFilter(selector) {
+                $(selector).find('span').html('Select Date Range');
+                $(selector + '-label').hide();
+            }
+
+            // Define the AJAX update functions (stub functions for example)
+            function updateDataBasedOnDateRange(startDate, endDate) {
+                // Make an AJAX GET request to fetch data from the server
+                $.ajax({
+                    url: '/Accountant/TotalIncExpAsyncSGS',
+                    type: 'GET',
+                    data: {
+                        startDate: startDate,
+                        endDate: endDate
+                    },
+                    success: function (response) {
+                        if (response.success) {
+                            if (response && response.objac) {
+                                const totalIncome = response.objac.TotalIncome ? response.objac.TotalIncome.toLocaleString('hi-IN', { style: 'currency', currency: 'INR' }) : '₹0.00';
+                                const totalExpenses = response.objac.TotalExpenses ? response.objac.TotalExpenses.toLocaleString('hi-IN', { style: 'currency', currency: 'INR' }) : '₹0.00';
+                                $('#totalIncome').text(totalIncome);
+                                $('#totalExpenses').text(totalExpenses);
+                            } else {
+                                console.error("Data is undefined or missing objac property");
+                            }
+                        } else {
+                            console.error("Failed to fetch income and expense data.");
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.error("AJAX request failed:", error);
+                    }
+                });
+
+            }
+
+
+            async function updateIncomeVsExpenseChart(startDate, endDate) {
+                try {
+                    // Fetch data from the server using $.getJSON
+                    $.getJSON('/Accountant/IncvsExpGraphAsyncSGS', { startDate: startDate, endDate: endDate }, function (response) {
+                        // Parse the JSON response
+                        const data = response; // Use response directly since $.getJSON already parses the JSON
+
+                        // Extract month, income, and expense data
+                        const months = data.map(item => item.Month);
+                        const incomeData = data.map(item => item.Income);
+                        const expenseData = data.map(item => item.Expense);
+
+                        // Initialize the chart
+                        var incomeExpenseCtx = document.getElementById('incomeExpenseChart').getContext('2d');
+
+                        // If a previous chart instance exists, destroy it before creating a new one
+                        if (window.incomeExpenseChart) {
+                            window.incomeExpenseChart.destroy();
+                        }
+
+                        // Create a new Chart instance
+                        window.incomeExpenseChart = new Chart(incomeExpenseCtx, {
+                            type: 'bar',
+                            data: {
+                                labels: months,
+                                datasets: [
+                                    {
+                                        label: 'Income',
+                                        data: incomeData,
+                                        backgroundColor: '#4db6ac',  // Modern teal color for income
+                                        borderColor: '#009688',      // Slightly darker teal for border
+                                        borderWidth: 1,
+                                    },
+                                    {
+                                        label: 'Expense',
+                                        data: expenseData,
+                                        backgroundColor: '#ffab91',  // Modern peach color for expense
+                                        borderColor: '#ff5722',      // Slightly darker peach for border
+                                        borderWidth: 1,
+                                    }
+                                ]
+                            },
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                scales: {
+                                    x: {
+                                        stacked: false,
+                                        beginAtZero: true,
+                                        title: {
+                                            display: true,
+                                            text: 'Month'
+                                        },
+                                        grid: {
+                                            display: false  // Hide grid lines
+                                        }
+                                    },
+                                    y: {
+                                        stacked: false,
+                                        beginAtZero: true,
+                                        title: {
+                                            display: true,
+                                            text: 'Amount'
+                                        },
+                                        ticks: {
+                                            callback: function (value) {
+                                                return '₹' + value; // Format y-axis labels with currency
+                                            }
+                                        },
+                                        grid: {
+                                            color: '#e0e0e0'  // Light grey grid lines
+                                        }
+                                    }
+                                },
+                                plugins: {
+                                    tooltip: {
+                                        callbacks: {
+                                            label: function (tooltipItem) {
+                                                return tooltipItem.dataset.label + ': ₹' + tooltipItem.raw;
+                                            }
+                                        }
+                                    },
+                                    legend: {
+                                        position: 'top'
+                                    }
+                                }
+                            }
+                        });
+                    });
+                } catch (error) {
+                    console.error("Error fetching or processing data:", error);
+                }
+            }
+
+            // Example usage:
+
+
+            function updateTopExpensesData(startDate, endDate) {
+                $.getJSON('/Accountant/ExpensesChartAsyncSGS', { startDate: startDate, endDate: endDate }, function (response) {
+                    if (response.success) {
+                        const expenseData = response.data;
+
+                        // Calculate the total amount of expenses
+                        const totalAmount = expenseData.reduce((sum, item) => sum + item.TotalAmount, 0);
+
+                        // Create labels with percentages
+                        const labels = expenseData.map(item => {
+                            const percentage = ((item.TotalAmount / totalAmount) * 100).toFixed(2); // Calculate percentage
+                            return `${item.ExpenseName} (${percentage}%)`; // Append percentage to label
+                        });
+
+                        const data = expenseData.map(item => item.TotalAmount);
+
+                        // Predefined basic color palette
+                        const backgroundColor = [
+                            '#ff6384', // Red
+                            '#36a2eb', // Blue
+                            '#ffce56', // Yellow
+                            '#4bc0c0', // Teal
+                            '#9966ff', // Purple
+                            '#ff9f40', // Orange
+                            '#c9cbcf', // Gray
+                            '#8dd3c7', // Soft Green
+                            '#fb8072', // Coral
+                            '#80b1d3'  // Light Blue
+                        ];
+
+                        // Destroy existing chart if it exists
+                        if (window.topExpensesChart) {
+                            window.topExpensesChart.destroy();
+                        }
+
+                        // Create the Top Expenses Chart using the fetched data
+                        const topExpensesCtx = document.getElementById('topExpensesChart').getContext('2d');
+                        window.topExpensesChart = new Chart(topExpensesCtx, {
+                            type: 'doughnut',
+                            data: {
+                                labels: labels,
+                                datasets: [{
+                                    data: data,
+                                    backgroundColor: backgroundColor // Use predefined colors
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                plugins: {
+                                    legend: {
+                                        position: 'right'
+                                    },
+                                    tooltip: {
+                                        callbacks: {
+                                            label: function (tooltipItem) {
+                                                const amount = data[tooltipItem.dataIndex];
+                                                const percentage = ((amount / totalAmount) * 100).toFixed(2);
+                                                return `${expenseData[tooltipItem.dataIndex].ExpenseName}: ₹${amount.toLocaleString('en-IN')} (${percentage}%)`;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        });
+                    } else {
+                        console.error("Failed to fetch expense data.");
+                    }
+                }).fail(function () {
+                    console.error("Error occurred while fetching the expense data.");
+                });
+            }
+
+
+
+
+            function updateCashFlowData(startDate, endDate) {
+                // AJAX call to update cash flow data based on date range
+            }
+
+
+
+            function clearBankFilter() {
+                $('#BankId').val('').change();
+                $('#BankBalance').val('Select Account');
+                $('#bank-label').hide();
+            }
+
+            function clearIncVsExpFilter() {
+                clearFilter('#daterange-btn-incvsexp');
+            }
+
+            function clearExpFilter() {
+                clearFilter('#daterange-btn-exp');
+            }
+
+            function clearCashFlowFilter() {
+                clearFilter('#daterange-btn-cashflow');
+            }
+
+            async function initializeCharts() {
+
+
+                // Fetch data from the server
+                const response = await fetch('/Accountant/IncvsExpGraphAsyncSGS?startDate=2024-04-01&endDate=2025-3-31');
+                const data = await response.json();
+
+                // Extract month, income, and expense data
+                const months = data.map(item => item.Month);
+                const incomeData = data.map(item => item.Income);
+                const expenseData = data.map(item => item.Expense);
+
+                // Initialize the chart
+                var incomeExpenseCtx = document.getElementById('incomeExpenseChart').getContext('2d');
+                window.incomeExpenseChart = new Chart(incomeExpenseCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: months,
+                        datasets: [
+                            {
+                                label: 'Income',
+                                data: incomeData,
+                                backgroundColor: '#4db6ac',  // Modern teal color for income
+                                borderColor: '#009688',      // Slightly darker teal for border
+                                borderWidth: 1,
+                                // Add slight shadow to bars
+                                shadowColor: '#004d40',
+                                shadowBlur: 4,
+                                shadowOffsetX: 1,
+                                shadowOffsetY: 1,
+                            },
+                            {
+                                label: 'Expense',
+                                data: expenseData,
+                                backgroundColor: '#ffab91',  // Modern peach color for expense
+                                borderColor: '#ff5722',      // Slightly darker peach for border
+                                borderWidth: 1,
+                                // Add slight shadow to bars
+                                shadowColor: '#d84315',
+                                shadowBlur: 4,
+                                shadowOffsetX: 1,
+                                shadowOffsetY: 1,
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            x: {
+                                stacked: false,
+                                beginAtZero: true,
+                                title: {
+                                    display: true,
+                                    text: 'Month'
+                                },
+                                grid: {
+                                    display: false  // Hide grid lines
+                                }
+                            },
+                            y: {
+                                stacked: false,
+                                beginAtZero: true,
+                                title: {
+                                    display: true,
+                                    text: 'Amount'
+                                },
+                                ticks: {
+                                    callback: function (value) {
+                                        return '₹' + value; // Format y-axis labels with currency
+                                    }
+                                },
+                                grid: {
+                                    color: '#e0e0e0'  // Light grey grid lines
+                                }
+                            }
+                        },
+                        plugins: {
+                            tooltip: {
+                                callbacks: {
+                                    label: function (tooltipItem) {
+                                        return tooltipItem.dataset.label + ': ₹' + tooltipItem.raw;
+                                    }
+                                }
+                            },
+                            legend: {
+                                position: 'top'
+                            }
+                        }
+                    }
+
+                });
+                 //Fetch data for the expenses chart with date range
+                $.getJSON('/Accountant/ExpensesChartAsyncSGS', { startDate: '2024-01-01', endDate: '2024-12-31' }, function (response) {
+                    if (response.success) {
+                        const expenseData = response.data;
+
+                        // Calculate the total amount of expenses
+                        const totalAmount = expenseData.reduce((sum, item) => sum + item.TotalAmount, 0);
+
+                        // Create labels with percentages
+                        const labels = expenseData.map(item => {
+                            const percentage = ((item.TotalAmount / totalAmount) * 100).toFixed(2); // Calculate percentage
+                            return `${item.ExpenseName} (${percentage}%)`; // Append percentage to label
+                        });
+
+                        const data = expenseData.map(item => item.TotalAmount);
+
+                        // Create the Top Expenses Chart using the fetched data
+                        var topExpensesCtx = document.getElementById('topExpensesChart').getContext('2d');
+                        window.topExpensesChart = new Chart(topExpensesCtx, {
+                            type: 'doughnut',
+                            data: {
+                                labels: labels,
+                                datasets: [{
+                                    data: data,
+                                    backgroundColor: ['#ff6384', '#36a2eb', '#ffce56', '#4bc0c0', '#9966ff', '#ff9f40', '#cc65fe']
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                plugins: {
+                                    legend: {
+                                        position: 'right' // Adjust the legend position as needed
+                                    },
+                                    tooltip: {
+                                        callbacks: {
+                                            label: function (tooltipItem) {
+                                                const amount = data[tooltipItem.dataIndex];
+                                                const percentage = ((amount / totalAmount) * 100).toFixed(2);
+                                                return `${expenseData[tooltipItem.dataIndex].ExpenseName}: ₹${amount} (${percentage}%)`;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        });
+                    } else {
+                        console.error("Failed to fetch expense data.");
+                    }
+                });
+            }
+        });
+    </script>
+}
+

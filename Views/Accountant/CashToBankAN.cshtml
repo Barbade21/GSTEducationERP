@@ -1,0 +1,187 @@
+﻿@model GSTEducationERPLibrary.Accountant.Accountant
+
+@{
+    string currentBalance = ViewBag.CurrentBalance; // Example: "14,531.67 ₹"
+
+    // Step 1: Remove the currency symbol and whitespace
+    string sanitizedBalance = currentBalance.Replace("₹", "").Trim();
+
+    // Step 2: Remove all commas
+    sanitizedBalance = sanitizedBalance.Replace(",", "");
+
+    // Step 3: Convert to decimal
+    decimal balance = 0;
+    if (decimal.TryParse(sanitizedBalance, System.Globalization.NumberStyles.Any, null, out balance))
+    {
+        // Successfully converted
+        ViewBag.DecimalBalance = balance; // Use this decimal value
+    }
+    else
+    {
+        // Handle conversion failure
+        ViewBag.DecimalBalance = 0; // Or any fallback/default value
+    }
+}
+
+
+@using (Html.BeginForm("CashToBankAN", "Accountant", FormMethod.Post, new { @id = "TransferMoney", @enctype = "multipart/form-data" }))
+{
+    <div class="card">
+
+        <div class="col-md-12 card-body">
+            <p style="margin-left:20px">Current Balance: <b>@ViewBag.CurrentBalance</b></p>
+
+            <div class="form-group row">
+                <label for="enterAmount" class="col-md-4 col-form-label text-md-right required">Enter Amount:</label>
+                <div class="col-md-8">
+                    @*<input type="number" id="enterAmount" class="form-control" placeholder="Enter amount" min="1" max="@currentBalance" required />*@
+                    @*@Html.EditorFor(model => model.Amount, new { htmlAttributes = new { @class = "form-control", id = "enterAmount"} })*@
+                    @Html.EditorFor(model => model.Amount, new { htmlAttributes = new { @class = "form-control", id = "enterAmount", @type = "number", @step = "0.01" } })
+
+                </div>
+            </div>
+
+
+            <div id="DebitFromField" class="form-group row">
+                @Html.Label("BankId", "Credited To: ", htmlAttributes: new { @class = "col-md-4 col-form-label text-md-right required" })
+
+                <div class="col-md-8">
+                    @{
+                        var bankList = ViewBag.BankAccountList as IEnumerable<SelectListItem>;
+                    }
+                    @Html.DropDownListFor(
+    model => model.BankId,
+    bankList ?? new SelectList(Enumerable.Empty<SelectListItem>(), "Value", "Text"),
+    "--Select Bank Account--",
+    new { @class = "form-control", id = "BankId" }
+)
+                    @Html.ValidationMessageFor(model => model.BankId, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            @*<div class="form-group row">
+            <label for="EnterAmount" class="col-md-4 col-form-label text-md-right required">Deposited Date:</label>
+            <div class="col-md-8">
+                @Html.EditorFor(model => model.BankAccountOpeningDate, new { htmlAttributes = new { @class = "form-control", id = "enterDate", @type = "date" } })
+
+            </div>
+        </div>*@
+            <div class="form-group row">
+                <label for="EnterAmount" class="col-md-4 col-form-label text-md-right required">Deposited Date:</label>
+                <div class="col-md-8">
+                    @Html.EditorFor(model => model.BankAccountOpeningDate, new { htmlAttributes = new { @class = "form-control", id = "enterDate", @type = "date" } })
+                </div>
+            </div>
+
+            <div>
+            </div>
+            <div class="d-flex justify-content-center pt-2 mb-2">
+                <input type="button" value="Save" class="btn btn-success" id="SaveButton">
+            </div>
+        </div>
+    </div>
+
+}
+<script src="~/Content/plugins/toastr/toastr.min.js"></script>
+<link rel="stylesheet" href="~/Content/plugins/toastr/toastr.min.css" />
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+    $(document).ready(function () {
+        var today = new Date();
+
+        // Format today's date as 'YYYY-MM-DD'
+        var formattedDate = today.toISOString().split('T')[0];
+
+        // Set the max attribute for the date input
+        $('#enterDate').attr('max', formattedDate);
+
+        // Calculate 7 days before today
+        var minDate = new Date();
+        minDate.setDate(today.getDate() - 7);
+
+        // Format minDate as 'YYYY-MM-DD'
+        var formattedMinDate = minDate.toISOString().split('T')[0];
+
+        // Set the min attribute for the date input
+        $('#enterDate').attr('min', formattedMinDate);
+    });
+</script>
+<script>
+    $(document).ready(function () {
+
+    // Ensure currentBalance is correctly set
+    var currentBalance = parseFloat(@Html.Raw(Json.Encode(ViewBag.DecimalBalance))) || 0;
+
+    // Amount validation and formatting function
+    function validateAmount() {
+        let amountField = $("#enterAmount");
+        let amountValue = amountField.val().replace(/[^0-9.]/g, ''); // Allow only numbers and decimals
+
+        // Prevent leading zeros and ensure only one decimal point
+        amountValue = amountValue.replace(/^0+(\d)/, '$1').replace(/(\..*)\./g, '$1');
+
+        let numericValue = parseFloat(amountValue) || 0;
+
+        // Cap the amount at 10 crores and ensure it doesn't exceed current balance
+        if (numericValue > 100000000) {
+            toastr.warning('Amount cannot exceed ₹10 crores.');
+            numericValue = 100000000;
+        } else if (numericValue > currentBalance) {
+            toastr.warning('Amount cannot exceed your current balance.');
+            numericValue = currentBalance;
+        }
+
+        amountField.val(numericValue || ''); // Update input with cleaned value
+    }
+
+    // Attach the input event listener for real-time validation
+    $("#enterAmount").on('input', validateAmount);
+
+    // Handle Save button click
+    $("#SaveButton").click(function (e) {
+        e.preventDefault();
+   
+        // Retrieve form data
+        var amount = parseFloat($('#enterAmount').val()) || 0;
+        var paymentType = $('#PaymentType').val();
+        var bankId = $('#BankId').val();
+        var transactionId = $('#enterDate').val();
+
+        // Simple form validation
+        if (!amount || !bankId || !transactionId) {
+            Swal.fire('Error', 'Please fill in all fields.', 'error');
+            return;
+        }
+
+        // Show confirmation dialog
+        Swal.fire({
+            title: 'Confirmation',
+            text: 'Are you sure you want to transfer money?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yes',
+            cancelButtonText: 'No'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Perform AJAX form submission
+                $.ajax({
+                    url: $("#TransferMoney").attr("action"),
+                    type: $("#TransferMoney").attr("method"),
+                    data: $("#TransferMoney").serialize(),
+                    success: function (response) {
+                        // Clear form fields and show success message
+                        $("#TransferMoney")[0].reset();
+                        toastr.success('Amount transferred successfully!', 'Success');
+                        setTimeout(() => window.location.reload(), 1000);
+                    },
+                    error: function () {
+                        toastr.error('An error occurred. Please try again later.', 'Error');
+                    }
+                });
+            }
+        });
+    });
+});
+
+</script>

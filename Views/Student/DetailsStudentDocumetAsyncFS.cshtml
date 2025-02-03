@@ -1,0 +1,259 @@
+﻿
+
+
+@model GSTEducationERPLibrary.Student.Student
+
+@{
+    ViewBag.Title = "DetailsStudentDocumetAsyncFS";
+}
+<style>
+    .styled-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 25px 0;
+        font-size: 14px; /* Reduced font size */
+        text-align: left;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+    }
+
+    .styled-table thead tr {
+        background-color: #009879;
+        color: #ffffff;
+    }
+
+    .styled-table th,
+    .styled-table td {
+        padding: 8px 10px; /* Reduced padding */
+    }
+
+    .styled-table tbody tr {
+        border-bottom: 1px solid #dddddd;
+    }
+
+    .styled-table tbody tr:nth-of-type(even) {
+        background-color: #f3f3f3;
+    }
+
+    .styled-table tbody tr:last-of-type {
+        border-bottom: 2px solid #009879;
+    }
+
+    .styled-table tbody tr:hover {
+        background-color: #f1f1f1;
+    }
+
+    .icon {
+        color: white;
+        text-decoration: none;
+    }
+
+    .action-content {
+        display: flex;
+        align-items: center;
+        flex-direction: column-reverse;
+    }
+
+    .icon-img,
+    .icon-video {
+        width: 20px; /* Reduced icon size */
+        height: 20px;
+        margin-left: 5px;
+    }
+
+    .left-header {
+        text-align: left;
+    }
+
+    .right-header {
+        text-align: right;
+    }
+
+     (max-width: 768px) {
+        .styled-table {
+            font-size: 12px; /* Further reduced font size for smaller screens */
+        }
+                 
+
+        .styled-table th,
+        .styled-table td {
+            padding: 6px 8px; /* Further reduced padding */
+        }
+
+        .icon-img,
+        .icon-video {
+            width: 15px; /* Further reduced icon size */
+            height: 15px;
+        }
+
+    #th {
+        color: white;
+    }
+    }
+</style>
+
+@*<style>
+        .styled-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 25px 0;
+            font-size: 18px;
+            text-align: left;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+        }
+
+            .styled-table thead tr {
+                background-color: #009879;
+                color: #ffffff;
+            }
+
+            .styled-table th,
+            .styled-table td {
+                padding: 12px 15px;
+            }
+
+            .styled-table tbody tr {
+                border-bottom: 1px solid #dddddd;
+            }
+
+                .styled-table tbody tr:nth-of-type(even) {
+
+                    background-color: #f3f3f3;
+                }
+
+                .styled-table tbody tr:last-of-type {
+                    border-bottom: 2px solid #009879;
+                }
+
+                .styled-table tbody tr:hover {
+                    background-color: #f1f1f1;
+                }
+
+        .icon {
+            color: white;
+            text-decoration: none;
+        }
+
+        .action-content {
+            display: flex;
+            align-items: center;
+            flex-direction: column-reverse;
+        }
+
+        .icon-img,
+        .icon-video {
+            width: 25px;
+            height: 25px;
+            margin-left: 5px;
+        }
+
+        .left-header {
+            text-align: left;
+        }
+
+        .right-header {
+            text-align: right;
+        }
+
+    </style>*@
+
+<table class="styled-table">
+    <thead>
+        <tr>
+            <th id="th" class="left-header" style="color: white;">Document</th>
+            <th id="th" class="right-header"  style="color: white;">View</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Pan Card</td>
+            <td>
+                <a  href="@Url.Content(Model.PanCard)" class="icon" target="_blank" title="View">
+                    <span class="action-content">
+                        <img src="~/Content/StudentTemplate/icon/eye.png" alt="view" class="icon-img">
+                        <video class="icon-video" playsinline loop>
+                            <source src="~/Content/Admin/icon/mortarboard.mp4" type="video/mp4" />
+                        </video>
+                    </span>
+                </a>
+            </td>
+        </tr>
+        <tr>
+            <td>Aadhar Card</td>
+            <td>
+                <a  href="@Url.Content(Model.AadharCard)" class="icon" target="_blank" title="View">
+                    <span class="action-content">
+                        <img src="~/Content/StudentTemplate/icon/eye.png" alt="view" class="icon-img">
+                        <video class="icon-video" playsinline loop>
+                            <source src="~/Content/Admin/icon/mortarboard.mp4" type="video/mp4" />
+                        </video>
+                    </span>
+                </a>
+            </td>
+        </tr>
+        <tr>
+            <td>SSC</td>
+            <td>
+                <a  href="@Url.Content(Model.SSC)" class="icon" target="_blank" title="View">
+                    <span class="action-content">
+                        <img src="~/Content/StudentTemplate/icon/eye.png" alt="view" class="icon-img">
+                        <video class="icon-video" playsinline loop>
+                            <source src="~/Content/Admin/icon/mortarboard.mp4" type="video/mp4" />
+                        </video>
+                    </span>
+                </a>
+            </td>
+        </tr>
+        <tr>
+            <td>HSC</td>
+            <td>
+                <a  href="@Url.Content(Model.HSC)" class="icon" target="_blank" title="View">
+                    <span class="action-content">
+                        <img src="~/Content/StudentTemplate/icon/eye.png" alt="view" class="icon-img">
+                        <video class="icon-video" playsinline loop>
+                            <source src="~/Content/Admin/icon/mortarboard.mp4" type="video/mp4" />
+                        </video>
+                    </span>
+                </a>
+            </td>
+        </tr>
+        <tr>
+            <td>Graduation</td>
+            <td>
+                <a  href="@Url.Content(Model.Graduation)" class="icon" target="_blank" title="View">
+                    <span class="action-content">
+                        <img src="~/Content/StudentTemplate/icon/eye.png" alt="view" class="icon-img">
+                        <video class="icon-video" playsinline loop>
+                            <source src="~/Content/Admin/icon/mortarboard.mp4" type="video/mp4" />
+                        </video>
+                    </span>
+                </a>
+            </td>
+        </tr>
+        <tr>
+            <td>Post Graduation</td>
+            <td>
+                <a  href="@Url.Content(Model.PostGraduation)" class="icon" target="_blank" title="View">
+                    <span class="action-content">
+                        <img src="~/Content/StudentTemplate/icon/eye.png" alt="view" class="icon-img">
+                        <video class="icon-video" playsinline loop>
+                            <source src="~/Content/Admin/icon/mortarboard.mp4" type="video/mp4" />
+                        </video>
+                    </span>
+                </a>
+            </td>
+        </tr>
+        <tr>
+            <td>Photograph</td>
+            <td>
+                <a href="@Url.Content(Model.Photograph)"class="icon" target="_blank" title="View">
+                    <span class="action-content">
+                        <img src="~/Content/StudentTemplate/icon/eye.png" alt="view" class="icon-img">
+                        <video class="icon-video" playsinline loop>
+                            <source src="~/Content/Admin/icon/mortarboard.mp4" type="video/mp4" />
+                        </video>
+                    </span>
+                </a>
+            </td>
+        </tr>
+    </tbody>
+</table>

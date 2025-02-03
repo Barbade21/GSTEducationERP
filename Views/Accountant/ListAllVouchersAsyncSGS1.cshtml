@@ -1,0 +1,339 @@
+﻿@using Newtonsoft.Json
+
+@model GSTEducationERPLibrary.Accountant.Accountant
+
+@{
+    ViewBag.Title = "ListAllVouchersAsyncSGS";
+    Layout = "~/Views/Shared/_LayoutERP.cshtml";
+}
+
+<html lang="en" style="height: auto;">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Stylesheets -->
+    <link href="~/Content/plugins/fontawesome-free/css/all.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="~/Content/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+    <link rel="stylesheet" href="~/Content/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
+    <link rel="stylesheet" href="~/Content/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
+
+    <!-- External Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <style>
+        h2 {
+            padding-top: 10px;
+            margin-bottom: 10px;
+            font-family: Verdana;
+            font-weight: bold;
+            font-size: large;
+            color: #33CCCC;
+            margin-left: 15px;
+        }
+
+        .dataTables_wrapper .btn-secondary {
+            color: #235;
+            background-color: transparent !important;
+            border-color: transparent;
+            font-size: x-large;
+            margin: 0px !important;
+        }
+
+        .card-primary.card-outline-tabs > .card-header a.active {
+            border-top: 3px solid #33CCCC;
+        }
+
+        a {
+            color: #33CCCC;
+        }
+
+        .card.card-outline-tabs .card-header a:hover {
+            color: #33CCCC;
+        }
+
+        .card-primary.card-outline-tabs > .card-header a.active,
+        .card-primary.card-outline-tabs > .card-header a.active:hover {
+            border-top: 3px solid #33CCCC;
+        }
+
+        .card-body {
+            font-family: Calibri !important;
+            padding-bottom: 0px !important;
+            background-color: #ffffff;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        th {
+            background-color: #33CCCC;
+            color: #000;
+            text-align: center !important;
+        }
+
+        td {
+            text-align: center;
+            color: black !important;
+        }
+
+        .table td,
+        .table th {
+            padding: 8px !important;
+            font-size: 14px !important;
+        }
+
+        table.dataTable {
+            border-collapse: separate !important;
+            border-spacing: 0;
+        }
+
+        /* Removing gap between tabs and table */
+        .nav-tabs {
+            margin-bottom: 0;
+            border-bottom: 2px solid #33CCCC;
+            background-color: white; /* Set the background of tabs to white */
+        }
+
+        /* Make tabs and table width match */
+        .card.card-outline-tabs {
+            border: none;
+            margin-bottom: 0;
+            width: 100%; /* Ensure the width of the tabs is 100% */
+        }
+
+        .card-header {
+            background-color: white;
+            padding: 0;
+            margin-bottom: 0;
+            border-bottom: 2px solid #33CCCC;
+        }
+
+        /* Set active tab's background and border */
+        .card-outline-tabs .nav-tabs .nav-link.active {
+            background-color: white;
+            border-color: #33CCCC #33CCCC white;
+        }
+
+        /* Ensuring table and tabs connect visually */
+        .card-body {
+            background-color: #ffffff;
+            padding-top: 0;
+        }
+
+        /* Aligning table and tab containers */
+        .connected-container {
+            border-top: 2px solid #33CCCC;
+            margin-top: 0;
+            width: 100%; /* Ensure full width */
+        }
+
+        /* Modal Styles */
+        .modal-title {
+            font-size: 20px;
+            color: #33CCCC;
+            text-align: center;
+        }
+
+        .modal-content {
+            background-color: #ffffff;
+            border: 2px solid #428bca;
+            border-radius: 5px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .modal-body {
+            font-family: 'Times New Roman';
+            font-weight: bold;
+        }
+
+        /* Style adjustments for tabs to table connection */
+        .tabs-connected .nav-tabs {
+            background-color: white; /* Tabs background color */
+            border-bottom: none;
+        }
+
+        .tabs-connected .nav-link.active {
+            background-color: white;
+            color: #33CCCC;
+            border-color: #33CCCC #33CCCC white;
+        }
+
+        /* Adjusting table wrapper to connect better */
+        .dataTables_wrapper {
+            margin-top: 0;
+            width: 100%; /* Ensure table fits the width */
+        }
+
+        #ExamList {
+            border-top: none;
+            width: 100%; /* Make the table take full width */
+        }
+        /* Loading Overlay */
+        #loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Loader GIF */
+        #loader-gif {
+            width: auto; /* Adjust size as needed */
+            height: auto;
+        }
+
+        .tableContent {
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+    </style>
+
+</head>
+
+<body style="margin: 0; padding: 0;">
+    <div class="card" style="padding: 5px; margin: 10px 20px;">
+        <h2>Vouchers List</h2>
+        <hr />
+
+        <div class="card-body">
+            <div class="card card-primary card-outline card-outline-tabs">
+                <div class="card-header p-0 border-bottom-0">
+                    <ul class="nav nav-tabs" id="custom-tabs-four-tab" role="tablist">
+                        @foreach (var tab in new[] {
+                            new { Text = "Vouchers", Api = Url.Action("ListVoucherAsyncSGS1", "Accountant"), Type = "vouchers" },
+                            new { Text = "Pending Vouchers", Api = Url.Action("ListPendingVoucherAsyncSGS1", "Accountant"), Type = "pending" },
+                            new { Text = "Completed Vouchers", Api = Url.Action("ListCompletedVoucherAsyncSGS1", "Accountant"), Type = "completed" }
+                        })
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link @(tab.Type == "vouchers" ? "active" : "")"
+                                   data-toggle="pill"
+                                   href="#"
+                                   data-api="@tab.Api"
+                                   data-type="@tab.Type"
+                                   role="tab">@tab.Text</a>
+                            </li>
+                        }
+                    </ul>
+                </div>
+
+                <div class="card-body tableContent">
+                    <table id="voucherTable" class="table table-bordered table-striped">
+                        <thead>
+                            <tr id="tableHeaders">
+                                <!-- Dynamic headers will be added here -->
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Data will be dynamically added here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Scripts -->
+        <script src="~/Content/plugins/jquery/jquery.min.js"></script>
+        <script src="~/Content/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+        <script src="~/Content/plugins/datatables/jquery.dataTables.min.js"></script>
+        <script src="~/Content/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
+
+        <script>
+            $(document).ready(function () {
+
+                // Headers mapped in Razor and passed to JavaScript
+                const headersMap = {
+                    vouchers: @Html.Raw(JsonConvert.SerializeObject(new[] { "Voucher Code", "Amount Receiver", "Amount Receiver Type", "Voucher Type", "Voucher Date", "Payment Mode", "Amount", "Actions" })),
+                    completed: @Html.Raw(JsonConvert.SerializeObject(new[] { "Voucher Code", "Amount Receiver", "Amount Receiver Type", "Voucher Type", "Voucher Date", "Payment Mode", "Amount", "Actions" })),
+                    pending: @Html.Raw(JsonConvert.SerializeObject(new[] { "Voucher Code", "Amount Receiver", "Amount Receiver Type", "Voucher Type", "Voucher Date", "Payment Mode", "Amount", "Balance", "Actions" }))
+                };
+
+                // Fetch table headers dynamically based on tab type
+                function getTableHeaders(tabType) {
+                    const headers = headersMap[tabType] || [];
+                    return headers.map(header => `<th>${header}</th>`).join('');
+                }
+
+                // Fetch table row data dynamically based on tab type
+                function getRowData(item, tabType) {
+                    const formattedDate = new Date(parseInt(item.VoucherDate.match(/\d+/)[0])).toLocaleDateString('en-IN');
+                    const amountFormatted = new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(item.Amount);
+
+                    return `
+                        <tr>
+                            <td>${item.VoucherCode}</td>
+                            <td>${item.VendorName || item.AmountPaidTo || item.AmountReceiver}</td>
+                            <td>${item.VendorName ? "Vendor" : item.AmountPaidTo ? "Staff" : item.AmountReceiverType}</td>
+                            <td>${item.VoucherType}</td>
+                            <td>${formattedDate}</td>
+                            <td>${item.PaymentMode}</td>
+                            <td>${amountFormatted}</td>
+                            ${tabType === "pending" ? `<td>${new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(item.Balance)}</td>` : ""}
+                            <td>
+                                <a href="#" class="icon" data-id="${item.VoucherCode}" data-url="@Url.Action("DetailsVoucherSGS", "Accountant")?id=${item.VoucherCode}" data-toggle="modal" data-target="#voucherModal" title="View">
+                                    <video width="25" height="25" playsinline loop>
+                                        <source src="@Url.Content("~/Content/Admin/icon/view.mp4")" type="video/mp4">
+                                    </video>
+                                </a>
+                                ${tabType === "vouchers" ?`
+                                <span class="delete-button video-link icon" onclick="showDeleteConfirmation('${item.VoucherCode}')" title="Delete">
+                                    <video width="25" height="25" playsinline loop>
+                                        <source src="@Url.Content("~/Content/Admin/icon/Delete%202.mp4")" type="video/mp4" />
+                                    </video>
+                                </span>`: ""}
+                            </td>
+                        </tr>`;
+                }
+
+                // Load table data
+                function loadTableData(apiUrl, tabType) {
+                    $.ajax({
+                        url: apiUrl,
+                        type: 'GET',
+                        dataType: 'json',
+                        success: function (response) {
+                            if (response.success) {
+                                $('#tableHeaders').html(getTableHeaders(tabType));
+
+                                const tableBody = response.data.map(item => getRowData(item, tabType)).join('');
+                                $('#voucherTable tbody').html(tableBody);
+
+                                $('#voucherTable').DataTable({
+                                    destroy: true,
+                                    responsive: true,
+                                });
+                            } else {
+                                Swal.fire('Error', response.message, 'error');
+                            }
+                        },
+                        error: function () {
+                            Swal.fire('Error', 'Failed to fetch data.', 'error');
+                        }
+                    });
+                }
+
+                // Initial tab load
+                const initialTab = $('#custom-tabs-four-tab .nav-link.active');
+                loadTableData(initialTab.data('api'), initialTab.data('type'));
+
+                // Tab switch handling
+                $('#custom-tabs-four-tab .nav-link').on('click', function () {
+                    const apiUrl = $(this).data('api');
+                    const tabType = $(this).data('type');
+                    if (apiUrl && tabType) {
+                        loadTableData(apiUrl, tabType);
+                    }
+                });
+            });
+        </script>
+    </div>
+</body>
+</html>

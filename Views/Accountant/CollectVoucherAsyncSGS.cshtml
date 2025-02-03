@@ -1,0 +1,195 @@
+﻿@model GSTEducationERPLibrary.Accountant.Accountant
+
+<style>
+    .voucher-container {
+        width: 100%;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+        border: 1px solid #000;
+        font-family: Arial, sans-serif;
+        background-color: #fff;
+    }
+
+    .voucher-header {
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    .voucher-body {
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .voucher-section {
+        width: 48%;
+    }
+
+    .voucher-header h4 {
+        margin: 0;
+        font-size: 24px;
+        color: #333;
+    }
+
+    .voucher-details dt {
+        float: left;
+        clear: left;
+        width: 200px;
+        font-weight: bold;
+        color: #555;
+    }
+
+    .voucher-details dd {
+        margin: 0 0 10px 210px;
+        padding: 0;
+        color: #333;
+    }
+
+    .voucher-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+    }
+
+        .voucher-table th, .voucher-table td {
+            border: 1px solid #000;
+            padding: 8px;
+            text-align: left;
+        }
+
+        .voucher-table th {
+            background-color: #f2f2f2;
+        }
+
+    .voucher-footer {
+        margin-top: 20px;
+    }
+
+    .remarks {
+        margin-top: 10px;
+    }
+</style>
+
+<div class="voucher-container">
+
+    <div class="voucher-header">
+        <div class="company-name">
+            Rahitech
+        </div>
+        <div class="company-details">
+            3rd Floor, Upendra 01, Opp. Hotel Nisarga, Erandwane Pune-04<br />
+            9421776337 | 9421776347 Email: info@rahitech.com<br />
+            www.rahitech.com
+        </div>
+    </div>
+
+    <div class="voucher-body">
+        <div class="voucher-section">
+            <dl class="voucher-details dl-horizontal">
+                <dt>@Html.DisplayNameFor(model => model.VoucherCode) :</dt>
+                <dd>@Html.DisplayFor(model => model.VoucherCode)</dd>
+
+                @if (string.IsNullOrEmpty(Model.VendorName))
+                {
+                    <dt>@Html.DisplayNameFor(model => model.AmountPaidTo) :</dt>
+                    <dd>@Html.DisplayFor(model => model.AmountPaidTo)</dd>
+                } else
+                {
+                    <dt>@Html.DisplayNameFor(model => model.VendorName) :</dt>
+                    <dd>@Html.DisplayFor(model => model.VendorName)</dd>
+                }
+
+                <dt>@Html.DisplayNameFor(model => model.PaymentMode) :</dt>
+                <dd>@Html.DisplayFor(model => model.PaymentMode)</dd>
+
+                @if (Model.PaymentMode == "BANK")
+                {
+                    <dt>@Html.DisplayNameFor(model => model.BankName) :</dt>
+                    <dd>@Html.DisplayFor(model => model.BankName)</dd>
+
+                    <dt>Receiver's Bank Details :</dt>
+                    <dd style="color: #fff">.</dd>
+
+                    <dt>@Html.DisplayNameFor(model => model.ReceiverBankAccountNumber) :</dt>
+                    <dd>@Html.DisplayFor(model => model.ReceiverBankAccountNumber)</dd>
+
+                    <dt>@Html.DisplayNameFor(model => model.ReceiverBankAccountHolderName) :</dt>
+                    <dd>@Html.DisplayFor(model => model.ReceiverBankAccountHolderName)</dd>
+
+                    <dt>@Html.DisplayNameFor(model => model.ReceiverBankIFSCCode) :</dt>
+                    <dd>@Html.DisplayFor(model => model.ReceiverBankIFSCCode)</dd>
+
+                    <dt>@Html.DisplayNameFor(model => model.ReceiverBankName) :</dt>
+                    <dd>@Html.DisplayFor(model => model.ReceiverBankName)</dd>
+
+                    <dt>@Html.DisplayNameFor(model => model.TransactionId) :</dt>
+                    <dd>@Html.DisplayFor(model => model.TransactionId)</dd>
+                } else if (Model.PaymentMode == "CHEQUE")
+                {
+                    <dt>Cheque Number :</dt>
+                    <dd>@Html.DisplayFor(model => model.TransactionId)</dd>
+
+                    <dt>@Html.DisplayNameFor(model => model.ChequeDate) :</dt>
+                    <dd>@Html.DisplayFor(model => model.ChequeDate)</dd>
+                }
+            </dl>
+        </div>
+
+        <div class="voucher-section">
+            <dl class="voucher-details dl-horizontal">
+                <dt>@Html.DisplayNameFor(model => model.VoucherDate) :</dt>
+                <dd>@Html.DisplayFor(model => model.VoucherDate)</dd>
+
+                <dt>@Html.DisplayNameFor(model => model.VoucherType) :</dt>
+                <dd>@Html.DisplayFor(model => model.VoucherType)</dd>
+            </dl>
+        </div>
+    </div>
+
+    <div class="voucher-body">
+        <table class="voucher-table">
+            <thead>
+                <tr>
+                    <th>@Html.DisplayNameFor(model => model.Description)</th>
+                    <th>AMOUNT (₹.)</th>
+                    <th>BALANCE (₹.)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>@Html.DisplayFor(model => model.Description)</td>
+                    <td>@Html.DisplayFor(model => model.Amount)</td>
+                    <td>@Html.DisplayFor(model => model.Balance)</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="voucher-body">
+        <table class="voucher-table">
+            <thead>
+                <tr>
+                    <th>Transactions</th>
+                    <th>AMOUNT (₹.)</th>
+                    <th>BALANCE (₹.)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>@Html.DisplayFor(model => model.Description)</td>
+                    <td>@Html.DisplayFor(model => model.Amount)</td>
+                    <td>@Html.DisplayFor(model => model.Balance)</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="voucher-footer">
+        <div>
+            For Rahi Tech<br />
+            Authorised Signatory
+        </div>
+        <div class="note">
+            Note: 1) Receipt valid subject to realization of cheque.
+        </div>
+    </div>
+</div>

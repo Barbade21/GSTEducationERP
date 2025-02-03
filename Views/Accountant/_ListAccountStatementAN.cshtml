@@ -1,0 +1,126 @@
+﻿@model GSTEducationERPLibrary.Accountant.Accountant
+
+<script src="~/Content/Admin/js/Icon.js"></script>
+
+
+<div class="card">
+    <div class="card-body">
+        <table id="example1" class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th>Transaction Date</th>
+                    @*<th>Name</th>*@
+                    <th>Transaction Id</th>
+                    <th>Description</th>
+                    <th>Payment Type</th>
+                    <th>Payment Mode</th>
+                    <th>Transaction Type</th>
+                    <th>Amount</th>
+                    <th>Balance</th>
+                </tr>
+            </thead>
+
+
+            @*@foreach (var item in Model.lstCashList)
+                {*@
+            <tbody>
+                @for (int i = 0; i < Model.lstCashList.Count; i++)
+                {
+                    var Item = Model.lstCashList[i];
+                    <tr class="@(Item.TransactionType == "Credit" ? "credit" : "debit")"
+                        style="--stagger-delay:@i">
+                        <td>@Html.DisplayFor(modelItem => Item.Date)</td>
+                        <td>@Html.DisplayFor(modelItem => Item.TransactionId)</td>
+                        @*<td>@Html.DisplayFor(modelItem => Item.ReceiverBankAccountHolderName) @if (Item.Description != null){"/ "+ @Html.DisplayFor(modelItem => Item.Description); }</td>*@
+                        <td>
+                            @Html.DisplayFor(modelItem => Item.ReceiverBankAccountHolderName)
+                            @if (!string.IsNullOrEmpty(Item.Description))
+                            {
+                                @: / @Html.DisplayFor(modelItem => Item.Description)
+                            }
+                        </td>
+
+                        <td>@Html.DisplayFor(modelItem => Item.Status)</td>
+                        <td>@Html.DisplayFor(modelItem => Item.PaymentType)</td>
+                        <td>
+                            @*@Html.DisplayFor(modelItem => Item.TransactionType)*@
+                            @if (Item.TransactionType.ToLower() == "credit")
+                            {
+                                <span class="badge bg-green">@Html.DisplayFor(modelItem => Item.TransactionType)</span>
+                            }
+                            else if (Item.TransactionType.ToLower() == "debit")
+                            {
+                                <span class="badge bg-danger">@Html.DisplayFor(modelItem => Item.TransactionType)</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-warning">@Html.DisplayFor(modelItem => Item.TransactionType)</span>
+                            }
+                        </td>
+                        <td>@String.Format("₹ {0:N2}", Item.Amount)</td>
+                        <td>@String.Format("₹ {0:N2}", Item.Balance)</td>
+                    </tr>
+                }
+            </tbody>
+
+
+
+        </table>
+    </div>
+</div>
+
+<div class="modal fade" id="CashHistory" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        @*<div class="modal-content">*@
+
+        <div class="modal-body">
+            <div class="modal-header">
+                @*<h5 class="modal-title" id="exampleModalLabel" style="color: #33CCCC;">Cash Deduction</h5>*@
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        </div>
+        @*</div>  *@
+    </div>
+</div>
+@*<div class="modal fade" id="CashHistory" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel" style="color: #33CCCC;">Cash Recieved</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body"></div>
+                <div class="modal-footer"></div>
+            </div>
+        </div>
+    </div>*@
+<script>
+    $(document).ready(function () {
+        $(document).on('click', '.bank-transaction', function (e) {
+            e.preventDefault();
+            var transactionid = $(this).data('bank-id');
+            console.log("Transaction ID: " + transactionid);
+
+            $.ajax({
+                url: '/Accountant/CashRecievedViewAN',
+                type: 'GET',
+                data: { TransactionId: transactionid },
+                success: function (data) {
+                    console.log("Data received:", data);
+                    $('#CashHistory .modal-body').html(data);
+                    $('#CashHistory .modal-header h5').text('Cash Recieved');
+                    $('#CashHistory').modal('show');
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    console.error("Error: " + textStatus, errorThrown);
+                    alert("An error occurred while fetching bank details.");
+                }
+            });
+        });
+    });
+</script>
+

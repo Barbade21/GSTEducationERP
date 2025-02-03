@@ -1,0 +1,148 @@
+﻿@model GSTEducationERPLibrary.Accountant.Accountant
+    @using System.Globalization
+
+<html>
+<head>
+   
+    <link href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css" rel="stylesheet" />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        .modal-header .close {
+            font-size: 2.5rem; /* Set the font size */
+            padding: 15px; /* Increase padding to increase overall size */
+            transition: color 0.3s; /* Add transition effect for smooth hover */
+        }
+
+            .modal-header .close:hover {
+                color: red; /* Change the color on hover */
+            }
+    </style>
+</head>
+<body>
+
+            <table id="ShortlistedStudents" class="table table-bordered table-striped">
+                <thead>
+                    <tr>
+                        <th hidden>
+                            @Html.DisplayNameFor(model => model.DepartmentID)
+                        </th>
+                        <th>
+                            Staff Code
+                        </th>
+                        <th>
+                            Name
+                        </th>
+                        <th>
+                            Department
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Designation)
+                        </th>
+                        <th>
+                            Bank Name
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.AccountNo)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.IFSCCode)
+                        </th>
+                        <th>
+                            Branch Name
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.GrossSalary)
+                        </th>
+                        <th>
+                            Action
+                        </th>
+                    </tr>
+                </thead>
+                <tbody id="staffListBody">
+                    @if (Model != null && Model.lstEmp != null)
+                    {
+                        for (int i = 0; i < Model.lstEmp.Count; i++)
+                        {
+                            var item = Model.lstEmp[i];
+                            <tr data-department-id="@item.DepartmentID">
+                                <td hidden>
+                                    @Html.DisplayFor(modelItem => item.DepartmentID)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.StaffCode)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.StaffName)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.DepartmentName)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Designation)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.BankName)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.AccountNo)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.IFSCCode)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.BranchName)
+                                </td>
+
+                                <td>@item.GrossSalary.ToString("C", new CultureInfo("en-IN"))</td>
+                                <td>
+                                   
+                                    <a class="icon" href="@Url.Action("ShowAllSalaryAsyncSS", "Accountant", new { StaffCode = item.StaffCode })" title="View">
+                                        <video width="25" height="25" playsinline loop>
+                                            <source src="~/Content/Admin/icon/view.mp4" type="video/mp4" />
+                                        </video>
+                                    </a>
+                                </td>
+
+
+                                @* <td style="text-align: center;">
+                                        <a href="@Url.Action("ShowAllSalaryAsyncSS", "Accountant", new { StaffCode = item.StaffCode })" class="icon" title="VIEW">
+                                            <video width="25" height="25" playsinline loop>
+                                                <source src="~/Content/Admin/icon/view.mp4" type="video/mp4">
+                                            </video>
+                                        </a>
+                                    </td>*@
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        
+
+
+
+    <script src="~/Content/Admin/js/Icon.js"></script>
+
+    <script src="~/Content/plugins/jquery/jquery.min.js" type="text/javascript"></script>
+    <script src="~/Content/plugins/bootstrap/js/bootstrap.bundle.min.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#ShortlistedStudents').on('click', '.icon', function () {
+                var VoucherCode = $(this).data('id');
+                var url = $(this).data('url');
+                $.ajax({
+                    url: url,
+                    type: 'GET',
+                    success: function (data) {
+                        $('#EditTaskModal .modal-body').html(data);
+                        $('#EditTaskModal').modal('show');
+                    },
+                    error: function (xhr, status, error) {
+                        console.log(xhr.responseText);
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

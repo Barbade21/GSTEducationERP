@@ -1,0 +1,194 @@
+﻿@model GSTEducationERPLibrary.Accountant.Accountant
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Cheque Receipt Table</title>
+
+    <link href="~/Content/Admin/css/UI.css" rel="stylesheet" />
+    <link href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css" rel="stylesheet" />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        .hidden-column {
+            display: none;
+        }
+    </style>
+
+</head>
+<body>
+    <div class="card-body">
+        <table id="ChequeReceiptTable" class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    @*<th>Sr. No.</th>*@
+                    <th>Receipt No.</th>
+                    <th>Student Code</th>
+                    <th>Student Name</th>
+                    @*<th>Admission Type</th>*@
+                    <th>Received Date</th>
+                    <th>Cheque Bank Name</th>
+                    <th>Cheque No.</th>
+                    <th>Cheque Date</th>
+                    <th>Amount</th>
+                    <th>Cheque Clearance Date</th>
+                    <th class="hidden-column">Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.lstChequeReceipt)
+                {
+                    <tr>
+                        <td>@Html.DisplayFor(modelItem => item.TransactionCodeSM)</td>
+                        <td>@Html.DisplayFor(modelItem => item.CandidateCode)</td>
+                        <td>@Html.DisplayFor(modelItem => item.StudentNameSM)</td>
+                        @*<td>@Html.DisplayFor(modelItem => item.AddmissionTypeSM)</td>*@
+                        <td>@item.TransactionDateSM.ToString("dd/MM/yyyy")</td>
+                        <td>@Html.DisplayFor(modelItem => item.BankNameSM)</td>
+                        <td>@Html.DisplayFor(modelItem => item.ChequeNumberSM)</td>
+                        <td>@item.ChequeDateSM.ToString("dd/MM/yyyy")</td>
+                        <td>₹ @Html.DisplayFor(modelItem => item.AmountSM).00</td>
+                        <td>
+                            @if (item.ChequeClearanceDateSM == DateTime.MinValue)
+                            {
+                                <span class="badge bg-orange">Not cleared</span>
+                            }
+                            else
+                            {
+                                @item.ChequeClearanceDateSM.ToString("dd/MM/yyyy")
+                            }
+                        </td>
+                        <td class="hidden-column">
+                            @if (item.Status == "Pending")
+                            {
+                                <span class="badge bg-orange">@Html.DisplayFor(modelItem => item.Status)</span>
+                            }
+                            else if (item.Status == "Completed")
+                            {
+                                <span class="badge bg-success">@Html.DisplayFor(modelItem => item.Status)</span>
+                            }
+                        </td>
+                        <td>
+                            @if (item.Status == "Pending")
+                            {
+
+                                <a class="sectionEditLink icon" href="javascript:;" data-id="@item.TransactionCodeSM" data-url="@Url.Action("ShowStudentFeeChequeAsyncSM", "Accountant", new { transactioncode = item.TransactionCodeSM, chequeDate = item.ChequeDateSM, receiveddate = item.TransactionDateSM })" data-toggle="modal" data-target="#SectionModal" title="Clear Cheque">
+                                    <video width="25" height="25" playsinline loop>
+                                        <source src="~/Content/Admin/icon/Edit%20Details.mp4" type="video/mp4" />
+                                    </video>
+                                </a>
+                            }
+                            else if (item.Status == "Completed")
+                            {
+                                <a class="icon" href="@Url.Action("StudentReceiptAsyncSM", "Accountant", new { transactionCode = item.TransactionCodeSM, amount = item.AmountSM, candidatecode =  item.CandidateCode })" title="View Receipt">
+                                    <video width="25" height="25" playsinline loop>
+                                        <source src="~/Content/Admin/icon/view.mp4" type="video/mp4" />
+                                    </video>
+                                </a>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        <!-- Updated modal structure -->
+        <div class="modal fade" id="SectionModal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modalLabel">Cheque Details</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <!-- Content from partial view will be loaded here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <script src="~/Content/Admin/js/Icon.js"></script>
+    <!-- jQuery -->
+    <script src="~/Content/plugins/jquery/jquery.min.js"></script>
+    <!-- Bootstrap 4 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+
+    <!-- DataTables & Plugins -->
+    <script src="~/Content/plugins/datatables/jquery.dataTables.min.js"></script>
+    <script src="~/Content/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
+    <script src="~/Content/plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
+    <script src="~/Content/plugins/datatables-responsive/js/responsive.bootstrap4.min.js"></script>
+    <script src="~/Content/plugins/datatables-buttons/js/dataTables.buttons.min.js"></script>
+    <script src="~/Content/plugins/datatables-buttons/js/buttons.bootstrap4.min.js"></script>
+    <script src="~/Content/plugins/jszip/jszip.min.js"></script>
+    <script src="~/Content/plugins/pdfmake/pdfmake.min.js"></script>
+    <script src="~/Content/plugins/pdfmake/vfs_fonts.js"></script>
+    <script src="~/Content/plugins/datatables-buttons/js/buttons.html5.min.js"></script>
+    <script src="~/Content/plugins/datatables-buttons/js/buttons.print.min.js"></script>
+    <script src="~/Content/plugins/datatables-buttons/js/buttons.colVis.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            // Handle the click event on the button with class 'sectionEditLink'
+            $('#ChequeReceiptTable').on('click', '.sectionEditLink', function (event) {
+                event.preventDefault(); // Prevent the default anchor click behavior
+
+                // Fetch the URL from the data-url attribute of the clicked element
+                var url = $(this).data('url');
+
+                // Use AJAX to load the content from the URL into the modal
+                $.ajax({
+                    url: url,
+                    type: 'GET',
+                    success: function (response) {
+                        // Load the response into the modal body
+                        $('#SectionModal .modal-body').html(response);
+
+                        // Show the modal
+                        $('#SectionModal').modal('show');
+                    },
+                    error: function (xhr, status, error) {
+                        // Handle error here (optional)
+                        console.error("Error loading modal content:", error);
+                        alert("Failed to load the cheque details. Please try again.");
+                    }
+                });
+            });
+        });
+
+    </script>
+
+    @section scripts {
+
+        <script>
+            $(document).ready(function () {
+                var table = $('#ChequeReceiptTable').DataTable({
+                    "responsive": true,
+                    "lengthChange": false,
+                    "autoWidth": false,
+                    "stateSave": true,
+                    "ordering": false,
+                    "buttons": [
+                        { extend: 'copy', text: '<img src="/Content/Admin/icon/copy.png" title="Copy" alt="Copy" height="20" width="20" />', titleAttr: 'Copy' },
+                        { extend: 'csv', text: '<img src="/Content/Admin/icon/csv.jpg" title="CSV" alt="CSV" height="20" width="20" />', titleAttr: 'CSV' },
+                        { extend: 'excel', text: '<img src="/Content/Admin/icon/xls-file.png" title="xls" alt="xls" height="20" width="20" />', titleAttr: 'Excel' },
+                        { extend: 'pdf', text: '<img src="/Content/Admin/icon/pdf-file.png" title="pdf" alt="pdf" height="20" width="20" />', titleAttr: 'PDF' },
+                        { extend: 'print', text: '<img src="/Content/Admin/icon/printer.png" title="printer" alt="printer" height="20" width="20" />', titleAttr: 'Print' },
+                        { extend: 'colvis', text: '<img src="/Content/Admin/icon/column.jpg" title="column" alt="column" height="20" width="20" />', titleAttr: 'Columns' }
+                    ]
+                });
+
+                table.buttons().container().appendTo('#ChequeReceiptTable_wrapper .col-md-6:eq(0)');
+            });
+        </script>
+    }
+</body>
+</html>

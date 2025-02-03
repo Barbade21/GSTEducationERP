@@ -1,0 +1,27 @@
+﻿@model GSTEducationERPLibrary.Student.Student
+
+
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.EventName)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Date)
+        </th>
+        
+    </tr>
+
+@foreach (var item in Model.lstEventDetails)
+{
+    <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.EventName)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.EventDate)
+        </td>
+    </tr>
+}
+
+</table>

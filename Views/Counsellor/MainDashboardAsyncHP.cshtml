@@ -1,0 +1,122 @@
+﻿@model GSTEducationERPLibrary.Counsellor.Counsellor
+
+@{
+    ViewBag.Title = "MainDashboardAsyncHP";
+    Layout = "~/Views/Shared/_LayoutERP.cshtml";
+	@Html.Partial("_LoadingOverlay");
+}
+
+@*<h2>MainDashboardAsyncHP</h2>*@
+
+
+
+<br />
+<div class="card-body" style="padding-top:0px">
+    <div class="container" style="margin-left:-10px">
+        <div class="row">
+       <div class="col-md-12">
+				<div class="card card-primary card-outline card-outline-tabs" style="width:81vw;">
+					<div class="card-header p-0 border-bottom-0 col-md-12 row">
+						<ul class="nav nav-tabs col-md-5" id="custom-tabs-four-tab" role="tablist">
+							<li class="nav-item">
+								<a class="nav-link active" data-toggle="pill" href="@Url.Action("CounsellorOrganizationDashboarddHP", "Counsellor")" role="tab" aria-controls="custom-tabs-four-home" aria-selected="true">Organization Dashboard</a>
+							</li>
+							<li class="nav-item">
+								<a class="nav-link" data-toggle="pill" href="@Url.Action("SelfDashboardAsyncHP", "Counsellor")" role="tab" aria-controls="custom-tabs-four-profile" aria-selected="false">Self Dashboard</a>
+							</li>
+						</ul>
+
+						<div class="col-md-5" style="padding-left: 2vw; display: flex; align-items: center;">
+							<span style="margin-right: 10px;">Select Month:</span>
+							<input type="month" class="form-control" id="MonthYearFilter" name="startMonthYear"
+								   max="@DateTime.Now.ToString("yyyy-MM")"
+								   value="@DateTime.Now.ToString("yyyy-MM")" style="width: auto;">
+						</div>
+					</div>
+
+					<div id="load"></div>
+				</div>
+			</div>
+        </div>
+        @*<div class="col-3">
+                <button type="button" class="btn btn-block bg-gradient-info active" value="List" onclick="location.href = '@Url.Action("ListMainGraphViewAsyncRU", "Counsellor")'">List</button>
+            </div>*@
+    </div>
+
+    @*<div id="load"></div>*@
+</div>
+
+<script src="~/Content/plugins/jquery/jquery.min.js"></script>
+<link href="~/Content/plugins/bootstrap-switch/css/bootstrap3/bootstrap-switch.min.css" rel="stylesheet" />
+<script src="~/Content/plugins/bootstrap-switch/js/bootstrap-switch.min.js"></script>
+
+@*div class="card " style="padding: 10px; /margin-left: -50px; margin-right: -50px;/ margin-top: 10px ">*@
+@*<h2>Reports</h2>*@
+
+<hr />
+
+
+<script>
+jQuery(document).ready(function ($) {
+    function loadTabContent(tabContentUrl) {
+	showLoadingOverlay();
+        $.ajax({
+            url: '/Counsellor/CounsellorOrganizationDashboarddHP',
+            type: 'GET',
+            data: {
+
+            },
+            success: function (data) {
+			
+		
+                $('#load').html(data);
+
+            },
+			    complete: function () {
+                hideLoadingOverlay();
+            }
+
+        });
+    }
+
+    $('#custom-tabs-four-tab').on('click', '.nav-link', function (e) {
+        e.preventDefault();
+        var tabContentUrl = $(this).attr('href');
+
+        loadTabContent(tabContentUrl);
+    });
+
+    var defaultTabUrl = '@Url.Action("CounsellorOrganizationDashboarddHP", "Counsellor")';
+    loadTabContent(defaultTabUrl);
+});
+</script>
+<script>
+   $('#MonthYearFilter').on('change', FetchCardsData);
+    function FetchCardsData() {
+         
+        var selectedDate = $('#MonthYearFilter').val();
+        showLoadingOverlay();
+        $.ajax({
+            url: '@Url.Action("CounsellorOrganizationDashboarddHP", "Counsellor")',
+            type: 'GET',
+            data: { startDate: selectedDate, endDate: selectedDate },
+            success: function (result) {
+                if (result.error) {
+                    toastr.error(result.error);
+                    return;
+                }
+                $('#load').html('');
+                $('#load').html(result);
+            },
+            error: function (xhr, status, error) {
+                toastr.error('Failed to fetch data: ' + error);
+            },
+            complete: function () {
+                hideLoadingOverlay();
+            }
+        });
+
+    }
+</script>
+<script src="~/Content/Admin/js/overlay.js"></script>
+

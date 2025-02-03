@@ -1,0 +1,181 @@
+﻿@model GSTEducationERPLibrary.Bind.Bind
+
+
+<html lang="en">
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title></title>
+
+    <link rel="stylesheet" href="~/Content/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+    <link rel="stylesheet" href="~/Content/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
+    <link rel="stylesheet" href="~/Content/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
+    <script src="~/Content/plugins/jquery/jquery.min.js" type="text/javascript"></script>
+
+    @*<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>*@
+    <!-- Bootstrap 4 -->
+    @*<script src="~/Content/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>*@
+    <script src="~/Content/plugins/moment/moment.min.js"></script>
+    <!-- Tempusdominus Bootstrap 4 -->
+    @*<script src="~/Content/plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js"></script>*@
+    @*<script src="~/Content/plugins/daterangepicker/daterangepicker.js"></script>*@
+    @*<link rel="stylesheet" href="~/Content/plugins/toastr/toastr.min.css">
+    <script src="~/Content/plugins/toastr/toastr.min.js"></script>*@
+    <style>
+        h2 {
+            color: #64bbc9;
+            font-weight: bold;
+            font-size: 30px;
+            margin-left: 17px;
+            margin-bottom: -10px;
+            font-family: sans-serif;
+        }
+
+        .dataTables_wrapper .btn-secondary {
+            color: #235;
+            background-color: transparent !important;
+            border-color: transparent;
+            font-size: x-large;
+        }
+
+        .card-primary.card-outline-tabs > .card-header a.active {
+            border-top: 3px solid #01a6a6;
+        }
+
+        a {
+            color: #01a6a6;
+        }
+
+        .card.card-outline-tabs .card-header a:hover {
+            color: #01a6a6;
+        }
+
+        .card-primary.card-outline-tabs > .card-header a.active, .card-primary.card-outline-tabs > .card-header a.active:hover {
+            border-top: 3px solid #01a6a6;
+        }
+
+        .card-body {
+            font-family: Calibri !important;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        th {
+            background-color: #64bbc9;
+            color: #000;
+            text-align: center !important;
+        }
+
+        td {
+            text-align: center;
+            color: black !important;
+        }
+
+        .table td {
+            padding: 0px 0px 0px 0px !important;
+            font-size: 14px !important;
+        }
+
+        .table th {
+            padding: 5px 5px 4px 10px !important;
+            font-size: 14px !important;
+        }
+
+        .dataTables_filter {
+            margin-top: -50px;
+        }
+
+        #example1_filter label {
+            margin-right: 60px !important;
+        }
+
+        #example1_wrapper {
+            margin-top: 0px !important;
+        }
+
+        .orange-text {
+            color: orange !important;
+            font-weight: bold;
+        }
+
+        .green-text {
+            color: #1cc51c !important;
+            font-weight: bold;
+        }
+
+        .red-text {
+            color: red !important;
+            font-weight: bold;
+        }
+    </style>
+
+</head>
+<body>
+  
+    <div class="card" style="top:-1vw; height:9vw;">
+        <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center">
+
+
+        <table id="example1" class="table table-bordered table-striped" style="height:7vw;">
+
+            @if (ViewBag.LeaveTypes != null && ViewBag.LeaveCounts != null)
+            {
+                int rowCount = Math.Max(ViewBag.LeaveTypes.Count, Math.Max(ViewBag.LeaveCounts.Count, ViewBag.AllottedLeavesList.Count));
+                <thead>
+                    <tr>
+                    @for (int i = 0; i < rowCount; i++)
+                    {
+
+                    
+                        <th align="center" colspan="2">
+
+                            <label>@(i < ViewBag.LeaveTypes.Count ? ViewBag.LeaveTypes[i] : "")</label>
+                        </th>
+                    
+                    }
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        @for (int i = 0; i < rowCount; i++)
+                        {
+                            <td>
+                                <label>Remaining</label>
+                            </td>
+                            <td>
+                                <label>Allotted</label>
+                            </td>
+                        }
+                    </tr>
+                    <tr>
+                        @for (int i = 0; i < rowCount; i++)
+                        {
+
+     
+                            <td class="@((i < ViewBag.LeaveCounts.Count && ViewBag.LeaveCounts[i] == "0") ? "red-text" : "orange-text")">
+                                @(i < ViewBag.LeaveCounts.Count ? ViewBag.LeaveCounts[i] : "")
+                            </td>
+                           // <td class="orange-text">@(i < ViewBag.LeaveCounts.Count ? ViewBag.LeaveCounts[i] : "")</td>
+                            <td class="green-text">@(i < ViewBag.AllottedLeavesList.Count ? ViewBag.AllottedLeavesList[i] : "")</td>
+
+                        }
+                    </tr>
+                </tbody>
+
+                    }
+                    else
+                    {
+                    <tr>
+                        <td colspan="2">No data available</td>
+                    </tr>
+                    }
+
+        </table>
+        </div>
+    </div>
+</body>
+</html>

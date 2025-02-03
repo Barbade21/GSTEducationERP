@@ -1,0 +1,366 @@
+﻿@model GSTEducationERPLibrary.Counsellor.Counsellor
+
+@{
+    ViewBag.Title = "MainGraphViewAsyncRU";
+    Layout = "~/Views/Shared/_LayoutERP.cshtml";
+}
+<br/>
+
+    <html>
+    <head>
+        <title>Bootstrap Example</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+        <script src="~/Content/plugins/jquery/jquery.min.js"></script>
+        <link href="~/Content/plugins/bootstrap-switch/css/bootstrap3/bootstrap-switch.min.css" rel="stylesheet" />
+        <script src="~/Content/plugins/bootstrap-switch/js/bootstrap-switch.min.js"></script>
+
+        <!-- Include Toastr CSS and JS -->
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet" />
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+        <style>
+            .dataTables_wrapper .btn-secondary {
+                color: #235;
+                background-color: transparent !important;
+                border-color: transparent;
+                font-size: x-large;
+                margin: 0px !important;
+            }
+
+            .card-primary.card-outline-tabs > .card-header a.active {
+                border-top: 3px solid #33CCCC;
+            }
+
+            a {
+                color: #33CCCC;
+            }
+
+            .card.card-outline-tabs .card-header a:hover {
+                color: #33CCCC;
+            }
+
+            .card-primary.card-outline-tabs > .card-header a.active, .card-primary.card-outline-tabs > .card-header a.active:hover {
+                border-top: 3px solid #33CCCC;
+            }
+
+            .card-body {
+                font-family: Calibri !important;
+                padding-bottom: 0px !important;
+            }
+
+            tr:nth-child(even) {
+                background-color: #f2f2f2;
+            }
+
+            th {
+                background-color: #33CCCC;
+                color: #000;
+                text-align: center !important;
+            }
+
+            td {
+                text-align: center;
+                color: black !important;
+            }
+
+            .table td {
+                padding: 0px 0px 0px 0px !important;
+                font-size: 14px !important;
+            }
+
+            .table th {
+                padding: 5px 5px 4px 10px !important;
+                font-size: 14px !important;
+            }
+
+            table.dataTable > thead .sorting:after, table.dataTable > thead .sorting:before {
+                font-size: xx-small !important;
+            }
+
+            div.dataTables_wrapper div.dataTables_filter {
+                margin-top: -5px !important;
+            }
+
+            div.dt-buttons {
+                margin-top: -20px !important;
+            }
+
+            .btn-group > .btn:not(:last-child):not(.dropdown-toggle), .btn-group > .btn-group:not(:last-child) > .btn {
+                padding-left: 5px !important;
+                padding-right: 5px !important;
+            }
+
+            div.dataTables_wrapper div.dataTables_filter label {
+                font-size: small !important;
+            }
+
+            div.dataTables_wrapper div.dataTables_filter input {
+                height: 20px !important;
+            }
+
+            div.dataTables_wrapper div.dataTables_info {
+                padding: 0px !important;
+                font-size: small !important;
+            }
+
+            div.dataTables_wrapper div.dataTables_paginate ul.pagination {
+                margin-top: 10px !important;
+            }
+
+            h2 {
+                padding-top: 10px;
+                margin-bottom: 10px;
+                font-family: Verdana;
+                font-weight: bold;
+                font-size: medium;
+                color: #33CCCC;
+            }
+
+            div.dataTables_wrapper div.dataTables_paginate {
+                font-size: small !important;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="card " style="padding: 10px; margin-top: 10px ">
+            <div style="display: flex; align-items: center;">
+
+
+                <div class="input-group d-flex align-items-center flex-wrap">
+                    <div class="col-auto pr-0">
+                        <label>From</label>
+                    </div>
+                    <div class="col-md-2">
+                        <input type="month" class="form-control" id="startDate" name="startDate">
+                    </div>
+                    <div class="col-auto pr-0">
+                        <label>To</label>
+                    </div>
+                    <div class="col-md-2">
+                        <input type="month" class="form-control" id="endDate" name="endDate">
+                    </div>
+
+                    <div class="col-auto pr-0" id="reporting">
+                        <label>Reporting</label>
+                    </div>
+                    <div class="col-md-4">
+                        <select id="StaffCode" class="form-control" style="width: 150px;">
+                            @foreach (var item in ViewBag.AllReportingStaffBind)
+                            {
+                                <option value="@item.Value">@item.Text</option>
+                            }
+                        </select>
+                    </div>
+
+                    <div class="col-auto ml-auto">
+                        <input type="checkbox" id="type" name="ReportType" checked data-bootstrap-switch data-off-color="primary" data-on-color="blue" data-on-text="Staff" data-off-text="Branch">
+                    </div>
+                </div>
+            </div>
+            </br>
+            <div class="col-3">
+                <button type="button" class="btn btn-block bg-gradient-info active" value="List" onclick="location.href='@Url.Action("ListMainGraphViewAsyncRU", "Counsellor")'">List</button>
+            </div>
+
+            <hr />
+            <div class="card-body" style="padding-top:0px">
+                <div class="container" style="margin-left:-10px">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="card card-primary card-outline card-outline-tabs">
+                                <div class="card-header p-0 border-bottom-0">
+                                    <ul class="nav nav-tabs" id="custom-tabs-four-tab" role="tablist">
+
+                                        <li class="nav-item">
+                                            <a class="nav-link active" id="EnqVsAdmsnTab" data-toggle="tab" href="#EnqVSAd"> Lead Vs Enquiry Vs Admission</a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link" id="EnquiryTab" data-toggle="tab" href="#Enquiry">Enquiries</a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link" id="AdmittedTab" data-toggle="tab" href="#Admitted">Admitted Students</a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link" id="DropoutTab" data-toggle="tab" href="#Drop">Dropout Students</a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link" id="AdmsnVsPlaceTab" data-toggle="tab" href="#AdVSPla">Admission VS Placement</a>
+                                        </li>
+										<li class="nav-item">
+    <a class="nav-link" id="SourseWiseLost" data-toggle="tab" href="#Svslost">Sourse wise Lost</a>
+</li>
+                                    </ul>
+                                </div>
+                                <div id="loadGraphs"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+
+
+     
+        <script>
+jQuery(document).ready(function ($) {
+    var today = new Date();
+    var oneYearBefore = new Date();
+    oneYearBefore.setFullYear(today.getFullYear() - 1);
+
+    // Function to format date as YYYY-MM
+    function formatDate(date) {
+        var month = String(date.getMonth() + 1).padStart(2, '0');
+        var year = date.getFullYear();
+        return year + '-' + month;
+    }
+
+    // Set endDate as today's date
+    var endDate = new Date();
+
+    // Format dates
+    var startDate = formatDate(oneYearBefore);
+    var formattedEndDate = formatDate(endDate);
+
+    // Set the values of the date inputs
+    $('#startDate').val(startDate);
+    $('#endDate').val(formattedEndDate);
+
+    // Set max attribute to restrict future dates for startDate and endDate
+    $('#startDate').attr('max', formatDate(today));
+    $('#endDate').attr('max', formatDate(today));
+
+    $('input[name="ReportType"]').bootstrapSwitch();
+    loadTabContent('@Url.Action("GraphForEnqVSAdmsnAsyncRU", "Counsellor")');
+
+    function toggleDropdownVisibility(state) {
+        if (state) {
+            $('#StaffCode').show();
+            $('#reporting').show();
+        } else {
+            $('#StaffCode').hide();
+            $('#reporting').hide();
+        }
+    }
+
+    toggleDropdownVisibility($('input[name="ReportType"]').bootstrapSwitch('state'));
+
+    $('input[name="ReportType"]').on('switchChange.bootstrapSwitch', function (event, state) {
+        handleInputChange();
+        toggleDropdownVisibility(state);
+    });
+
+    $('#StaffCode').on('change', function () {
+        handleInputChange();
+    });
+
+    $('#custom-tabs-four-tab').on('click', '.nav-link', function (e) {
+        setTimeout(handleInputChange, 100);
+    });
+
+    function loadTabContent(tabContentUrl) {
+        var startDate = $('#startDate').val();
+        var endDate = $('#endDate').val();
+        var staffCode = $('#StaffCode').val();
+
+        $.ajax({
+            url: tabContentUrl,
+            data: {
+                startDate: startDate,
+                endDate: endDate,
+                staffCode: staffCode
+            },
+            type: 'GET',
+            success: function (data) {
+                $('#loadGraphs').html(data);
+            },
+            error: function (xhr, status, error) {
+                console.error('Error loading content.');
+            }
+        });
+    }
+
+    $('#startDate').on('change', function () {
+        var startDate = $(this).val();
+        $('#endDate').attr('min', startDate);
+        if (validateDates()) {
+            handleInputChange();
+        }
+    });
+
+    $('#endDate').on('change', function () {
+        var endDate = $(this).val();
+        $('#startDate').attr('max', endDate);
+        if (validateDates()) {
+            handleInputChange();
+        }
+    });
+
+    function handleInputChange() {
+        if (!validateDates()) return;
+
+        var tabContentUrl = '';
+        var activeTabId = $('.nav-tabs .nav-item .active').attr('id');
+
+        switch (activeTabId) {
+            case 'EnqVsAdmsnTab':
+                tabContentUrl = $('input[name="ReportType"]').bootstrapSwitch('state') ? '@Url.Action("GraphForEnqVSAdmsnAsyncRU", "Counsellor")' : '@Url.Action("GraphForEnqVSAdmsnBranchAsyncRU", "Counsellor")';
+                break;
+            case 'DropoutTab':
+                tabContentUrl = $('input[name="ReportType"]').bootstrapSwitch('state') ? '@Url.Action("GraphForDropoutCountAsyncRU", "Counsellor")' : '@Url.Action("GraphForDropoutCountBranchAsyncRU", "Counsellor")';
+                break;
+            case 'AdmittedTab':
+                tabContentUrl = $('input[name="ReportType"]').bootstrapSwitch('state') ? '@Url.Action("GraphForAdmittedStudentCountAsyncRU", "Counsellor")' : '@Url.Action("GraphForAdmittedStudentCountBranchAsyncRU", "Counsellor")';
+                break;
+            case 'EnquiryTab':
+                tabContentUrl = $('input[name="ReportType"]').bootstrapSwitch('state') ? '@Url.Action("GraphForEnquiryCountAsyncRU", "Counsellor")' : '@Url.Action("GraphForEnquiryCountBranchAsyncRU", "Counsellor")';
+                break;
+            case 'AdmsnVsPlaceTab':
+                tabContentUrl = $('input[name="ReportType"]').bootstrapSwitch('state') ? '@Url.Action("GraphForAdmittedVSPlacementAsyncRU", "Counsellor")' : '@Url.Action("GraphForAdmittedVSPlacementBranchAsyncRU", "Counsellor")';
+                break;
+				case 'SourseWiseLost':
+			 
+			 tabContentUrl = $('input[name="ReportType"]').bootstrapSwitch('state') ? '@Url.Action("PieChartForSourseWiseLostTrainAsyncVP", "Counsellor")' : '@Url.Action("PieChartForSourseWiseLostTrainAsyncVP", "Counsellor")';
+			 break;
+
+            default:
+                break;
+        }
+
+        loadTabContent(tabContentUrl);
+    }
+
+    function validateDates() {
+        var startDate = new Date($('#startDate').val() + '-01');
+        var endDate = new Date($('#endDate').val() + '-01');
+        var today = new Date();
+
+        if (startDate > today) {
+            return false;
+        }
+
+        if (startDate > endDate) {
+            return false;
+        }
+
+        if (endDate < startDate) {
+            return false;
+        }
+
+        return true;
+    }
+
+    handleInputChange();
+});
+        </script>
+
+
+
+    </body>
+</html>
+
+
+

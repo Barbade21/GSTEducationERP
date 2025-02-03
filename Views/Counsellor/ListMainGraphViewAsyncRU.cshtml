@@ -1,0 +1,455 @@
+﻿@model GSTEducationERPLibrary.Counsellor.Counsellor
+
+@{
+    ViewBag.Title = "ListMainGraphViewAsyncRU";
+    Layout = "~/Views/Shared/_LayoutERP.cshtml";
+}
+
+<html>
+<head>
+    <title>Bootstrap Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="~/Content/plugins/bootstrap-switch/css/bootstrap3/bootstrap-switch.min.css" rel="stylesheet" />
+    <script src="~/Content/plugins/jquery/jquery.min.js" type="text/javascript"></script>
+    <script src="~/Content/plugins/bootstrap/js/bootstrap.bundle.min.js" type="text/javascript"></script>
+    <script src="~/Content/plugins/bootstrap-switch/js/bootstrap-switch.min.js"></script>
+    <link rel="stylesheet" href="~/Content/Admin/css/UI.css" />
+    <link rel="stylesheet" href="~/Content/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+    <link rel="stylesheet" href="~/Content/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
+    <link rel="stylesheet" href="~/Content/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
+
+    <style>
+        .dataTables_wrapper .btn-secondary {
+            color: #235;
+            background-color: transparent !important;
+            border-color: transparent;
+            font-size: x-large;
+            margin: 0px !important;
+        }
+
+        h2 {
+            padding-top: 10px;
+            margin-bottom: 10px;
+            font-family: Verdana;
+            font-weight: bold;
+            font-size: medium;
+            color: #33CCCC;
+        }
+
+        .card-primary.card-outline-tabs > .card-header a.active {
+            border-top: 3px solid #33CCCC;
+        }
+
+        a {
+            color: #33CCCC;
+        }
+
+        .card.card-outline-tabs .card-header a:hover {
+            color: #33CCCC;
+        }
+
+        .card-primary.card-outline-tabs > .card-header a.active, .card-primary.card-outline-tabs > .card-header a.active:hover {
+            border-top: 3px solid #33CCCC;
+        }
+
+        .card-body {
+            font-family: Calibri !important;
+            padding-bottom: 0px !important;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        th {
+            background-color: #33CCCC;
+            color: #000;
+            text-align: center !important;
+        }
+
+        td {
+            text-align: center;
+            color: black !important;
+            border: 2px black;
+        }
+
+        .table td {
+            padding: 0px 0px 0px 0px !important;
+            font-size: 14px !important;
+        }
+
+        .table th {
+            padding: 5px 5px 4px 10px !important;
+            font-size: 14px !important;
+        }
+
+        table.dataTable > thead .sorting:after, table.dataTable > thead .sorting:before {
+            font-size: xx-small !important;
+        }
+
+        div.dataTables_wrapper div.dataTables_filter {
+            margin-top: -10px !important;
+        }
+
+        div.dt-buttons {
+            margin-top: -20px !important;
+        }
+
+        .btn-group > .btn:not(:last-child):not(.dropdown-toggle), .btn-group > .btn-group:not(:last-child) > .btn {
+            padding-left: 5px !important;
+            padding-right: 5px !important;
+        }
+
+        div.dataTables_wrapper div.dataTables_filter label {
+            font-size: small !important;
+        }
+
+        div.dataTables_wrapper div.dataTables_filter input {
+            height: 20px !important;
+        }
+
+        div.dataTables_wrapper div.dataTables_info {
+            padding: 0px !important;
+            font-size: small !important;
+        }
+
+        div.dataTables_wrapper div.dataTables_paginate ul.pagination {
+            margin-top: 0px !important;
+        }
+
+        div.dataTables_wrapper div.dataTables_paginate {
+            font-size: small !important;
+        }
+    </style>
+</head>
+
+
+<br />
+<body>
+
+    <div class="card " style="padding:5px;margin-right:20px;margin-left:10px; margin-top:-15px">
+        <div style="display: flex; align-items: center;">
+
+            <div class="col-md-1"></div>
+            <div class="input-group">
+
+                <div class="col-md-1" style="padding-right:0px !important">
+                    <label> From Date </label>
+                </div>
+                <div class="col-md-2">
+                    <input type="date" class="form-control" id="startDate" name="startDate">
+                </div>
+                <div class="col-md-1" style="padding-right:0px !important">
+                    <label>  To Date</label>
+                </div>
+                <div class="col-md-2">
+                    <input type="date" class="form-control" id="endDate" name="endDate">
+                </div>
+
+                <div class="col-md-2" style="padding-right:0px !important" id="reporting">
+                    <label>Reporting Staff</label>
+                </div>
+
+                <div class="col-md-2" style="padding-right:0px !important;left:-4vw;">
+
+                    <select id="StaffCode" class="form-control" style="width: 90%;">
+                        @*<label>Reporting Staff</label>*@
+                        @foreach (var item in ViewBag.AllReportingStaffBind)
+                        {
+                            <option value="@item.Value">@item.Text</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="col-auto ml-auto">
+                    <input type="checkbox" id="type" name="ReportType" checked data-bootstrap-switch data-off-color="primary" data-on-color="blue" data-on-text="Staff" data-off-text="Branch">
+                </div>
+
+            </div>
+
+
+
+        </div>
+        <hr />
+
+        <div class="card-body" style="padding-top:0px">
+            <div class="container" style="margin-left:-10px">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card card-primary card-outline card-outline-tabs">
+                            <div class="card-header p-0 border-bottom-0">
+                                <ul class="nav nav-tabs" id="custom-tabs-four-tab" role="tablist">
+                                    <li class="nav-item">
+                                        <a class="nav-link active" id="EnquiryTab" data-toggle="tab" href="#Enquiry">Enquiry</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" id="AdmittedTab" data-toggle="tab" href="#Admitted">Admitted</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" id="DropoutTab" data-toggle="tab" href="#Drop">Dropout</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" id="PlacedTab" data-toggle="tab" href="#Placed">Placed</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" id="LostTab" data-toggle="tab" href="#Lost">Lost</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" id="HoldTab" data-toggle="tab" href="#Hold">Hold</a>
+                                    </li>
+                                    <li class="nav-item8">
+                                        <select id="statusFilter" name="enquiryfor" class="form-control" style="width:200px;">
+                                            <option value="">---Select---</option>
+                                            <option value="Course">Course</option>
+                                            <option value="Placement">Placement</option>
+                                        </select>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="ExamList"></div>
+        </div>
+    </div>
+
+
+
+    <div class="col-md-12">
+        <a data-toggle="tooltip" data-placement="top" title="Back" alt="Back" style="width: 60px; height: 35px; border: 0; margin-block-start: 0px;" onclick="location.href = '@Url.Action("MainGraphViewAsyncRU", "Counsellor")'">
+            <video width="35" height="35" playsinline loop>
+                <source src="~/Content/Admin/icon/Back.mp4" type="video/mp4">
+            </video>
+        </a>
+    </div>
+    <script src="~/Content/plugins/datatables/jquery.dataTables.min.js" type="text/javascript"></script>
+    <script src="~/Content/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js" type="text/javascript"></script>
+    <script src="~/Content/plugins/datatables-responsive/js/dataTables.responsive.min.js" type="text/javascript"></script>
+    <script src="~/Content/plugins/datatables-responsive/js/responsive.bootstrap4.min.js" type="text/javascript"></script>
+    <script src="~/Content/plugins/datatables-buttons/js/dataTables.buttons.min.js" type="text/javascript"></script>
+    <script src="~/Content/plugins/datatables-buttons/js/buttons.bootstrap4.min.js" type="text/javascript"></script>
+    <script src="~/Content/plugins/jszip/jszip.min.js" type="text/javascript"></script>
+    <script src="~/Content/plugins/pdfmake/pdfmake.min.js" type="text/javascript"></script>
+    <script src="~/Content/plugins/pdfmake/vfs_fonts.js" type="text/javascript"></script>
+    <script src="~/Content/plugins/datatables-buttons/js/buttons.html5.min.js" type="text/javascript"></script>
+    <script src="~/Content/plugins/datatables-buttons/js/buttons.print.min.js" type="text/javascript"></script>
+    <script src="~/Content/plugins/datatables-buttons/js/buttons.colVis.min.js" type="text/javascript"></script>
+
+    <script>
+        jQuery(document).ready(function ($) {
+    var today = new Date();
+    var oneYearBefore = new Date();
+    oneYearBefore.setFullYear(today.getFullYear() - 1);
+
+    // Function to format date as YYYY-MM-DD
+    function formatDate(date) {
+        var day = String(date.getDate()).padStart(2, '0');
+        var month = String(date.getMonth() + 1).padStart(2, '0');
+        var year = date.getFullYear();
+        return year + '-' + month + '-' + day;
+    }
+
+    // Initialize start and end dates
+    var startDate = formatDate(oneYearBefore);
+    var formattedEndDate = formatDate(today);
+
+    // Set the values of the date inputs
+    $('#startDate').val(startDate);
+    $('#endDate').val(formattedEndDate);
+
+    // Set max attribute to restrict future dates for startDate and endDate
+    $('#startDate').attr('max', formattedEndDate);
+    $('#endDate').attr('max', formattedEndDate);
+
+    // Initialize Bootstrap Switch for ReportType
+    $('input[name="ReportType"]').bootstrapSwitch();
+
+    // Load initial tab content
+    loadTabContent('@Url.Action("ListForMonnthlyEnquiryRU", "Counsellor")');
+
+    // Function to show or hide Reporting Staff label and dropdown based on ReportType switch state
+    function toggleDropdownVisibility(state) {
+        if (state) {
+            $('#StaffCode').parent().show(); // Show the parent div of StaffCode
+            $('#reporting').show(); // Show the Reporting Staff label
+        } else {
+            $('#StaffCode').parent().hide(); // Hide the parent div of StaffCode
+            $('#reporting').hide(); // Hide the Reporting Staff label
+        }
+    }
+
+    // Set initial visibility of Reporting Staff label and dropdown
+    toggleDropdownVisibility($('input[name="ReportType"]').bootstrapSwitch('state'));
+
+    // Event handlers
+    $('input[name="ReportType"]').on('switchChange.bootstrapSwitch', function (event, state) {
+        toggleDropdownVisibility(state);
+        handleInputChange();
+    });
+
+    $('#StaffCode').on('change', function () {
+        handleInputChange();
+    });
+
+    $('#custom-tabs-four-tab').on('click', '.nav-link', function (e) {
+        setTimeout(handleInputChange, 100);
+    });
+
+    $('#startDate').on('change', function () {
+        var startDate = $(this).val();
+        $('#endDate').attr('min', startDate);
+        if (validateDates()) {
+            handleInputChange();
+        }
+    });
+
+    $('#endDate').on('change', function () {
+        var endDate = $(this).val();
+        $('#startDate').attr('max', endDate);
+        if (validateDates()) {
+            handleInputChange();
+        }
+    });
+
+    // Event handler for statusFilter dropdown change
+    $('#statusFilter').on('change', function () {
+        handleInputChange();
+    });
+
+    // Function to load content based on the active tab and form data
+    function loadTabContent(tabContentUrl) {
+        var startDate = $('#startDate').val();
+        var endDate = $('#endDate').val();
+        var staffCode = $('#StaffCode').val();
+        var enquiryfor = $('#statusFilter').val(); // Get the value of statusFilter
+
+        $.ajax({
+            url: tabContentUrl,
+            data: {
+                startDate: startDate,
+                endDate: endDate,
+                staffCode: staffCode,
+                enquiryfor: enquiryfor // Include statusFilter value in the request data
+            },
+            type: 'GET',
+            success: function (data) {
+                $('#ExamList').html(data);
+                // Apply DataTables
+                var table = $('#ExamList table').DataTable({
+                    "responsive": true,
+                    "lengthChange": false,
+                    "autoWidth": false,
+                    "stateSave": true,
+                    "buttons": [
+                        {
+                            extend: 'copy',
+                            text: '<img src="/Content/Admin/icon/copy.png" title="Copy" alt="Copy" height="20" width="20" />',
+                            titleAttr: 'Copy'
+                        },
+                        {
+                            extend: 'csv',
+                            text: '<img src="/Content/Admin/icon/csv.jpg" title="CSV" alt="CSV" height="25" width="25" />',
+                            titleAttr: 'CSV'
+                        },
+                        {
+                            extend: 'excel',
+                            text: '<img src="/Content/Admin/icon/xls-file.png" title="xls" alt="xls" height="20" width="20" />',
+                            titleAttr: 'Excel'
+                        },
+                        {
+                            extend: 'pdf',
+                            text: '<img src="/Content/Admin/icon/pdf-file.png" title="pdf" alt="pdf" height="20" width="20" />',
+                            titleAttr: 'PDF'
+                        },
+                        {
+                            extend: 'print',
+                            text: '<img src="/Content/Admin/icon/printer.png" title="printer" alt="printer" height="20" width="20" />',
+                            titleAttr: 'Print'
+                        },
+                        {
+                            extend: 'colvis',
+                            text: '<img src="/Content/Admin/icon/column.jpg" title="column" alt="column" height="20" width="20" />',
+                            titleAttr: 'Columns'
+                        }
+                    ]
+                });
+                table.buttons().container().appendTo('#ExamList .col-md-6:eq(0)');
+            },
+            error: function (xhr, status, error) {
+                console.error('Error loading content: ', error);
+            }
+        });
+    }
+
+    // Function to handle input changes and reload content
+    function handleInputChange() {
+        if (!validateDates()) return;
+
+        var tabContentUrl = '';
+        var activeTabId = $('#custom-tabs-four-tab .nav-link.active').attr('id');
+
+        switch (activeTabId) {
+            case 'EnquiryTab':
+                tabContentUrl = $('input[name="ReportType"]').bootstrapSwitch('state')
+                    ? '@Url.Action("ListForMonnthlyEnquiryRU", "Counsellor")'
+                    : '@Url.Action("BranchListForMonnthlyEnquiryRU", "Counsellor")';
+                break;
+            case 'AdmittedTab':
+                tabContentUrl = $('input[name="ReportType"]').bootstrapSwitch('state')
+                    ? '@Url.Action("ListForAdmittedStudentsRU", "Counsellor")'
+                    : '@Url.Action("BranchListForAdmittedStudentsRU", "Counsellor")';
+                break;
+            case 'DropoutTab':
+                tabContentUrl = $('input[name="ReportType"]').bootstrapSwitch('state')
+                    ? '@Url.Action("ListForMonthlyDropoutStudentsRU", "Counsellor")'
+                    : '@Url.Action("BranchListForMonthlyDropoutStudentsRU", "Counsellor")';
+                break;
+            case 'PlacedTab':
+                tabContentUrl = $('input[name="ReportType"]').bootstrapSwitch('state')
+                    ? '@Url.Action("ListForPlacedStudentsRU", "Counsellor")'
+                    : '@Url.Action("BranchListForPlacedStudentsRU", "Counsellor")';
+                break;
+            case 'LostTab':
+                tabContentUrl = $('input[name="ReportType"]').bootstrapSwitch('state')
+                    ? '@Url.Action("ListForlostStudentRU", "Counsellor")'
+                    : '@Url.Action("BranchListForlostStudentRU", "Counsellor")';
+                break;
+            case 'HoldTab':
+                tabContentUrl = $('input[name="ReportType"]').bootstrapSwitch('state')
+                    ? '@Url.Action("ListForHOLDStudentRU", "Counsellor")'
+                    : '@Url.Action("BranchListForHOLDStudentRU", "Counsellor")';
+                break;
+            default:
+                console.error('Unknown tab ID:', activeTabId);
+                return;
+        }
+
+        loadTabContent(tabContentUrl);
+    }
+
+    // Function to validate the date inputs
+    function validateDates() {
+        var startDate = new Date($('#startDate').val());
+        var endDate = new Date($('#endDate').val());
+        var today = new Date();
+
+        if (startDate > today || startDate > endDate) {
+            console.warn('Invalid date range.');
+            return false;
+        }
+
+        return true;
+    }
+
+    // Trigger initial content load
+    handleInputChange();
+});
+    </script>
+
+
+
+
+</body>
+</html>

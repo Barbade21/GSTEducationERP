@@ -1,0 +1,534 @@
+﻿@model GSTEducationERPLibrary.Accountant.Accountant
+@{
+    var currency = Html.Raw(ViewBag.Currency);
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Match Voucher</title>
+    <script src="~/Content/plugins/jquery/jquery.min.js"></script>
+    <script src="~/Content/plugins/bootstrap/js/bootstrap.min.js"></script>
+    <style>
+        h2 {
+            padding-top: 10px;
+            margin-bottom: 10px;
+            font-family: Verdana;
+            font-weight: bold;
+            font-size: medium;
+            color: #33CCCC;
+        }
+        /* Customize the Select2 dropdown */
+        .select2-container--default .select2-selection--multiple .select2-selection__choice {
+            background-color: #33CCCC;
+            color: white; /* Text color of selected items */
+        }
+            /* Optional: Change the hover color of selected items */
+            .select2-container--default .select2-selection--multiple .select2-selection__choice:hover {
+                background-color: darkviolet; /* Darker shade on hover */
+                color: white; /* Ensure text remains white on hover */
+            }
+
+        label {
+            text-align: start;
+        }
+    </style>
+</head>
+<body>
+    <form id="frmAddVendor">
+        <div class="card" style="margin-top:0;margin-bottom:0;">
+            <div class="card-header">
+                <h2 class="card-title">Add Vendor</h2>
+            </div>
+            <div class="card-body">
+                <!--controls start from here-->
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="input-group">
+                            <label for="VendorName" class="control-label col-md-12">Vendor Name <span class="text-danger">*</span>:</label>
+                            @Html.EditorFor(model => model.VendorName, new { htmlAttributes = new { @class = "form-control col-md-12", @maxlength = 250 } })
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="input-group">
+                            <label for="EmailId" class="form-check-control col-md-12">Email-Id :</label>
+                            @Html.EditorFor(model => model.EmailId, new { htmlAttributes = new { @class = "form-control col-md-12", @maxlength = 250 } })
+
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="input-group">
+                            <label for="Contact" class="control-label col-md-12">Contact <span class="text-danger">*</span>:</label>
+                            @Html.EditorFor(model => model.Contact, new { htmlAttributes = new { @class = "form-control col-md-12", @maxlength = 14 } })
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="input-group">
+                            <label for="Address" class="control-label col-md-12">Address <span class="text-danger">*</span>:</label>
+                            @Html.EditorFor(model => model.Address, new { htmlAttributes = new { @class = "form-control col-md-12", @maxlength = 500 } })
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="input-group">
+                            <label for="CountryId" class="label-comtrol col-md-12">Country <span class="text-danger">*</span>:</label>
+                            <select id="CountryId" class="form-control col-md-12">
+                                <option value="" disabled selected>-Select Country-</option>
+                                @foreach (System.Data.DataRow data in ViewBag.Country.Tables[0].Rows)
+                                {
+                                    <option value="@data["CountryId"]">@data["CountryName"]</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+
+
+                    <div class="col-md-6">
+                        <div class="input-group">
+                            <label for="StateId" class="label-comtrol col-md-12">State <span class="text-danger">*</span>:</label>
+                            <select id="StateName" name="StateName" class="form-control col-md-12">
+                                <option>Select State</option>
+                            </select>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="input-group">
+                            <label for="CityId" class="label-comtrol col-md-12">City <span class="text-danger">*</span>:</label>
+                            <select id="City" name="City" class="form-control col-md-12">
+                                <option>Select City</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="input-group">
+                            <label for="GSTInNo" class="control-label col-md-12">GSTInNo. :</label>
+                            @Html.EditorFor(model => model.GSTInNo, new { htmlAttributes = new { @class = "form-control col-md-12", @maxlength = 16 } })
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="input-group">
+                            <label for="AccountHolderName" class="control-label col-md-12">Account Holder Name :</label>
+                            @Html.EditorFor(model => model.AccountHolderName, new { htmlAttributes = new { @class = "form-control col-md-12", @maxlength = 250 } })
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="input-group">
+                            <label for="BankAccountNumber" class="control-label col-md-12">Account Number. <span class="text-danger">*</span>:</label>
+                            @Html.EditorFor(model => model.BankAccountNumber, new { htmlAttributes = new { @class = "form-control col-md-12", maxlength = 17 } })
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="input-group">
+                            <label for="IFSCCode" class="control-label col-md-12">IFSC Code <span class="text-danger">*</span>:</label>
+                            @Html.EditorFor(model => model.IFSCCode, new { htmlAttributes = new { @class = "form-control col-md-12", @maxlength = 12 } })
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="input-group">
+                            <label for="BankName" class="control-label col-md-12">Bank Name :</label>
+                            @Html.EditorFor(model => model.BankName, new { htmlAttributes = new { @class = "form-control col-md-12", @readonly = "true" } })
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="input-group">
+                            <label for="BankBranch" class="control-label col-md-12">Branch Name :</label>
+                            @Html.EditorFor(model => model.BankBranch, new { htmlAttributes = new { @class = "form-control col-md-12", @readonly = "true" } })
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="input-group">
+                            <label for="MICRCode" class="control-label col-md-12">MICR Code :</label>
+                            @Html.EditorFor(model => model.MICRCode, new { htmlAttributes = new { @class = "form-control col-md-12", @readonly = "true" } })
+                        </div>
+                    </div>
+                </div>
+                <br />
+                <!---Here we can we add the buttons-->
+                <div class="form-group" style="text-align: center;">
+                    <button class="btn btn-success" id="btnSaveVendor">Save</button>
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+                </div>
+            </div>
+        </div>
+        <button class="close text-danger" data-dismiss="modal" style="position: absolute; top: 25px; right: 25px;">&times;</button>
+    </form>
+    <!--vishal done this script-->
+    <!--state and city fetching here-->
+    <script>
+        $(document).ready(function () {
+            $('#CountryId').on('change', function (e) {
+
+                var Country = $('#CountryId').val();
+                $.ajax({
+                    url: "/Bind/GetStateAsyncPB",
+                    type: 'Post',
+                    data: {
+                        CountryId: Country
+                    },
+                    success: function (response) {
+                        var v = "<option disabled selected>Select State</option>";
+                        var result = JSON.parse(response);
+                        for (var i = 0; i < result.length; i++) {
+                            v += "<option value='" + result[i]["StateId"] + "'>" + result[i]["StateName"] + "</option>";
+                        }
+                        $("#StateName").html(v);
+                    },
+                });
+            });
+
+            $('#StateName').on('change', function (e) {
+                var state = $('#StateName').val();
+                $.ajax({
+                    url: "/Bind/GetCityAsyncPB",
+                    type: 'Post',
+                    data: {
+                        StateId: state
+                    },
+                    success: function (response) {
+                        var v = "<option disabled selected>Select City</option>";
+                        var result = JSON.parse(response);
+                        for (var i = 0; i < result.length; i++) {
+                            v += "<option value='" + result[i]["CityId"] + "'>" + result[i]["CityName"] + "</option>";
+                        }
+                        $("#City").html(v);
+                    },
+
+                });
+            });
+        });
+    </script>
+
+    <script>
+        $(document).ready(function () {
+            $('#btnSaveVendor').on('click', function (e) {
+                $(this).prop('disabled', true);
+                const modalSelector = '#AddVendorModal';
+                const formSelector = '#frmAddVendor';
+                e.preventDefault();
+                const vendorname = $('#VendorName').val();
+                const isvalidVendor = ValidateVendorName(vendorname);
+                const isvalid = validateVendor();
+                if (isvalid && isvalidVendor) {
+                    //SweetAlert confirmation
+                    Swal.fire({
+                        title: 'Are you sure?',
+                        text: 'The vendor details will be saved...!',
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonText: 'Yes, submit it!',
+                        cancelButtonText: 'No, cancel!'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            handleaddvendor(formSelector, modalSelector);
+                            fetchvendor();
+                        }
+                        else {
+                            //nothing happens
+                            $(this).prop('disabled', false);
+                        }
+                    });
+                }
+                else {
+                    $(this).prop('disabled', false);
+                }
+            });
+            function ValidateVendorName(vendorName) {
+                if (vendorName != '') {
+                    return $.ajax({
+                        url: '/Accountant/ValidateVendorAsync',
+                        type: 'GET',
+                        data: { VendorName1: vendorName },
+                        dataType: 'json'
+                    }).then(function (response) {
+                        if (response.success) {
+                            $('#VendorName').css('border', '');
+                            return true;
+
+                        } else {
+                            // Vendor name exists, validation failed
+                            $('#VendorName').css('border', '1px solid red');
+                            displayToast("Vendor name already exists.", "error");
+                            $('#VendorName').val('');
+                            return false;
+                        }
+                    }).catch(function () {
+                        displayToast("There has been an error validating the vendor name.", "error");
+                        return false;
+                    });
+                } else {
+                    displayToast("Please enter the vendor name.", "error");
+                    return false; // Ensure the function returns false if no vendor name is provided
+                }
+            };
+            function validateVendor() {
+                const vendorname = $('#VendorName').val();
+                //const emailid = $('#EmailId').val();
+                const contact = $('#Contact').val();
+                const address = $('#Address').val();
+                const city = $('#City option:selected').text();
+                //const gstin = $('#GSTInNo').val();
+                const accountholdername = $('#AccountHolderName').val();
+                const accountno = $('#BankAccountNumber').val();
+                const ifsc = $('#IFSCCode').val();
+                if (!vendorname || /*!emailid ||*/ !contact || !address || !city || /*!gstin || !accountholdername ||*/ !accountno || !ifsc) {
+                    let message = "";
+                    !(vendorname) ? message += "Please enter vendor name..!" : null;
+                    //!(emailid) ? message += "Please enter email-id..!" : null;
+                    !(contact) ? message += "Please enter  contact..!" : null;
+                    (contact < 10) ? message += "please enter valid valid contact...!" : null;
+                    !(address) ? message += "please enter address..!" : null;
+                    !(city) ? message += "please select city...!" : null;
+                    //!(gstin) ? message += "please enter GSTIn number...!" : null;
+                    //!(accountholdername) ? message += "please enter holder name...!" : null;
+                    !(accountno) ? message += "please enter account number...!" : null;
+                    !(ifsc) ? message += "please enter ifsc code...!" : null;
+                    !(String(ifsc).length < 15) ? message += "please valid ifsc code...!" : null;
+                    if (message != "") {
+                        Swal.fire({
+                            title: 'Invalid Input?',
+                            text: message,
+                            icon: 'error',
+                            confirmButtonColor: '#3085d6',
+                            confirmButtonText: 'OK!'
+                        });
+                        validationBorder();
+                        return;
+                    }
+                    return false;
+                }
+                else {
+                    return true;
+                }
+            }
+            function validationBorder() {
+                $('#frmAddVendor').find('input, select').each(function () {
+                    if ($(this).is(':visible') && $(this).val() === '' && !$(this).is('#EmailId, #GSTInNo,#AccountHolderName')) {
+                        $(this).css('border', '1px solid red'); // Highlight the empty field
+                    } else {
+                        $(this).css('border', ''); // Remove highlight if filled
+                    }
+                });
+            }
+            //validation here
+            $('#VendorName').on('blur', function () {
+                var vendorName = $(this).val();
+                const valid = ValidateVendorName(vendorName);
+                if (valid) {
+                    $('VendorName').val(null);
+                }
+            });
+            $('#EmailId').on('blur', validateEmail);
+            function validateEmail() {
+                const email = $(this).val();
+                $(this).css('border', '');
+                const emailPattern = "^[a-zA-Z0-9._%+-]+@@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$";
+                if (!new RegExp(emailPattern).test(email)) {
+                    //toastr.error("Invalid email address.");
+                    //$(this).css('border', '1px solid red');
+                    return false;
+                } else {
+                    return true;
+                }
+            }
+            //remove the red border for the controls
+            $('#Contact').on('blur', function () {
+                let enteredValue = $(this).val();
+                let numericValue = enteredValue.replace(/[^\d.]/g, '');
+                if (numericValue.length < 10) {
+                    displayToast("Please enter valida contact..!", "error")
+                    $(this).css('border', '1px solid red');
+                }
+                else {
+                    $(this).css('border', '');
+                }
+                $(this).val(numericValue);
+            });
+            $('#Address').on('blur', function () {
+                const add = $(this).val();
+                if (!add) {
+                    displayToast("please provide valid address..!", "error");
+                    $(this).css('border', '1px solid red');
+                }
+                else {
+                    $(this).css('border', '');
+                }
+            });
+            $('#City').on('blur', function () {
+                const city = $(this).val();
+                if (city === 'Select City') {
+                    displayToast("please provide valid city..!", "error");
+                    $(this).css('border', '1px solid red');
+                }
+                else {
+                    $(this).css('border', '');
+                }
+            });
+            //$('#GSTInNo').on('blur', function () {
+            //    const gstno = $(this).val();
+            //    if (gstno === '' || gstno.length<15) {
+            //        displayToast("please provide valid GSTIn number...!", "error");
+            //        $(this).css('border', '1px solid red');
+            //    }
+            //    else {
+            //        $(this).css('border', '');
+            //    }
+            //});
+            //$('#AccountHolderName').on('blur', function () {
+            //    const name = $(this).val();
+            //    if (name === '') {
+            //        displayToast("please provide acount name..!", "error");
+            //        $(this).css('border', '1px solid red');
+            //    }
+            //    else {
+            //        $(this).css('border', '');
+            //    }
+            //});
+            $('#BankAccountNumber').on('input', function () {
+                var maxLength = 17;
+                var value = $(this).val();
+
+                if (value.length > maxLength) {
+                    $(this).val(value.slice(0, maxLength));
+                    var msg = ('Maximum length of ' + maxLength + ' characters exceeded.');
+                    displayToast(msg, "error");
+                }
+            });
+            $('#BankAccountNumber').on('blur', function () {
+                let enteredValue = $(this).val();
+                let numericValue = enteredValue.replace(/[^\d.]/g, '');
+                if (numericValue.length < 10) {
+                    displayToast("Please enter valida account number..!", "error")
+                    $(this).css('border', '1px solid red');
+                }
+                else {
+                    $(this).css('border', '');
+                }
+                $(this).val(numericValue);
+            });
+            //using the api for the bank details
+            $('#IFSCCode').on('blur', function () {
+                const ifscCode = $(this).val();
+                if (!ifscCode || String(ifscCode).length < 11) {
+                    displayToast("Invalid IFSC code..!", "error");
+                    $(this).css('border', '1px solid red');
+                    return;
+                } else {
+                    $(this).css('border', '');
+                    $.ajax({
+                        url: `https://ifsc.razorpay.com/${ifscCode}`,
+                        method: 'GET',
+                        success: function (data) {
+                            if (data) {
+                                $('#BankName').val(data.BANK);
+                                $('#BankBranch').val(data.BRANCH);
+                                $('#MICRCode').val(data.MICR);
+                                validationBorder();
+                            } else {
+                                displayToast("No details found for the provided IFSC code.", "error");
+                            }
+                        },
+                        error: function () {
+                            displayToast("Failed to fetch bank details. Please try again later.", "error");
+                        }
+                    });
+                }
+            });
+            
+        });
+        
+    </script>
+    <script>
+
+        function handleaddvendor(formSelector, modalSelector = null) {
+            const formData = $(formSelector).serialize();
+            $.ajax({
+                url: '@Url.Action("AddVendorAsyncVP", "Accountant")',
+                type: 'POST',
+                data: formData,
+                success: function (response) {
+                    if (response.success) {
+                        // Reset the form
+                        document.querySelector('#frmAddVendor').reset();
+                        if (modalSelector) {
+                            $(modalSelector).modal('hide');
+                        }                            // Display success message
+                        Swal.fire({
+                            position: "center",
+                            icon: "success",
+                            title: "Successful",
+                            text: "Vendor saved successfully!",
+                            showConfirmButton: false,
+                            timer: 3000
+                        });
+                        $('#AddVendorModal').hide();
+                        $('.modal-backdrop').remove();
+                        $('#btnSaveVendor').prop('disabled', false);
+                    } else {
+                        Swal.fire('Error', response.message, 'error');
+                        $('#btnSaveVendor').prop('disabled', false);
+                    }
+                },
+                error: function () {
+                    Swal.fire('Error', 'An error occurred while processing your request.', 'error');
+                }
+            });
+        }
+        function fetchvendor() {
+            $.ajax({
+                url: '@Url.Action("ListVendorAsyncVP", "Accountant")',
+                type: 'GET',
+                success: function (response) {
+                    if (response.success) {
+                        debugger;
+                        const $voucherSelect = $('#VendorCode');
+                        $voucherSelect.empty();
+                        let newVoucherValue = null;
+                        debugger;
+                        // Populate the dropdown with fetched vouchers
+                        $.each(response.data, function (i, voucher) {
+                            $voucherSelect.append('<option value="' + voucher.Value + '">' + voucher.Text + '</option>');
+                            if (voucher.IsNew) {
+                                newVoucherValue = voucher.Value;
+                            }
+                        });
+
+                        // Auto-select the newly created voucher if present
+                        if (newVoucherValue) {
+                            $voucherSelect.val(newVoucherValue).trigger('change');
+                        }
+
+                        displayToast("Fetched vendors successfully.", "success");
+                    } else {
+                        displayToast("An error occurred while fetching vendors.", "error");
+                    }
+                },
+                error: function (xhr, status, error) {
+                    displayToast("An error occurred while fetching the vendors.", "error");
+                }
+            });
+        }
+        $(document).ready(function () {
+            $('#AddVendorModal').on('hidden.bs.modal', function () {
+                $(this).find('.modal-body').empty();
+                $(this).find('form').off();
+            });
+        });
+    </script>
+
+</body>
+</html>

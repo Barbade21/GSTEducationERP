@@ -1,0 +1,473 @@
+﻿@model GSTEducationERPLibrary.Accountant.Accountant
+@using System.Globalization
+
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Staff Salary Management</title>
+    @*<link href="~/Content/Admin/css/UI.css" rel="stylesheet" />*@
+
+    <style>
+        .payment-section {
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+            .payment-section p {
+                font-size: 18px;
+                font-weight: bold;
+                color: black;
+                margin: 0;
+            }
+
+        .staff-count-section p {
+            font-size: 18px;
+            font-weight: bold;
+            color: black;
+            margin: 5px 0;
+        }
+
+        .staff-count-section span {
+            font-size: 16px;
+            font-weight: normal;
+            color: black;
+        }
+
+        .btn-make-payment, .btn-select-all {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 5px;
+            margin-left: 10px;
+        }
+
+            .btn-make-payment:hover, .btn-select-all:hover {
+                background-color: #218838;
+            }
+
+        .badge {
+            padding: 5px 10px;
+            border-radius: 3px;
+            font-size: 14px;
+            font-weight: bold;
+            color: white;
+        }
+
+        .badge-paid {
+            background-color: #28a745;
+        }
+
+        .badge-not-paid {
+            background-color: #dc3545;
+        }
+        .green-text {
+            color: green;
+        }
+
+        .red-text {
+            color: red;
+        }
+        .payment-section {
+            display: flex;
+            justify-content: space-between; /* Ensure spacing between salary/staff count and button */
+            align-items: center; /* Vertically center-align items */
+            margin-left: 20px;
+            margin-right: 20px;
+        }
+        .salary-and-staff-count {
+            display: flex;
+            align-items: center; /* Align salary and staff count in the center horizontally */
+        }
+
+            .salary-and-staff-count p {
+                margin-right: 20px; /* Add some space between the salary and staff count */
+            }
+
+        .amount {
+            color: green; 
+            font-weight: bold; 
+        }
+
+        p span {
+            color: green; 
+        }
+        #uprowsecond {
+           margin-left: 20px;
+           margin-right: 20px;
+        }
+        #AddVoucher {
+            background-color: blue;
+            color: white; 
+            font-weight: bold;
+            padding: 10px 20px; 
+            border: none;
+            border-radius: 5px; 
+            cursor: pointer; 
+        }
+
+            #AddVoucher:hover {
+                background-color: darkblue; 
+            }
+
+    </style>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body>
+  
+
+
+    <div class="card">
+        <div class="card-body">
+            <table class="table table-bordered table-striped" id="ShortlistedStaff">
+                @{
+                    bool showActionColumn = false;
+                    if (Model != null && Model.lstEmpAttendance != null)
+                    {
+                        foreach (var item in Model.lstEmpAttendance)
+                        {
+                            if ((item.PayingStatus == "Not Processed" || item.PayingStatus == "Rejected") && item.AdvanceAmountCut > 0)
+                            {
+                                showActionColumn = true;
+                                break; // No need to continue once we know the column is needed
+                            }
+                        }
+                    }
+                }
+
+                <thead>
+                    <tr>
+                        <th><input type="checkbox" id="selectAll" /></th>
+                        <th>Staff Code</th>
+                        <th>Staff Name</th>
+                        <th>Department</th>
+                        <th>Designation</th>
+                        <th>Paid Days</th>
+                        <th>Present Days</th>
+                        <th>Paid Leaves</th>
+                        <th>Absent Days</th>
+                        <th>Payable Days</th>
+                        <th>Net Salary</th>
+                        <th>Take Home Amount</th>
+                        <th>Advance Amount</th>
+                        <th>Payment Status</th>
+                        @if (showActionColumn)
+                        {
+                            <th>Action</th>
+                        }
+                    </tr>
+                </thead>
+
+                <tbody id="staffList">
+                    @if (Model != null && Model.lstEmpAttendance != null)
+                    {
+                        for (int i = 0; i < Model.lstEmpAttendance.Count; i++)
+                        {
+                            var item = Model.lstEmpAttendance[i];
+                            var isPaid = item.PayingStatus == "Credit";
+
+                            <tr>
+                                <td>
+                                    @if (item.PayingStatus == "Not Processed" || item.PayingStatus == "Rejected")
+                                    {
+                                        <input type="checkbox" class="staffCheckbox" data-StaffName="@item.StaffName" data-staffcode="@item.StaffCode" data-netsalary="@item.AdjustedNetSalary" data-advanceamount="@item.AdvanceAmountCut" />
+                                    }
+                                </td>
+                                <td>@Html.DisplayFor(modelItem => item.StaffCode)</td>
+                                <td>@Html.DisplayFor(modelItem => item.StaffName)</td>
+                                <td>@Html.DisplayFor(modelItem => item.DepartmentName)</td>
+                                <td>@Html.DisplayFor(modelItem => item.Designation)</td>
+                                <td>@Html.DisplayFor(modelItem => item.PaidDays)</td>
+                                <td>@Html.DisplayFor(modelItem => item.PresentDays)</td>
+                                <td>@Html.DisplayFor(modelItem => item.PaidLeaveCount)</td>
+                                <td>@Html.DisplayFor(modelItem => item.AbsentDays)</td>
+                                <td>@Html.DisplayFor(modelItem => item.PayableDaysS)</td>
+                                <td><span class="green-text">@string.Format(new CultureInfo("en-IN"), "{0:C}", item.MonthlyBasicSalary)</span></td>
+                                <td><span class="green-text">@string.Format(new CultureInfo("en-IN"), "{0:C}", item.FinalAmount)</span></td>
+                                <td><span class="red-text">@string.Format(new CultureInfo("en-IN"), "{0:C}", item.AdvanceAmountCut)</span></td>
+
+
+                                <td>
+                                    @if (item.PayingStatus == "Credit")
+                                    {
+                                        <span class="badge bg-success">@Html.DisplayFor(modelItem => item.PayingStatus)</span>
+                                    }
+                                    else if (item.PayingStatus == "Not Processed")
+                                    {
+                                        <span class="badge bg-warning text-dark">@Html.DisplayFor(modelItem => item.PayingStatus)</span>
+                                    }
+                                    else if (item.PayingStatus == "Pending")
+                                    {
+                                        <span class="badge bg-primary">@Html.DisplayFor(modelItem => item.PayingStatus)</span>
+                                    }
+                                    else if (item.PayingStatus == "Approved")
+                                    {
+                                        <span class="badge bg-info">@Html.DisplayFor(modelItem => item.PayingStatus)</span>
+                                    }
+                                    else if (item.PayingStatus == "Rejected")
+                                    {
+                                        <span class="badge bg-danger">@Html.DisplayFor(modelItem => item.PayingStatus)</span>
+                                    }
+                                    else if (item.PayingStatus == "Created")
+                                    {
+                                        <span class="badge bg-secondary">@Html.DisplayFor(modelItem => item.PayingStatus)</span> <!-- Changed to bg-secondary -->
+                                    }
+                                </td>
+
+                                @if (showActionColumn)
+                                {
+                                    <td>
+                                        @if ((item.PayingStatus == "Not Processed" || item.PayingStatus == "Rejected") && item.AdvanceAmountCut > 0)
+                                        {
+                                            <a class="icon AddVoucher" title="View" data-StaffName="@item.StaffName" data-staffcode="@item.StaffCode" data-advanceamount="@item.AdvanceAmountCut" data-finalamount="@item.FinalAmount" data-netsalary="@item.AdjustedNetSalary">
+                                                <video width="25" height="25" playsinline loop>
+                                                    <source src="~/Content/Admin/icon/view.mp4" type="video/mp4" />
+                                                </video>
+                                            </a>
+
+                                        }
+                                    </td>
+                                }
+                            </tr>
+                        }
+                    }
+                </tbody>
+
+            </table>
+        </div>
+    </div>
+    <!-- Modal -->
+    <div class="modal fade" id="BankModal" tabindex="-1" role="dialog" aria-labelledby="BankModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="BankModalLabel">Advance Salary Details</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <!-- Content loaded via AJAX -->
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script src="~/Content/plugins/jquery/jquery.min.js"></script>
+    <!-- Bootstrap 4 -->
+    <script src="~/Content/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+
+    <script type="text/javascript">
+       $(document).ready(function () {
+           var selectedStaff = {};
+           var selectedStaffWithAdvance = {};
+    $('.AddVoucher').on('click', function () {
+    var staffCode = $(this).data('staffcode');
+    var StaffName = $(this).data('staffname'); // Ensure this matches the data attribute
+    var advanceAmount = $(this).data('advanceamount');
+    var finalAmount = $(this).data('finalamount');
+    var Netsalary = $(this).data('netsalary');
+    var month = '@Session["month"]';
+    var year = '@Session["year"]';
+
+    $.ajax({
+        url: '@Url.Action("CreditAdvanceSalaryAsyncSS", "Accountant")',
+        type: 'POST',
+        data: {
+            StaffName: StaffName,
+            staffCode: staffCode,
+            advanceAmount: advanceAmount,
+            finalAmount: finalAmount,
+            Netsalary: Netsalary,
+            month: month,
+            year: year
+        },
+        success: function (data) {
+            if (data) {
+                $('#BankModal .modal-body').html(data);
+                $('#BankModal').modal('show');
+            } else {
+                Swal.fire('Error', 'No data received', 'error');
+            }
+        },
+        error: function (xhr, status, error) {
+            Swal.fire('Error', 'Failed to load content', 'error');
+        }
+    });
+});
+
+
+           $('#selectAll').on('click', function () {
+               var isChecked = $(this).is(':checked');
+               $('.staffCheckbox').prop('checked', isChecked);
+               updateSelectedStaff();
+           });
+
+           $('#staffList').on('change', '.staffCheckbox', function () {
+               updateSelectedStaff();
+           });
+
+           $('#AddVoucher').on('click', function () {
+               // Check if no staff is selected
+               if (Object.keys(selectedStaff).length === 0 && Object.keys(selectedStaffWithAdvance).length === 0) {
+                   // Show warning message using Swal.fire
+                   Swal.fire({
+                       toast: true,
+                       position: 'top-end',
+                       icon: 'warning',
+                       title: 'Please select at least one staff member.',
+                       showConfirmButton: false,
+                       timer: 3000  // Adjust the timer as needed
+                   });
+                   return; // Stop further execution
+               }
+
+               // Proceed with salary payment if at least one staff is selected
+               var totalSalary = calculateTotalSelectedSalary();
+               var staffCount = Object.keys(selectedStaff).length + Object.keys(selectedStaffWithAdvance).length;
+
+               showPayConfirmation(totalSalary, staffCount);
+           });
+
+
+
+    function showPayConfirmation(totalSalary, staffCount) {
+        Swal.fire({
+            title: 'Are you sure?',
+            text: `You are about to Pay the Salary of ${staffCount} staff members. Total amount: ₹${totalSalary.toFixed(2)}`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, Pay it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                AllStaffPay();
+            }
+        });
+    }
+
+
+        function AllStaffPay() {
+        var selectedStaffCodes = Object.keys(selectedStaff);
+        var totalSalary = calculateTotalSelectedSalary();
+
+       $.ajax({
+    url: '@Url.Action("ConfirmationStaffPayasyncSS", "Accountant")',
+    type: 'POST',
+    data: {
+        selectedStaffCodes: selectedStaffCodes,
+        selectedStaffWithAdvance: JSON.stringify(selectedStaffWithAdvance),
+        ExpenseId: 6,
+        FinalAmount: totalSalary
+    },
+    success: function (response) {
+        if (response.success) {
+            Swal.fire({
+               // toast: true,
+               // position: 'top-end',
+                icon: 'success',
+                title: 'Salary Send to Approveval!',
+                showConfirmButton: false,
+                timer: 4000  // Adjust the timer as needed
+            });
+            callAttendanceOfStaff();
+        } else {
+            Swal.fire({
+                title: 'Error!',
+                text: 'Failed to pay salary. Error: ' + response.error,
+                icon: 'error'
+            });
+        }
+    },
+    error: function () {
+        Swal.fire({
+            title: 'Error!',
+            text: 'An error occurred while processing your request.',
+            icon: 'error'
+        });
+    }
+});
+
+    }
+
+    function callAttendanceOfStaff() {
+        var month = '@Session["month"]';
+        var year = '@Session["year"]';
+
+        $.ajax({
+            url: '@Url.Action("AttendenceOfStaffssAsync", "Accountant")',
+            type: 'GET',
+            data: { month: month, year: year },
+            success: function (html) {
+                $('#staffList').html($(html).find('#staffList').html());
+                $('#count').html($(html).find('#count').html());
+
+                selectedStaff = {};
+                $('.staffCheckbox').prop('checked', false);
+                $('#selectAll').prop('checked', false);
+
+                updateTotalSalary();
+
+                updateStaffCounts();
+            },
+            error: function () {
+                Swal.fire({
+                    title: 'Error!',
+                    text: 'An error occurred while retrieving staff attendance.',
+                    icon: 'error'
+                });
+            }
+        });
+    }
+           function updateSelectedStaff() {
+               selectedStaff = {};
+               selectedStaffWithAdvance = {};
+               $('.staffCheckbox:checked').each(function () {
+                   var staffCode = $(this).data('staffcode');
+                   var netSalary = parseFloat($(this).data('netsalary'));
+                   var advanceAmount = parseFloat($(this).data('advanceamount') || 0);
+
+                   if (advanceAmount > 0) {
+                       selectedStaffWithAdvance[staffCode] = { netSalary: netSalary, advanceAmount: advanceAmount };
+                   } else {
+                       selectedStaff[staffCode] = netSalary;
+                   }
+               });
+               updateTotalSalary();
+           }
+
+           function updateTotalSalary() {
+               var totalSalary = calculateTotalSelectedSalary();
+               $('#totalSelectedSalarycal').text(totalSalary.toFixed(2));
+           }
+
+           function calculateTotalSelectedSalary() {
+               var total = Object.values(selectedStaff).reduce((sum, salary) => sum + salary, 0);
+               total += Object.values(selectedStaffWithAdvance).reduce((sum, staff) => sum + staff.netSalary, 0);
+               return total;
+           }
+
+
+
+    function updateStaffCounts() {
+        var paidStaffCount = $('#staffList').find('tr:has(td:contains("Paid"))').length;
+        var unpaidStaffCount = $('#staffList').find('tr:has(td:contains("Not Paid"))').length;
+
+        $('#paidStaffCount').text(paidStaffCount);
+        $('#unpaidStaffCount').text(unpaidStaffCount);
+    }
+
+    updateStaffCounts();
+});
+    </script>
+</body>
+</html>

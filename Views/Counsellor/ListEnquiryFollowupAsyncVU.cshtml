@@ -1,0 +1,194 @@
+﻿@model GSTEducationERPLibrary.Counsellor.Counsellor
+
+<head>
+   
+</head>
+
+<div id="FollowUpForm">
+
+</div>
+<style>
+    .single-line-ellipsis {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 200px; /* Adjust as necessary */
+    }
+
+    .popover-header {
+        background-color: #33CCCC;
+        color: /white/ black;
+        border-bottom: 1px solid #33CCCC;
+    }
+</style>
+
+<table class="table table-bordered dataTable no-footer dtr-inline" style="width:100%;">
+    <thead>
+        <tr>
+            <th>
+                Sr.No.
+            </th>
+            <th hidden>
+                Candidate Code
+            </th>
+            <th>
+                Full Name
+            </th>
+            <th>
+                Mobile No.
+            </th>
+            <th>
+                FollowUp Note
+            </th>
+            <th>
+                Last Followup Date
+            </th>
+            <th>
+                Next FollowUp Date
+            </th>
+            <th>
+                Status
+            </th>
+            <th>
+                FollowUp Status
+            </th>
+            <th>
+                Consellor Name
+            </th>
+            <th>
+                Action
+            </th>
+            <th hidden>
+                Enquiry Type
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @{
+            int i = 1;
+        }
+
+        @foreach (var item in Model.lstEnquiryfollowup)
+        {
+            <tr>
+                <td>
+                    @i
+                </td>
+                <td hidden>
+                    @Html.DisplayFor(modelItem => item.CandidateCode)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.FullName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ContactNumber)
+                </td>
+                <td class="single-line-ellipsis" data-toggle="popover" title="FollowUpNote" data-content="@item.FollowUpNote">@Html.DisplayFor(modelItem => item.FollowUpNote)</td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.FollowUpTakenDate)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.NextFollowUpDate)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Status)
+                </td>
+                <td>
+                    @if (item.FollowUpStatus == "Hot")
+                    {
+                        <span class="badge bg-danger">@Html.DisplayFor(modelItem => item.FollowUpStatus)</span>
+                    }
+                    @if (item.FollowUpStatus == "Cold")
+                    {
+                        <span class="badge bg-blue">@Html.DisplayFor(modelItem => item.FollowUpStatus)</span>
+                    }
+                    @if (item.FollowUpStatus == "Warm")
+                    {
+                        <span class="badge bg-warning">@Html.DisplayFor(modelItem => item.FollowUpStatus)</span>
+                    }
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.StaffName)
+                </td>
+                <td>
+                    <a href="#" class="addfollowup icon" data-id="@item.CandidateCode" data-url="@Url.Action("EnquiryFollowUpVU", "Counsellor", new { id = item.CandidateCode })" data-toggle="modal" data-target="#detailsModal" title="Add FollowUp">
+                        <video width="25" height="25" playsinline loop muted>
+                            <source src="~/Content/Admin/icon/add.mp4" type="video/mp4">
+                        </video>
+                    </a>
+                </td>
+                <td>
+                    @Html.HiddenFor(modelItem => item.EnquiryFor)
+                </td>
+            </tr>
+            i++;
+        }
+    </tbody>
+</table>
+
+<!-- Bootstrap Modal -->
+<div class="modal fade" id="detailsModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content" style="width:58vw;">
+            <div class="modal-body">
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script src="~/Content/Admin/js/Icon.js"></script>
+<script type="text/javascript">
+    $('.addfollowup').click(function () {
+        var candidateCode = $(this).data('id');
+        var url = $(this).data('url');
+
+        console.log("Candidate Code:", candidateCode);
+        console.log("URL:", url);
+
+        // Check if URL and candidate code are defined
+        if (url && candidateCode) {
+            $.ajax({
+                url: url,
+                type: 'GET',
+                data: { CandidateCode: candidateCode },
+                success: function (data) {
+                    $('#detailsModal .modal-body').html(data);
+                    $('#detailsModal').modal('show');
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    console.error("AJAX Error:", textStatus, errorThrown);
+                }
+            });
+        } else {
+            console.error("URL or candidate code is not defined");
+        }
+    });
+    $(document).ready(function () {
+        $('[data-toggle="popover"]').popover({
+            trigger: 'hover',
+            placement: 'top',
+            html: true
+        });
+
+        $.noConflict();
+        var table = $('#Examlist').DataTable({
+            "responsive": true, "lengthChange": false, "autoWidth": false,
+            "buttons": [],
+            "responsive": true,
+            "lengthChange": false,
+            "autoWidth": false
+        }).buttons().container().appendTo('#Examlist_wrapper .col-md-6:eq(0)');
+
+        $('#custom-tabs-four-tab').on('click', '.nav-link', function (e) {
+            e.preventDefault();
+            var tabContentUrl = $(this).attr('href');
+            loadTabContent(tabContentUrl);
+            $('[custom-tabs-four-tab"]').tooltip();
+        });
+    });
+
+</script>
+
+
+

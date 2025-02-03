@@ -1,0 +1,1621 @@
+﻿
+@model GSTEducationERPLibrary.Bind.Bind
+
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>AdminLTE 3 | DataTables</title>
+    <link rel="stylesheet" href="~/Content/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+    <link rel="stylesheet" href="~/Content/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
+    <link rel="stylesheet" href="~/Content/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
+    <script src="~/Content/plugins/jquery/jquery.min.js" type="text/javascript"></script>
+    <link href="~/Content/plugins/bs-stepper/css/bs-stepper.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- Bootstrap 4 -->
+    @*<script src="~/Content/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>*@
+    <script src="~/Content/plugins/moment/moment.min.js"></script>
+    <link href="~/Content/plugins/icheck-bootstrap/icheck-bootstrap.min.css" rel="stylesheet" />
+    <!-- Tempusdominus Bootstrap 4 -->
+    <link rel="stylesheet" href="~/Content/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
+    <!-- Theme style -->
+    <link href="~/Content/plugins/fontawesome-free/css/all.min.css" rel="stylesheet" />
+
+    <link rel="stylesheet" href="~/Content/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+    <link rel="stylesheet" href="~/Content/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
+    @*<a href="~/Views/Bind/ListStaffAppliedLeavesAsyncAM.cshtml">~/Views/Bind/ListStaffAppliedLeavesAsyncAM.cshtml</a>*@
+    <script src="~/Content/plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js"></script>
+    <script src="~/Content/plugins/daterangepicker/daterangepicker.js"></script>
+    <link rel="stylesheet" href="~/Content/plugins/toastr/toastr.min.css">
+    <script src="~/Content/plugins/toastr/toastr.min.js"></script>
+
+    <style>
+        h2 {
+            color: #64bbc9;
+            font-weight: bold;
+            font-size: 30px;
+            margin-left: 17px;
+            margin-bottom: -10px;
+            font-family: sans-serif;
+        }
+
+        h4 {
+            color: #64bbc9;
+            font-weight: bold;
+        }
+
+        .dataTables_wrapper .btn-secondary {
+            color: #235;
+            background-color: transparent !important;
+            border-color: transparent;
+            font-size: x-large;
+        }
+
+        .card-primary.card-outline-tabs > .card-header a.active {
+            border-top: 3px solid #33CCCC;
+        }
+
+        a {
+            color: #01a6a6;
+        }
+
+        .card.card-outline-tabs .card-header a:hover {
+            color: #01a6a6;
+        }
+
+        .card-primary.card-outline-tabs > .card-header a.active, .card-primary.card-outline-tabs > .card-header a.active:hover {
+            border-top: 3px solid #33CCCC;
+        }
+
+        .card-body {
+            font-family: Calibri !important;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        th {
+            background-color: #33CCCC;
+            color: #000;
+            text-align: center !important;
+        }
+
+        td {
+            text-align: center;
+            color: black !important;
+        }
+
+        .table td {
+            padding: 0px 0px 0px 0px !important;
+            font-size: 14px !important;
+        }
+
+        .table th {
+            padding: 5px 5px 4px 10px !important;
+            font-size: 14px !important;
+        }
+
+        .dataTables_filter {
+            margin-top: -50px;
+        }
+
+        #example1_filter label {
+            margin-right: 60px !important;
+        }
+
+        #example1_wrapper {
+            margin-top: 0px !important;
+        }
+
+        select option:disabled {
+            color: #999;
+            background-color: #f2f2f2;
+            font-style: italic;
+        }
+
+        .bs-stepper-circle {
+            background-color: #33CCCC !important;
+        }
+
+        .active .bs-stepper-circle {
+            background-color: #64bbc9 !important;
+        }
+        /* Custom CSS to remove margin-bottom from rows */
+        .row {
+            margin-bottom: 0;
+        }
+
+    </style>
+
+</head>
+<body>
+
+    <div class="card-tools">
+
+        <div class="row">
+
+            <div class="btn-content btn icon" id="btnApplyLeave">
+                <i class="fas fa-plus"></i>
+                <video width="25" height="25" playsinline loop>
+                    <source src="~/Content/Admin/icon/LeaveApplication.mp4" type="video/mp4" />
+                </video>
+            </div>
+
+            <div class="btn-content icon" id="btnCompOffLeave">
+                <i class="fas fa-plus"></i>
+                <video width="25" height="25" playsinline loop>
+                    <source src="~/Content/Admin/icon/compensation.mp4" type="video/mp4" />
+                </video>
+            </div>
+
+        </div>
+    </div>
+
+
+    <div class="container">
+
+        <div class="row justify-content-center" id="DivApplyLeaveForm">
+            <div class="card col-md-14">
+
+                <div class="card-body" id="ApplyLeaveForm" style="display:none">
+                    <h4>Leave Application Form</h4>
+                    @using (Html.BeginForm("ListStaffAppliedLeavesAsyncAM", "Bind", FormMethod.Post, new { enctype = "multipart/form-data", id = "leaveform" }))
+                    {
+                        @Html.AntiForgeryToken()
+
+                        <div class="container">
+                            <div class="row">
+                                <div class="col-md-5" style="height:4vw;">
+                                    <div class="input-group leaveform" id="leavetypesField">
+                                        <h6><b>Leave Type @Html.ValidationMessageFor(model => model.LeaveType, "*", new { @class = "text-danger" })</b></h6>
+                                        <div class="col-md-8">
+                                            <select id="leaveId" name="LeaveType" class="form-control">
+                                                <option value="">Select Option</option>
+                                                @if (ViewBag.LeaveTypes != null && ViewBag.LeaveCounts != null && ViewBag.LeaveTypeId != null)
+                                                {
+                                                    int rowCount = Math.Max(ViewBag.LeaveTypes.Count, Math.Max(ViewBag.LeaveCounts.Count, ViewBag.LeaveTypeId.Count));
+                                                    for (int i = 0; i < rowCount; i++)
+                                                    {
+                                                        var leaveTypeId = ViewBag.LeaveTypeId[i];
+                                                        var leaveType = ViewBag.LeaveTypes[i];
+                                                        var leaveCount = ViewBag.LeaveCounts[i];
+                                                        <option value="@leaveTypeId" @(leaveCount == "0" ? "disabled" : "")>@leaveType (@leaveCount)</option>
+                                                    }
+                                                }
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-5">
+                                    <div class="input-group leaveform clearfix" id="dayField">
+                                        <div class="col-3">
+                                            <span>
+                                                <label>Day Type @Html.ValidationMessageFor(model => model.Day, "*", new { @class = "text-danger" })</label>
+                                            </span>
+                                        </div>
+                                        <div class="form-group clearfix ">
+                                            <div class="icheck-primary d-inline">
+                                                <input type="radio" class="day-radio" id="Full Day" value="Full Day" name="Day">
+                                                <label for="Full Day">Full Day</label>
+                                            </div>
+                                            <div class="icheck-primary d-inline">
+                                                <input type="radio" class="day-radio" id="Half Day" value="Half Day" name="Day">
+                                                <label for="Half Day">Half Day</label>
+                                            </div>
+                                            <div class="icheck-primary d-inline">
+                                                <input type="radio" class="day-radio" id="Short Leave" value="Short Leave" name="Day">
+                                                <label for="Short Leave">Short Leave</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-5">
+                                    <!-- Placeholder for additional fields in the first row -->
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <div class="input-group leaveform" id="startdateField">
+                                        @Html.LabelFor(model => model.StartDate, "Start Date", htmlAttributes: new { @class = "control-label col-md-4" })
+                                        <div class="col-md-8">
+                                            @Html.EditorFor(model => model.StartDate, new { htmlAttributes = new { @class = "form-control datepicker col-md-12", min = DateTime.Now.ToString("yyyy-MM-dd"), required = "required", id = "startdate" } })
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="input-group mb-6 leaveform" style="margin-left:15px;" id="starttimeFields">
+                                        <label>Start Time : </label>
+                                        <div class="col-md-6" style="margin-left:39px;">
+                                            <div class="input-group date" data-target-input="nearest">
+                                                <input type="text" name="StartTime" id="timepicker" class="form-control datetimepicker-input" data-target="#timepicker" required />
+                                                <div class="input-group-append" data-target="#timepicker" data-toggle="datetimepicker">
+                                                    <div class="input-group-text"><i class="far fa-clock"></i></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-5">
+                                    <div class="input-group leaveform" id="noofdaysField">
+                                        @Html.LabelFor(model => model.NoOfDays, "No of Days", htmlAttributes: new { @class = "control-label col-md-4" })
+                                        <div class="col-md-7">
+                                            <input type="text" class="form-control col-md-12" name="NoOfDays" id="NoOfDayss" readonly />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <div class="input-group leaveform" id="enddateField">
+                                        @Html.LabelFor(model => model.EndDate, htmlAttributes: new { @class = "control-label col-md-4" })
+                                        <div class="col-md-8">
+                                            @Html.EditorFor(model => model.EndDate, new { htmlAttributes = new { @class = "form-control datepicker col-md-12", min = DateTime.Now.ToString("yyyy-MM-dd"), required = "required", id = "endDate" } })
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="input-group mb-6 leaveform" style="margin-left:15px;" id="endtimeFieldd">
+                                        <label>End Time </label>
+                                        <div class="col-md-6" style="margin-left:53px;">
+                                            <div class="input-group date" data-target-input="nearest">
+                                                <input type="text" name="EndTime" id="Endtimepicker" class="form-control datetimepicker-input" data-target="#Endtimepicker" required />
+                                                <div class="input-group-append" data-target="#Endtimepicker" data-toggle="datetimepicker">
+                                                    <div class="input-group-text"><i class="far fa-clock"></i></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-5">
+                                    <div class="input-group leaveform" id="leavelocationField">
+                                        @Html.LabelFor(model => model.LeaveLocation, "Location", htmlAttributes: new { @class = "control-label col-md-4" })
+                                        <div class="col-md-7">
+                                            @Html.EditorFor(model => model.LeaveLocation, new { htmlAttributes = new { @class = "form-control", id = "Leavelocation" } })
+                                            @Html.ValidationMessageFor(model => model.LeaveLocation, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="input-group leaveform" id="reasonField">
+                                        @Html.LabelFor(model => model.Reason, htmlAttributes: new { @class = "control-label col-md-5" })
+                                        <div class="col-md-8">
+                                            <textarea name="Reason" class="form-control col-md-12" required="required" id="reason"></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6" style="top:1vw;">
+                                    <div class="input-group leaveform" id="uploaddocumentField">
+                                        @Html.LabelFor(model => model.UploadDocument, "Upload Documents")
+                                        <div class="col-md-9">
+                                            <input type="file" name="UploadDocument" id="Documents" class="form-control" />
+                                            @Html.ValidationMessageFor(model => model.UploadDocument, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-8 offset-md-2" style="left:-13vw;">
+                                    <div class="input-group justify-content-end" style="margin-top:10px; padding-right:40px;">
+                                        <div class="col-md-2">
+                                            <button type="button" class="btn btn-block bg-gradient-success btn-block" id="submit" onclick="applyConfirms(event)">Apply</button>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <button type="button" class="btn btn-block bg-gradient-danger btn-block" onclick="resetForm()">Clear</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+
+                    }
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--Regular Leave Form End-->
+    <!--Comp Off Leave Form Start-->
+
+    <div class="container">
+        <div class="row justify-content-center" id="DivApplyCompOffForm">
+            <div class="card col-md-10">
+                <div class="card-body" id="ApplyCompOffLeaveForm" style="display:none">
+                    <h4>Compensatory Off Application</h4>
+                    @using (Html.BeginForm("ListStaffAppliedLeavesAsyncAM", "Bind", FormMethod.Post, new { enctype = "multipart/form-data", id = "ComOffleaveform" }))
+                    {
+                        @Html.AntiForgeryToken()
+
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="input-group leaveform" id="WorkedDate">
+                                        @Html.LabelFor(model => model.HolidayWorkedDate, "Holiday Worked Date", htmlAttributes: new { @class = "control-label col-md-4" })
+                                        <div class="col-md-8">
+                                            @Html.EditorFor(model => model.HolidayWorkedDate, new { htmlAttributes = new { @class = "form-control datepicker", max = DateTime.Now.ToString("yyyy-MM-dd"), required = "required", id = "HolidayWorkedDate" } })
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="input-group leaveform clearfix" id="dayField">
+                                        <span>
+                                            <label>Day Type</label>
+                                        </span>
+                                        <div class="form-group clearfix">
+                                            <div class="icheck-primary d-inline">
+                                                <input type="radio" class="day-radio" id="Full Days" value="Full Day" name="Day" checked>
+                                                <label for="Full Day">Full Day</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="input-group leaveform" id="startdateField">
+                                        @Html.LabelFor(model => model.StartDate, "Start Date", htmlAttributes: new { @class = "control-label col-md-4" })
+                                        <div class="col-md-8">
+                                            @Html.EditorFor(model => model.StartDate, new { htmlAttributes = new { @class = "form-control datepicker", min = DateTime.Now.ToString("yyyy-MM-dd"), required = "required", id = "CompOffstartdate" } })
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="input-group mb-6 leaveform" id="enddateField">
+                                        @Html.LabelFor(model => model.EndDate, htmlAttributes: new { @class = "control-label col-md-4" })
+                                        <div class="col-md-8">
+                                            @Html.EditorFor(model => model.EndDate, new { htmlAttributes = new { @class = "form-control datepicker", min = DateTime.Now.ToString("yyyy-MM-dd"), required = "required", id = "CompOffendDate" } })
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="input-group leaveform" id="noofdaysField">
+                                        @Html.LabelFor(model => model.NoOfDays, "No of Days", htmlAttributes: new { @class = "control-label col-md-4" })
+                                        <div class="col-md-8">
+                                            <input type="text" class="form-control" name="NoOfDays" id="CompOffNoOfDays" readonly />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="input-group leaveform" id="leavelocationField">
+                                        @Html.LabelFor(model => model.LeaveLocation, "Location", htmlAttributes: new { @class = "control-label col-md-4" })
+                                        <div class="col-md-8">
+                                            @Html.EditorFor(model => model.LeaveLocation, new { @class = "form-control", required = "required", id = "location" })
+                                            @Html.ValidationMessageFor(model => model.LeaveLocation, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="input-group leaveform" id="reasonField">
+                                        @Html.LabelFor(model => model.Reason, htmlAttributes: new { @class = "control-label col-md-4" })
+                                        <div class="col-md-8">
+                                            <textarea name="Reason" class="form-control" required="required" id="reason"></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="input-group leaveform" id="uploaddocumentField">
+                                        @Html.LabelFor(model => model.UploadDocument, "Upload Documents:")
+                                        <div class="col-md-8">
+                                            <input type="file" name="UploadDocument" id="Documents" class="form-control" />
+                                            @Html.ValidationMessageFor(model => model.UploadDocument, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row justify-content-end">
+                            <div class="col-7 row">
+                                <div class="col-md-2">
+                                    <button type="button" class="btn btn-block bg-gradient-success" id="submitCompOff" onclick="applyConfirms(event)">Apply</button>
+                                </div>
+                                <div class="col-md-2">
+                                    <button type="button" class="btn btn-block bg-gradient-danger" onclick="resetForm()">Clear</button>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+    <!--Comp Off Leave Off End-->
+    <div class="card-body">
+        @{
+            int allLeavesCount = 0;
+            int approvedLeavesCount = 0;
+            int pendingLeavesCount = 0;
+            int rejectedLeavesCount = 0;
+
+            if (Model.ListStaffAppliedLeaves != null)
+            {
+                allLeavesCount = Model.ListStaffAppliedLeaves.Count();
+                approvedLeavesCount = Model.ListStaffAppliedLeaves.Count(item => item.Status == "Approved");
+                pendingLeavesCount = Model.ListStaffAppliedLeaves.Count(item => item.Status == "Pending");
+                rejectedLeavesCount = Model.ListStaffAppliedLeaves.Count(item => item.Status == "Rejected");
+            }
+        }
+
+        <div class="col-12">
+            <div class="card card-primary card-outline card-outline-tabs">
+                <div class="card-header p-0 border-bottom-0">
+                    <ul class="nav nav-tabs" id="custom-tabs-one-tab" role="tablist">
+                        <li class="nav-item">
+                            <a class="nav-link active" id="AllLeavesList" data-toggle="pill" href="" role="tab" aria-controls="custom-tabs-one-home" aria-selected="true">All Leaves <span class="bs-stepper-circle">@allLeavesCount</span></a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="ApprovedLeavesList" data-toggle="pill" href="" role="tab" aria-controls="custom-tabs-one-profile" aria-selected="false">Approved Leaves <span class="bs-stepper-circle">@approvedLeavesCount</span></a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="PendingLeavesList" data-toggle="pill" href="" role="tab" aria-controls="custom-tabs-one-profile" aria-selected="false">Pending Leaves <span class="bs-stepper-circle">@pendingLeavesCount</span></a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="RejectedLeavesList" data-toggle="pill" href="" role="tab" aria-controls="custom-tabs-one-profile" aria-selected="false">Rejected Leaves <span class="bs-stepper-circle">@rejectedLeavesCount</span></a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="card ListCard" id="AllLeavesListCard">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+
+                    <table id="example1" class=" table table-bordered dataTable no-footer dtr-inline ">
+                        <thead>
+                            <tr>
+                                <th hidden>
+                                    @Html.DisplayNameFor(model => model.LeaveAppliedId)
+                                </th>
+                                <th align="center">
+                                    <label>Leave Type</label>
+                                </th>
+                                <th align="center">
+                                    <label> Day </label>
+                                </th>
+                                <th align="center">
+                                    <label>Start Date</label>
+                                </th>
+                                <th align="center">
+                                    <label>End Date</label>
+                                </th>
+                                <th align="center">
+                                    <label> No Of Days </label>
+                                </th>
+                                <th align="center">
+                                    <label> Location </label>
+                                </th>
+                                <th align="center">
+                                    <label> Reason </label>
+                                </th>
+                                <th align="center">
+                                    <label> Documents </label>
+                                </th>
+                                <th align="center">
+                                    <label> Status </label>
+                                </th>
+                                <th hidden>
+                                    @Html.DisplayNameFor(model => model.StatusId)
+                                </th>
+                                <th align="center">
+                                    <label> Action </label>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model.ListStaffAppliedLeaves != null && Model.ListStaffAppliedLeaves.Any())
+                            {
+                                foreach (var item in Model.ListStaffAppliedLeaves)
+                                {
+
+
+
+                                    //       public int LeaveCount { get; set; }
+                                    //public int LeaveAppliedId { get; set; }
+                                    //public string LeaveType { get; set; }
+                                    //public string LeaveLocation { get; set; }
+                                    //public string Reason { get; set; }
+                                    //public string Document { get; set; }
+                                    <tr>
+                                        <td hidden>
+                                            @Html.DisplayFor(modelItem => item.LeaveAppliedId)
+                                        </td>
+                                        <td align="center">
+                                            @Html.DisplayFor(modelItem => item.LeaveType)
+                                        </td>
+                                        <td align="center">
+                                            @Html.DisplayFor(modelItem => item.Day)
+                                        </td>
+                                        <td align="center">
+                                            @Html.DisplayFor(modelItem => item.StartDate)
+                                        </td>
+                                        <td align="center">
+                                            @Html.DisplayFor(modelItem => item.EndDate)
+                                        </td>
+                                        <td align="center">
+                                            @Html.DisplayFor(modelItem => item.NoOfDays)
+                                        </td>
+                                        <td align="center">
+                                            @Html.DisplayFor(modelItem => item.LeaveLocation)
+                                        </td>
+                                        <td align="center">
+                                            @Html.DisplayFor(modelItem => item.Reason)
+                                        </td>
+                                        <td align="center">
+                                            <a href="#" class="sectionEditLink2 icon" data-id="@item.Document" id="btnViewFile" title="View">
+                                                <video width="25" height="25" playsinline loop>
+                                                    <source src="~/Content/Admin/icon/view.mp4" type="video/mp4">
+                                                </video>
+                                            </a>
+                                        </td>
+                                        <td align="center">
+                                            @if (item.Status == "Approved")
+                                            {
+                                                <span class="badge bg-success">@Html.DisplayFor(modelItem => item.Status)</span>
+                                            }
+                                            @if (item.Status == "Pending")
+                                            {
+                                                <span class="badge bg-blue">@Html.DisplayFor(modelItem => item.Status)</span>
+                                            }
+                                            @if (item.Status == "Rejected")
+                                            {
+                                                <span class="badge bg-danger">@Html.DisplayFor(modelItem => item.Status)</span>
+                                            }
+                                            @if (item.Status == "Cancelled")
+                                            {
+                                                <span class="badge bg-warning">@Html.DisplayFor(modelItem => item.Status)</span>
+                                            }
+
+                                        </td>
+                                        <td hidden>
+                                            @Html.DisplayFor(modelItem => item.StatusId)
+                                        </td>
+                                        <td align="center">
+
+                                            @if (item.StatusId != 16 && item.StatusId != 7 && item.StartDate > DateTime.Now)
+                                            {
+                                                <a href="#" class="sectionEditLink2 icon" data-id="@item.LeaveAppliedId" data-url="@Url.Action("EditLeaveAsyncAM", "Bind", new { id = item.LeaveAppliedId })" data-toggle="modal" data-target="#EditLeaveModal" title="EDIT">
+                                                    <video width="25" height="25" playsinline loop>
+                                                        <source src="~/Content/Admin/icon/Edit%20Details.mp4" type="video/mp4">
+                                                    </video>
+                                                </a>
+                                            }
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td colspan="10">No Data Available</td>
+                                </tr>
+
+                            }
+                        </tbody>
+
+                    </table>
+                </div>
+            </div>
+        </div>
+        <!--Table for Approved Leave-->
+        <div class="card ListCard" id="ApprovesLeavesListCard">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+
+                    <table id="example1" class="table table-bordered dataTable no-footer dtr-inline">
+
+
+                        <thead>
+                            <tr>
+                                <th hidden>
+                                    @Html.DisplayNameFor(model => model.LeaveAppliedId)
+                                </th>
+                                <th align="center">
+                                    <label>Leave Type</label>
+                                </th>
+                                <th align="center">
+                                    <label> Day </label>
+                                </th>
+                                <th align="center">
+                                    <label>Start Date</label>
+                                </th>
+                                <th align="center">
+                                    <label>End Date</label>
+                                </th>
+                                <th align="center">
+                                    <label> No Of Days </label>
+                                </th>
+                                <th align="center">
+                                    <label> Location </label>
+                                </th>
+                                <th align="center">
+                                    <label> Reason </label>
+                                </th>
+                                <th align="center">
+                                    <label> Documents </label>
+                                </th>
+                                <th align="center">
+                                    <label> Status </label>
+                                </th>
+                                <th hidden>
+                                    @Html.DisplayNameFor(model => model.StatusId)
+                                </th>
+                                <th align="center">
+                                    <label> Action </label>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model.ListStaffAppliedLeaves != null && Model.ListStaffAppliedLeaves.Any())
+                            {
+                                foreach (var item in Model.ListStaffAppliedLeaves)
+                                {
+
+                                    if (item.Status == "Approved")
+                                    {
+                                        <tr>
+                                            <td hidden>
+                                                @Html.DisplayFor(modelItem => item.LeaveAppliedId)
+                                            </td>
+                                            <td align="center">
+                                                @Html.DisplayFor(modelItem => item.LeaveType)
+                                            </td>
+                                            <td align="center">
+                                                @Html.DisplayFor(modelItem => item.Day)
+                                            </td>
+                                            <td align="center">
+                                                @Html.DisplayFor(modelItem => item.StartDate)
+                                            </td>
+                                            <td align="center">
+                                                @Html.DisplayFor(modelItem => item.EndDate)
+                                            </td>
+                                            <td align="center">
+                                                @Html.DisplayFor(modelItem => item.NoOfDays)
+                                            </td>
+                                            <td align="center">
+                                                @Html.DisplayFor(modelItem => item.LeaveLocation)
+                                            </td>
+                                            <td align="center">
+                                                @Html.DisplayFor(modelItem => item.Reason)
+                                            </td>
+                                            <td align="center">
+                                                <a href="#" class="sectionEditLink2 icon" data-id="@item.Document" id="btnViewFile" title="View">
+                                                    <video width="25" height="25" playsinline loop>
+                                                        <source src="~/Content/Admin/icon/view.mp4" type="video/mp4">
+                                                    </video>
+                                                </a>
+                                            </td>
+                                            <td align="center">
+                                                @if (item.Status == "Approved")
+                                                {
+                                                    <span class="badge bg-success">@Html.DisplayFor(modelItem => item.Status)</span>
+                                                }
+                                                @if (item.Status == "Pending")
+                                                {
+                                                    <span class="badge bg-blue">@Html.DisplayFor(modelItem => item.Status)</span>
+                                                }
+                                                @if (item.Status == "Rejected")
+                                                {
+                                                    <span class="badge bg-danger">@Html.DisplayFor(modelItem => item.Status)</span>
+                                                }
+
+                                            </td>
+                                            <td hidden>
+                                                @Html.DisplayFor(modelItem => item.StatusId)
+                                            </td>
+                                            <td align="center">
+
+                                                @if (item.StatusId != 16 && item.StatusId != 7 && item.StartDate > DateTime.Now)
+                                                {
+                                                    <a href="#" class="sectionEditLink2 icon" data-id="@item.LeaveAppliedId" data-url="@Url.Action("EditLeaveAsyncAM", "Bind", new { id = item.LeaveAppliedId })" data-toggle="modal" data-target="#EditLeaveModal" title="EDIT">
+                                                        <video width="25" height="25" playsinline loop>
+                                                            <source src="~/Content/Admin/icon/Edit%20Details.mp4" type="video/mp4">
+                                                        </video>
+                                                    </a>
+                                                }
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td colspan="10">No Data Available</td>
+                                </tr>
+
+                            }
+                        </tbody>
+
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!--Approved Leave Table End-->
+        <!--Pending Leave Table Start-->
+        <div class="card ListCard" id="PendingLeavesListCard">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+
+                    <table id="example1" class="table table-bordered dataTable no-footer dtr-inline">
+
+
+                        <thead>
+                            <tr>
+                                <th hidden>
+                                    @Html.DisplayNameFor(model => model.LeaveAppliedId)
+                                </th>
+                                <th align="center">
+                                    <label>Leave Type</label>
+                                </th>
+                                <th align="center">
+                                    <label> Day </label>
+                                </th>
+                                <th align="center">
+                                    <label>Start Date</label>
+                                </th>
+                                <th align="center">
+                                    <label>End Date</label>
+                                </th>
+                                <th align="center">
+                                    <label> No Of Days </label>
+                                </th>
+                                <th align="center">
+                                    <label> Location </label>
+                                </th>
+                                <th align="center">
+                                    <label> Reason </label>
+                                </th>
+                                <th align="center">
+                                    <label> Documents </label>
+                                </th>
+                                <th align="center">
+                                    <label> Status </label>
+                                </th>
+                                <th hidden>
+                                    @Html.DisplayNameFor(model => model.StatusId)
+                                </th>
+                                <th align="center">
+                                    <label> Action </label>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model.ListStaffAppliedLeaves != null && Model.ListStaffAppliedLeaves.Any())
+                            {
+                                foreach (var item in Model.ListStaffAppliedLeaves)
+                                {
+
+                                    if (item.Status == "Pending")
+                                    {
+                                        <tr>
+                                            <td hidden>
+                                                @Html.DisplayFor(modelItem => item.LeaveAppliedId)
+                                            </td>
+                                            <td align="center">
+                                                @Html.DisplayFor(modelItem => item.LeaveType)
+                                            </td>
+                                            <td align="center">
+                                                @Html.DisplayFor(modelItem => item.Day)
+                                            </td>
+                                            <td align="center">
+                                                @Html.DisplayFor(modelItem => item.StartDate)
+                                            </td>
+                                            <td align="center">
+                                                @Html.DisplayFor(modelItem => item.EndDate)
+                                            </td>
+                                            <td align="center">
+                                                @Html.DisplayFor(modelItem => item.NoOfDays)
+                                            </td>
+                                            <td align="center">
+                                                @Html.DisplayFor(modelItem => item.LeaveLocation)
+                                            </td>
+                                            <td align="center">
+                                                @Html.DisplayFor(modelItem => item.Reason)
+                                            </td>
+                                            <td align="center">
+                                                <a href="#" class="sectionEditLink2 icon" data-id="@item.Document" id="btnViewFile" title="View">
+                                                    <video width="25" height="25" playsinline loop>
+                                                        <source src="~/Content/Admin/icon/view.mp4" type="video/mp4">
+                                                    </video>
+                                                </a>
+                                            </td>
+                                            <td align="center">
+                                                @if (item.Status == "Approved")
+                                                {
+                                                    <span class="badge bg-success">@Html.DisplayFor(modelItem => item.Status)</span>
+                                                }
+                                                @if (item.Status == "Pending")
+                                                {
+                                                    <span class="badge bg-blue">@Html.DisplayFor(modelItem => item.Status)</span>
+                                                }
+                                                @if (item.Status == "Rejected")
+                                                {
+                                                    <span class="badge bg-danger">@Html.DisplayFor(modelItem => item.Status)</span>
+                                                }
+
+                                            </td>
+                                            <td hidden>
+                                                @Html.DisplayFor(modelItem => item.StatusId)
+                                            </td>
+                                            <td align="center">
+
+                                                @if (item.StatusId != 16 && item.StatusId != 7 && item.StartDate > DateTime.Now)
+                                                {
+                                                    <a href="#" class="sectionEditLink2 icon" data-id="@item.LeaveAppliedId" data-url="@Url.Action("EditLeaveAsyncAM", "Bind", new { id = item.LeaveAppliedId })" data-toggle="modal" data-target="#EditLeaveModal" title="EDIT">
+                                                        <video width="25" height="25" playsinline loop>
+                                                            <source src="~/Content/Admin/icon/Edit%20Details.mp4" type="video/mp4">
+                                                        </video>
+                                                    </a>
+                                                }
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td colspan="10">No Data Available</td>
+                                </tr>
+
+                            }
+                        </tbody>
+
+                    </table>
+                </div>
+            </div>
+        </div>
+        <!--Pending Leave Table End-->
+        <!--Rejected Leave Table Start-->
+        <div class="card ListCard" id="RejectedLeavesListCard">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+
+
+                    <table id="example1" class="table table-bordered dataTable no-footer dtr-inline">
+
+
+                        <thead>
+                            <tr>
+                                <th hidden>
+                                    @Html.DisplayNameFor(model => model.LeaveAppliedId)
+                                </th>
+                                <th align="center">
+                                    <label>Leave Type</label>
+                                </th>
+                                <th align="center">
+                                    <label> Day </label>
+                                </th>
+                                <th align="center">
+                                    <label>Start Date</label>
+                                </th>
+                                <th align="center">
+                                    <label>End Date</label>
+                                </th>
+                                <th align="center">
+                                    <label> No Of Days </label>
+                                </th>
+                                <th align="center">
+                                    <label> Location </label>
+                                </th>
+                                <th align="center">
+                                    <label> Reason </label>
+                                </th>
+                                <th align="center">
+                                    <label> Documents </label>
+                                </th>
+                                <th align="center" hidden>
+                                    <label> Status </label>
+                                </th>
+                                <th hidden>
+                                    @Html.DisplayNameFor(model => model.StatusId)
+                                </th>
+                                <th align="center" hidden>
+                                    <label> Action </label>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model.ListStaffAppliedLeaves != null && Model.ListStaffAppliedLeaves.Any())
+                            {
+                                foreach (var item in Model.ListStaffAppliedLeaves)
+                                {
+
+                                    if (item.Status == "Rejected")
+                                    {
+                                        <tr>
+                                            <td hidden>
+                                                @Html.DisplayFor(modelItem => item.LeaveAppliedId)
+                                            </td>
+                                            <td align="center">
+                                                @Html.DisplayFor(modelItem => item.LeaveType)
+                                            </td>
+                                            <td align="center">
+                                                @Html.DisplayFor(modelItem => item.Day)
+                                            </td>
+                                            <td align="center">
+                                                @Html.DisplayFor(modelItem => item.StartDate)
+                                            </td>
+                                            <td align="center">
+                                                @Html.DisplayFor(modelItem => item.EndDate)
+                                            </td>
+                                            <td align="center">
+                                                @Html.DisplayFor(modelItem => item.NoOfDays)
+                                            </td>
+                                            <td align="center">
+                                                @Html.DisplayFor(modelItem => item.LeaveLocation)
+                                            </td>
+                                            <td align="center">
+                                                @Html.DisplayFor(modelItem => item.Reason)
+                                            </td>
+                                            <td align="center">
+                                                <a href="#" class="sectionEditLink2 icon" data-id="@item.Document" id="btnViewFile" title="View">
+                                                    <video width="25" height="25" playsinline loop>
+                                                        <source src="~/Content/Admin/icon/view.mp4" type="video/mp4">
+                                                    </video>
+                                                </a>
+                                            </td>
+                                            <td align="center" hidden>
+                                                @if (item.Status == "Approved")
+                                                {
+                                                    <span class="badge bg-success">@Html.DisplayFor(modelItem => item.Status)</span>
+                                                }
+                                                @if (item.Status == "Pending")
+                                                {
+                                                    <span class="badge bg-blue">@Html.DisplayFor(modelItem => item.Status)</span>
+                                                }
+                                                @if (item.Status == "Rejected")
+                                                {
+                                                    <span class="badge bg-danger">@Html.DisplayFor(modelItem => item.Status)</span>
+                                                }
+
+                                            </td>
+                                            <td hidden>
+                                                @Html.DisplayFor(modelItem => item.StatusId)
+                                            </td>
+                                            <td align="center" hidden>
+
+                                                @if (item.StatusId != 16 && item.StatusId != 7 && item.StartDate > DateTime.Now)
+                                                {
+                                                    <a href="#" class="sectionEditLink2 icon" data-id="@item.LeaveAppliedId" data-url="@Url.Action("EditLeaveAsyncAM", "Bind", new { id = item.LeaveAppliedId })" data-toggle="modal" data-target="#EditLeaveModal" title="EDIT">
+                                                        <video width="25" height="25" playsinline loop>
+                                                            <source src="~/Content/Admin/icon/Edit%20Details.mp4" type="video/mp4">
+                                                        </video>
+                                                    </a>
+                                                }
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td colspan="10">No Data Available</td>
+                                </tr>
+
+                            }
+                        </tbody>
+
+                    </table>
+                </div>
+            </div>
+        </div>
+        <!--Rejected Leave Table End-->
+    </div>
+    <!--PopUp Display code-->
+    <div class="modal fade" id="EditLeaveModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content" style="width:78vw; left:-5vw;">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel" style="color: #33CCCC;">Update Applied Leave</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="color:red;">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                </div>
+                <div class="modal-footer">
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--PopUp Display End-->
+
+    <script src="~/Content/plugins/jquery-validation/jquery.validate.min.js"></script>
+
+    <script src="~/Content/plugins/datatables/jquery.dataTables.min.js"></script>
+    <script src="~/Content/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
+    <script src="~/Content/plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
+    <script src="~/Content/plugins/datatables-responsive/js/responsive.bootstrap4.min.js"></script>
+    <script src="~/Content/plugins/datatables-buttons/js/dataTables.buttons.min.js"></script>
+    <script src="~/Content/plugins/datatables-buttons/js/buttons.bootstrap4.min.js"></script>
+    <script src="~/Content/plugins/jszip/jszip.min.js"></script>
+    <script src="~/Content/plugins/pdfmake/pdfmake.min.js"></script>
+    <script src="~/Content/plugins/pdfmake/vfs_fonts.js"></script>
+    <script src="~/Content/plugins/datatables-buttons/js/buttons.html5.min.js"></script>
+    <script src="~/Content/plugins/datatables-buttons/js/buttons.print.min.js"></script>
+
+
+
+
+    <script src="~/Content/plugins/daterangepicker/daterangepicker.js"></script>
+    @*<link href="~/Content/plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css" rel="stylesheet" />*@
+    <script src="~/Content/Admin/js/Icon.js"></script>
+    <!-- Include SweetAlert CSS and JS files -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+
+
+
+
+    <script type="text/javascript">
+        var ReceivedMessage = "";
+        var ResponseReceived;
+    function applyConfirms(event) {
+        console.log("Before validation");
+
+        // Prevent default form submission
+        event.preventDefault();
+
+
+        // Validate fields before showing the confirmation dialog
+        var Llocation = $('#Leavelocation').val();
+        var leaveId = $('#leaveId').val();
+        var dayType = $('.day-radio:checked').val();
+        var LstartDate = $('#startdate').val();
+        var LstartTime = $('#timepicker').val();
+        var LendDate = $('#endDate').val();
+        var LendTime = $('#Endtimepicker').val();
+        var noofDays = $('#NoOfDayss').val();
+        var Lreason = $('#reason').val();
+        var LHolidayWorkedDate = $('#HolidayWorkedDate').val();
+        var document = $('#HolidayWorkedDate').val();
+
+        if ($('#HolidayWorkedDate').is(':visible')) {
+            // Check if any required field is empty
+            if (!LHolidayWorkedDate || !dayType || !LstartDate) {
+                // If any required field is empty, show an error message
+                Swal.fire({
+                    title: 'Error',
+                    text: 'All fields must be filled in.',
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                });
+                return false; // Prevent further execution and form submission
+            }
+        } else {
+            if (!leaveId || !dayType || !LstartDate || !LendDate || !noofDays || !Lreason) {
+                // If any required field is empty, show an error message
+                Swal.fire({
+                    title: 'Error',
+                    text: 'All fields must be filled in.',
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                });
+                return false; // Prevent further execution and form submission
+            }
+        }
+
+        // If all required fields are filled, proceed to show the confirmation dialog
+        Swal.fire({
+            title: 'Are you sure you want to apply for leave?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, apply!',
+            cancelButtonText: 'Cancel'
+        }).then((result) => {
+            if (result.isConfirmed) {
+
+                // User confirmed, submit the form with file data using FormData
+                var formData = new FormData($('#leaveform')[0]);
+                var CompOffformData = new FormData($('#ComOffleaveform')[0]);
+                if ($('#HolidayWorkedDate').is(':visible')) {
+                    // 
+                    $.ajax({
+                        type: 'POST',
+                        url: '@Url.Action("ApplyCompOffAsyncAM", "Bind")',
+                        data: CompOffformData,
+                        contentType: false,
+                        processData: false,
+                        success: function (data) {
+                            displayToast('Comp Off Applied successfully!', 'success');
+                            $('#leaveform')[0].reset();
+                            $('.custom-file-label').html('Choose File'); // Reset the file input label text
+                            // Wait for the toast to be shown before redirecting
+                            setTimeout(function () {
+
+                            }, 2000); // Adjust the timeout value as needed
+                            $("#DivApplyCompOffForm").hide();
+                            var icon = $('#btnCompOffLeave').find('i');
+                            icon.removeClass('fa-minus').addClass('fa-plus');
+                        },
+                        error: function (error) {
+                            // Handle error
+                            Swal.fire({
+                                title: 'Error',
+                                text: 'An error occurred while applying for leave.',
+                                icon: 'error',
+                                confirmButtonText: 'OK'
+                            }).then(() => {
+                                // Redirect to the AddNewExamSNAsync action
+                                window.location.href = '@Url.Action("LeaveManagementAsyncAM", "Bind")';
+                            });
+                        }
+                    });
+                }
+                else {
+
+                       $.ajax({
+       type: 'POST',
+       url: '@Url.Action("ListStaffAppliedLeavesAsyncAM", "Bind")',
+       data: formData,
+       contentType: false,
+       processData: false,
+
+       success: function (data) {
+           // 
+           displayToast('Leave Applied successfully!', 'success');
+           $('#leaveform')[0].reset();
+           $('.custom-file-label').html('Choose File'); // Reset the file input label text
+           // Wait for the toast to be shown before redirecting
+           setTimeout(function () {
+               //window.location.href = '/Placement/ListAllInterviewAsyncSN'; // Replace '/home' with the URL you want to redirect to
+           }, 2000); // Adjust the timeout value as needed
+
+           $("#DivApplyLeaveForm").hide();
+           var icon = $('#btnApplyLeave').find('i');
+           icon.removeClass('fa-minus').addClass('fa-plus');
+                           },
+       error: function (error) {
+           // Handle error
+           Swal.fire({
+               title: 'Error',
+               text: 'An error occurred while applying for leave.',
+               icon: 'error',
+               confirmButtonText: 'OK'
+           }).then(() => {
+               // Redirect to the AddNewExamSNAsync action
+               window.location.href = '@Url.Action("LeaveManagementAsyncAM", "Bind")';
+           });
+       }
+
+   });
+                }
+
+            }
+        });
+
+        return false; // Prevent default form submission
+        }
+
+        function displayToast(message, type) {
+            // Display Toastr notification
+            toastr[type](message);
+        }
+
+        toastr.options = {
+            closeButton: true,
+            progressBar: true,
+            positionClass: 'toast-top-right',
+            showMethod: 'slideDown',
+            timeOut: 4000 // How long the toast will be displayed (in milliseconds)
+        };
+
+
+
+    function resetForm() {
+        if ($('#ApplyLeaveForm').is(':visible')) {
+            $('#leaveform')[0].reset();
+            $('.custom-file-label').html('Choose File'); // Reset the file input label text
+        } else {
+            $('#CompOffleaveform')[0].reset();
+            $('.custom-file-label').html('Choose File'); // Reset the file input label text
+        }
+    }
+
+        $('#HolidayWorkedDate').change(function () {
+
+        var selectedDate = $(this).val();
+
+        $.ajax({
+            url: '@Url.Action("ValidateCompOffAsyncAM", "Bind")',
+            type: 'POST',
+            data: {
+                date: selectedDate,
+            },
+            success: function (response) {
+                ReceivedMessage = "CompOff can be applied";
+                ResponseReceived = response.Message;
+                var ExpireMessage = "CompOff Cannot be applied, limit is expired";
+                var AlreadyCompOffTakenMessage = "CompOff Already Taken for selected Date.";
+                updateSubmitCompOffButton();
+                if (response.DateWorked === selectedDate &&  response.Message  == ReceivedMessage) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: response.Message,
+                        text: 'Date: ' + selectedDate
+                    });
+                } else if (response.Message === ExpireMessage){
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'CompOff Expired',
+                        text: response.Message
+                    });
+
+                }
+                else if(response.Message === AlreadyCompOffTakenMessage){
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Comp Off Already Taken',
+                        text: response.Message
+                    });
+
+                }
+                else {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Invalid Date',
+                        text: 'Selected Date is not valid for CompOff'
+                    });
+
+                }
+            },
+            error: function() {
+                Swal.fire({
+                    title: 'Error',
+                    text: 'There was an error processing your request.',
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                });
+            }
+        });
+    });
+
+    // Event delegation for dynamically added .sectionEditLink2 elements
+
+        $('.sectionEditLink2').click(function () {
+        // 
+        console.log("Clicked on .sectionEditLink2");
+        var leaveAppliedId = $(this).data('id');
+        var url = $(this).data('url');
+        console.log("leaveAppliedId:", leaveAppliedId);
+        console.log("url:", url);
+
+        // Check if the url is not empty
+        if (url) {
+            $.ajax({
+                url: url,
+                type: 'GET',
+                success: function (data) {
+                    $('#EditLeaveModal .modal-body').html(data);
+                    $('#EditLeaveModal').modal('show');
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    console.error("AJAX error:", textStatus, errorThrown);
+                }
+            });
+        } else {
+            console.error("URL is not defined");
+        }
+        });
+
+        function updateSubmitCompOffButton() {
+
+            if ($('#HolidayWorkedDate').is(':visible') && ReceivedMessage == ResponseReceived) {
+                $('#submitCompOff').prop('disabled', false);
+            } else {
+                $('#submitCompOff').prop('disabled', true);
+            }
+        }
+
+        $('#HolidayWorkedDate').change(function () {
+            updateSubmitCompOffButton();
+        });
+
+    $(document).ready(function () {
+        console.log("Document ready");
+
+        $("#DivApplyLeaveForm").hide();
+        $("#DivApplyCompOffForm").hide();
+        $('#ApprovesLeavesListCard').hide();
+        $('#PendingLeavesListCard').hide();
+        $('#RejectedLeavesListCard').hide();
+
+
+        $('#custom-tabs-one-tab a').on('click', function (e) {
+            e.preventDefault();
+            // 
+
+            $('.ListCard').hide();
+
+            var tabId = $(this).attr('id');
+            if (tabId === 'AllLeavesList') {
+                $('#AllLeavesListCard').show();
+            } else if (tabId === 'ApprovedLeavesList') {
+                $('#ApprovesLeavesListCard').show();
+            } else if (tabId === 'PendingLeavesList') {
+                $('#PendingLeavesListCard').show();
+            } else if (tabId === 'RejectedLeavesList') {
+                $('#RejectedLeavesListCard').show();
+            }
+        });
+
+
+
+        $('#btnApplyLeave').click(function () {
+            $('.leaveform').toggleClass('hidden-form');
+            var icon = $(this).find('i');
+            if ($('.leaveform').hasClass('hidden-form')) {
+                icon.removeClass('fa-minus').addClass('fa-plus');
+                $('#DivApplyLeaveForm').prevAll('br').slice(0, 2).remove();
+                $('#DivApplyCompOffForm').prevAll('br').slice(0, 2).remove();
+                $('#ApplyLeaveForm').hide();
+                $('#ApplyCompOffLeaveForm').hide();
+                $("#DivApplyLeaveForm").hide();
+                $('#ApplyLeaveForm').hide();
+                $("#DivApplyCompOffForm").hide();
+            } else {
+                icon.removeClass('fa-plus').addClass('fa-minus');
+                $('.leaveform').hide();
+                $('#leavetypesField, #dayField, #startdateField, #starttimeFields, #enddateField, #endtimeFieldd, #noofdaysField, #leavelocationField, #reasonField, #uploaddocumentField').show();
+                //$('<br>').insertBefore('#DivApplyLeaveForm');
+                $("#DivApplyLeaveForm").show();
+                $('#ApplyLeaveForm').slideDown();
+                $('#ApplyCompOffLeaveForm').hide();
+            }
+        });
+
+        $('#btnCompOffLeave').click(function () {
+            $('.leaveform').toggleClass('hidden-form');
+            var icon = $(this).find('i');
+            if ($('.leaveform').hasClass('hidden-form')) {
+                icon.removeClass('fa-minus').addClass('fa-plus');
+                $('#DivApplyCompOffForm').prevAll('br').slice(0, 2).remove();
+                $('#DivApplyLeaveForm').prevAll('br').slice(0, 2).remove();
+                $('#ApplyCompOffLeaveForm').hide();
+                $('#ApplyLeaveForm').hide();
+                $("#DivApplyCompOffForm").hide();
+                $("#DivApplyLeaveForm").hide();
+            } else {
+                icon.removeClass('fa-plus').addClass('fa-minus');
+                $('.leaveform').hide();
+                $('#startdateField, #dayField, #WorkedDate, #enddateField, #noofdaysField, #leavelocationField, #reasonField, #uploaddocumentField').show();
+               // $('<br>').insertBefore('#DivApplyCompOffForm');
+                $("#DivApplyCompOffForm").show();
+                $('#ApplyCompOffLeaveForm').slideDown();
+                $('#ApplyLeaveForm').hide();
+            }
+        });
+
+        $('#timepicker').datetimepicker({
+            format: 'LT'
+        });
+        $('#Endtimepicker').datetimepicker({
+            format: 'LT'
+        });
+
+        function calculateDays() {
+
+            const startDate = $('#startdate').val();
+            const CompOffstartDate = $('#CompOffstartdate').val();
+            const endDate = $('#endDate').val();
+            const CompOffendDate = $('#CompOffendDate').val();
+            let totalDays = 0;
+            if ($('#ApplyLeaveForm').is(':visible')) {
+                if ($('.day-radio:checked').val() === 'Full Day') {
+                    if (startDate && endDate) {
+                        totalDays = moment(endDate).diff(moment(startDate), 'days') + 1; // Including the start day
+                    } else if (CompOffstartDate && CompOffendDate) {
+                        totalDays = moment(CompOffendDate).diff(moment(CompOffstartDate), 'days') + 1; // Including the start day
+                    }
+                } else if ($('.day-radio:checked').val() === 'Half Day') {
+                    totalDays = 0.5;
+                    $('#endDate').val(startDate);
+                } else if ($('.day-radio:checked').val() === 'Short Leave') {
+                    totalDays = 0;
+                    $('#endDate').val(startDate);
+                }
+
+                var selectedOptionText = $('#leaveId').children('option:selected').text();
+
+                var regex = /(.*)\((\d+)\)/;
+                var match = regex.exec(selectedOptionText);
+                if (match) {
+                var LeaveType = match[1]
+                var digit = match[2];
+                    if (totalDays > digit) {
+                        Swal.fire({
+                            title: 'info',
+                            text: 'Only ' + digit + ' ' + LeaveType + ' are remaining',
+                            icon: 'error',
+                            confirmButtonText: 'OK'
+                        });
+                    }
+                }
+                $('#NoOfDayss').val(totalDays);
+                console.log("Assigned to NoOfDays: ", $('#NoOfDayss').val());
+                //return false;
+            } else {
+                if ($('.day-radio:checked').val() === 'Full Days') {
+                    if (CompOffstartDate && CompOffendDate) {
+                        totalDays = moment(CompOffendDate).diff(moment(CompOffstartDate), 'days') + 1; // Including the start day
+                    }
+                }
+                $('#CompOffNoOfDays').val(totalDays);
+            }
+        }
+
+
+
+        $('.day-radio').change(function () {
+            if ($(this).val() === 'Full Day') {
+                // Enable start and end date fields
+                $('#startdateField, #enddateField, #leavetypesField').prop('disabled', false).show();
+                // Disable and hide time fields
+                $('#starttimeFields, #endtimeFieldd').prop('disabled', true).hide();
+            } else if ($(this).val() === 'Half Day') {
+                // 
+                // Show and enable all date and time fields
+                $('#startdateField, #starttimeFields, #endtimeFieldd, #leavetypesField').prop('disabled', false).show();
+                $('#endtimeFieldd').prop('disabled', false).show();
+                // Hide the end date field input
+                $('#enddateField').hide();
+            }
+            else if ($(this).val() === 'Short Leave') {
+                $('#startdateField, #starttimeFields, #endtimeFieldd').prop('disabled', false).show();
+                $('#endtimeFieldd').prop('disabled', false).show();
+                // Hide the end date field input
+                $('#enddateField, #leavetypesField ').hide();
+            }
+            calculateDays();
+
+        });
+
+
+
+        $('#startdate, #endDate, #CompOffendDate, #CompOffstartdate').change(function () {
+            calculateDays();
+        });
+
+        $('#timepicker').on('change.datetimepicker', function (e) {
+            var startTime = moment(e.date);
+            var endTime = moment($('#Endtimepicker').datetimepicker('date'));
+
+            if (endTime.isBefore(startTime)) {
+                alert('Start time cannot be after end time');
+                $('#Endtimepicker').datetimepicker('date', startTime);
+            } else {
+                calculateDifference();
+            }
+        });
+
+        $('#Endtimepicker').on('change.datetimepicker', function (e) {
+            var startTime = moment($('#timepicker').datetimepicker('date'));
+            var endTime = moment(e.date);
+
+            if (endTime.isBefore(startTime)) {
+                alert('End time cannot be before start time');
+                $('#Endtimepicker').datetimepicker('date', startTime);
+            } else {
+                calculateDifference();
+            }
+        });
+
+        function calculateDifference() {
+            const startTimeInput = $('#timepicker').val();
+            const endTimeInput = $('#Endtimepicker').val();
+
+            if ($('.day-radio:checked').val() === 'Short Leave') {
+                if (startTimeInput && endTimeInput) {
+                    const startTime = moment(startTimeInput, 'LT');
+                    const endTime = moment(endTimeInput, 'LT');
+                    let serverValue;
+                    const diffMs = endTime.diff(startTime);
+                    const diffHrs = diffMs / (1000 * 60 * 60);
+
+                    if (diffHrs < 0) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Invalid Time',
+                            text: 'End time must be after start time',
+                        });
+                        $('#Endtimepicker').val(startTimeInput);
+                    } else {
+                        $.ajax({
+                            url: '/Bind/ValidateShortLeaveTimeAsyncAM',
+                            type: 'GET',
+                            success: function (response) {
+                                console.log("Response from server:", response);
+                                serverValue = response.CountofShortLeave;
+
+                                console.log("Received digit from server:", serverValue);
+
+                                if (diffHrs > serverValue) {
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'Limit Exceeded',
+                                        text: 'Max limit for short leaves is ' + serverValue + ' Hrs',
+                                    });
+                                    $('#Endtimepicker').val(startTimeInput);
+                                }
+                            },
+                            error: function (error) {
+                                console.error('Error:', error);
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Server Error',
+                                    text: 'An error occurred while validating the leave time',
+                                });
+                            }
+                        });
+                    }
+                }
+            }
+        }
+
+
+             $('#btnViewFile').click(function () {
+
+
+
+                 var fullDocumentPath = $(this).data('id');
+                 var documentPath = fullDocumentPath.split('~')[1] || '';
+
+
+                            if (documentPath.trim() !== '') {
+
+                                 openLeaveDoc(documentPath);
+
+                             } else {
+
+                                 toastr.error('Document not available.');
+                             }
+
+             });
+                     function openLeaveDoc(DocumentPath) {
+                         // 
+                         // For a modal (using SweetAlert2):
+                         Swal.fire({
+                             title: 'Leave Document',
+                             html: '<iframe src="' + DocumentPath + '" width="100%" height="600px"></iframe>',
+                             showCloseButton: true,
+                             showConfirmButton: false
+                      });
+                     }
+
+
+    });
+    </script>
+
+
+</body>
+</html>

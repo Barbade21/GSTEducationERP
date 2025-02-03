@@ -1,0 +1,118 @@
+/* General styles */
+/*body {
+    font-family: Arial, sans-serif;
+}*/
+
+.container {
+    padding: 15px;
+}
+
+/* Media query for screens smaller than 768px (mobile) */
+@media (max-width: 768px) {
+    .row {
+        flex-direction: column; /* Stack elements vertically */
+    }
+
+    .col-md-6, .col-md-12 {
+        width: 100%; /* Full width on small screens */
+        margin-bottom: 10px;
+    }
+
+    .col-md-9, .col-md-8, .col-md-4 {
+        width: 100%; /* Ensure inner elements are also full width */
+    }
+
+    .form-group {
+        margin-bottom: 15px;
+    }
+
+    .table-responsive {
+        max-height: 300px;
+        overflow-y: auto;
+    }
+
+    .btn-block {
+        width: 100%;
+    }
+
+    /* Adjust the position of the form fields */
+    .col-md-8 {
+        padding-left: 0;
+        padding-right: 0;
+    }
+
+    .col-md-4 {
+        text-align: right;
+    }
+
+    /* For the pop-up content */
+    .modal-content {
+        margin: 10px;
+        padding: 15px;
+    }
+
+    /* Adjust the FollowUp Note textarea size on mobile */
+    #FollowUpNote {
+        width: 100%;
+        height: 100px;
+    }
+
+    /* Adjust dropdowns */
+    #FollowUpDropdown, #EnqStatusDropdown {
+        width: 100%;
+    }
+
+    /* Checkboxes adjustments */
+    #checkboxContainer {
+        text-align: center;
+    }
+}
+
+/* Media query for tablets (between 768px and 1024px) */
+@media (min-width: 768px) and (max-width: 1024px) {
+    .col-md-6 {
+        width: 48%;
+    }
+
+    .col-md-12 {
+        width: 100%;
+    }
+
+    .col-md-9, .col-md-8 {
+        width: 90%;
+    }
+
+    /* Slightly larger font size for readability on tablet */
+    body {
+        font-size: 16px;
+    }
+
+    .btn-block {
+        width: 100%;
+    }
+}
+
+/* Media query for large screens (above 1024px, such as desktops) */
+@media (min-width: 1025px) {
+    .col-md-6 {
+        width: 48%;
+    }
+
+    .col-md-12 {
+        width: 100%;
+    }
+
+    .col-md-9 {
+        width: 90%;
+    }
+
+    /* Standard table height for larger screens */
+    .table-responsive {
+        max-height: 400px;
+        overflow-y: auto;
+    }
+
+    .btn-block {
+        width: auto;
+    }
+}

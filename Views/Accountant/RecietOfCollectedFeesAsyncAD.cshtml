@@ -1,0 +1,372 @@
+﻿@model GSTEducationERPLibrary.Accountant.Accountant
+
+@{
+    ViewBag.Title = "recieptkk";
+    Layout = "~/Views/Shared/_LayoutERP.cshtml";
+}
+
+
+
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+
+        .receipt-data p {
+            font-weight: normal !important;
+        }
+
+        .receipt-data {
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .receipt-voucher td {
+            font-weight: normal !important;
+        }
+
+
+        h4 {
+            color: #64bbc9;
+            font-weight: bold;
+            font-size: 20px;
+            font-family: sans-serif;
+            color: #139a9a;
+        }
+        
+
+        /* Print button styling */
+        button.print-button {
+            width: 50px;
+            height: 50px;
+            margin-left: 90%;
+            position: relative;
+            padding: 0;
+            border: none;
+            background: transparent;
+        }
+
+        /* Print icon styling */
+        span.print-icon, span.print-icon::before, span.print-icon::after, button.print-button:hover .print-icon::after {
+            border: solid 2px #333;
+            box-sizing: border-box;
+            background-color: #fff;
+        }
+
+        span.print-icon::after {
+            border-width: 1px;
+        }
+
+        span.print-icon {
+            position: relative;
+            display: inline-block;
+            width: 40%;
+            height: 20%;
+            background: #fff;
+            border-radius: 20% 20% 0 0;
+        }
+
+        span.print-icon::before {
+            content: "";
+            position: absolute;
+            bottom: 100%;
+            left: 12%;
+            right: 12%;
+            height: 110%;
+            transition: height .2s .15s;
+        }
+
+        span.print-icon::after {
+            content: "";
+            position: absolute;
+            top: 55%;
+            left: 12%;
+            right: 12%;
+            height: 0;
+            background: #fff;
+            background-repeat: no-repeat;
+            background-size: 70% 90%;
+            background-position: center;
+            background-image: linear-gradient(to top, #fff 0, #fff 14%, #333 14%, #333 28%, #fff 28%, #fff 42%, #333 42%, #333 56%, #fff 56%, #fff 70%, #333 70%, #333 84%, #fff 84%, #fff 100%);
+            transition: height .2s, border-width 0s .2s, width 0s .2s;
+        }
+
+        button.print-button:hover {
+            cursor: pointer;
+        }
+
+        button.print-button:hover .print-icon::before {
+            height: 0;
+            transition: height .2s;
+        }
+
+        button.print-button:hover .print-icon::after {
+            height: 120%;
+            transition: height .2s .15s, border-width 0s .16s;
+        }
+
+
+
+        /* Close button styling */
+        button.close-button {
+            width: auto; /* Adjust width to fit content */
+            height: auto; /* Adjust height to fit content */
+            margin-left: 10px; /* Adjust margin as needed */
+            padding: 0;
+            border: none; /* Remove border */
+            background: transparent;
+            display: inline-flex; /* Align icon properly */
+            align-items: center;
+            justify-content: center;
+        }
+
+        button.close-button img {
+            width: 34px; /* Adjust image size */
+            height: 34px; /* Adjust image size */
+        }
+
+
+
+        /* General receipt styling */
+        .receipt-voucher {
+            margin: 0 auto;
+            width: 70%;
+            padding: 10px;
+            overflow: hidden;
+            font-size: 0.9em;
+            border: solid 2px black;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        .receipt-section {
+            margin: 0 auto;
+            width: 100%;
+            text-align: center;
+            padding: 10px;
+        }
+
+        .receipt-section h2 {
+            display: inline-flex;
+            text-align: center;
+            padding-bottom: 5px;
+            font-size: 1.2em;
+        }
+
+        .receipt-data {
+            display: flex;
+            justify-content: space-between;
+            padding: 5px 0;
+        }
+
+        .receipt-data p {
+            margin: 0;
+        }
+
+        .remark, .note {
+            margin-top: 5px;
+        }
+
+        .authorized-signatory {
+            text-align: right;
+            font-size: 0.9em;
+        }
+
+        img {
+            display: block;
+            margin: 0 auto;
+            width: 100px;
+            padding-bottom: 10px;
+        }
+
+        th {
+            background-color: #64bbc9;
+            color: #000;
+            text-align: center !important;
+            font-size: 0.9em;
+        }
+
+        table {
+            margin: 0 auto;
+            width: 70%;
+            border-collapse: collapse;
+            padding: 2px;
+        }
+
+        td {
+            text-align: center;
+            color: black !important;
+            padding: 4px;
+            font-size: 0.9em;
+        }
+
+        .dataTables_filter {
+            margin-top: -25px;
+        }
+
+        .receipt-data {
+            font-weight: bold;
+            text-align: center;
+        }
+
+        /* Print-specific styles */
+        @@media print {
+            body * {
+                visibility: hidden;
+            }
+            .receipt-voucher, .receipt-voucher * {
+                visibility: visible;
+            }
+            .receipt-voucher {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                margin: 0;
+                box-shadow: none;
+            }
+            button.print-button {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+
+
+    @*<button onclick="closeWindow()" class="close-button">
+            <img src="~/Content/Accountant/img/icons8-close-24.png" alt="Close" />
+        </button>*@
+
+    <button onclick="printReceipt()" class="print-button">
+        <span class="print-icon"></span>
+    </button>
+
+
+    <div class="receipt-voucher">
+        
+
+        <div class="receipt-data">
+            <img src="~/Content/Admin/img/@Model.Logo" alt="Logo" />
+            <p style="font-weight: bold;"> <strong>@Model.BranchAddress</strong> </p>
+        </div>
+
+
+        <div class="receipt-section">
+            @if (@Model.PaymentModeId == "Cheque")
+            {
+                <h4>Provisional Receipt</h4>
+            }
+            else
+            {
+                <h4>Fee Receipt</h4>
+            }
+
+            <div class="receipt-data">
+                <p id="receipt-no"><strong>Receipt no</strong> :  @Model.ReciptCode </p>
+                <p><strong>Payment Mode :</strong>  @Model.PaymentModeId </p>
+            </div>
+
+            <div class="receipt-data">
+                <p><strong>Course :</strong>  @Model.CourseName </p>
+                @if (@Model.PaymentModeId == "Bank")
+                {
+                    <p><strong>Payment Type :</strong> @Model.PaymentType</p>
+                }
+            </div>
+
+            <div class="receipt-data">
+                <p><strong>Batch :</strong> @Model.Batch</p>
+                @if (@Model.PaymentModeId == "Cheque" || @Model.PaymentModeId == "Bank")
+                {
+                    <p><strong>TransactionID / Cheque Number :</strong> @Model.TransactionID_checqueNumber </p>
+                }
+            </div>
+
+            <div class="receipt-data" style="text-align:left">
+                <p><strong>Receipt Date :</strong> @Model.ReceiptDateAD</p>
+            </div>
+
+            @if (@Model.PaymentModeId == "Cheque")
+            {
+                <div class="receipt-data">
+                    <p><strong>Cheque Bank Name :</strong> @Model.CheckBankName</p>
+                    <p><strong>Drawn On : </strong> @Model.DrawnOn</p>
+                </div>
+            }
+
+            <br /><br />
+            <div>
+                <table border="1">
+                    <tr>
+                        <th>NAME</th>
+                        <th>ADMISSION TYPE</th>
+                        <th>Installments Completed</th>
+                        <th>CREDIT AMOUNT</th>
+                    </tr>
+                    <tr>
+                        <td>@Model.Name</td>
+                        <td>@Model.StudentType</td>
+                        <td>@Model.InstallmentNo</td>
+                        <td>₹ @Model.InstallmentAmount.00</td>
+                    </tr>
+                </table>
+            </div>
+
+            <br /><br />
+            <div class="receipt-data">
+                <p><strong>Total Fee :</strong> ₹ @Model.TotalFees.00</p>
+                <p><strong>Outstanding Amount :</strong> ₹ @Model.RemainingFees.00</p>
+            </div>
+            <div class="receipt-data">
+                @if (@Model.RemainingFees > 0)     //   NextInstallmentAmount
+                {
+                    <p><strong>Next Installment Date :</strong> @Model.NextInstallmentDates</p>
+                    <p><strong>Next Installment Amount:</strong> ₹ @Model.NextInstallmentAmount.00</p>
+                }
+
+            </div>
+            <br />
+    <div class="note">
+        <div class="receipt-data">
+            <p><strong>Note -  1) Receipt valid subject to realization of cheque.<br>2) Fees once paid are non-refundable.<br>3) This is system genrated receipt, no signature require. </strong></p>
+            
+        </div>
+    </div>
+          
+
+            <br /><br />
+            <div class="authorized-signatory">
+                <p>Authorized Signatory</p>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        function printReceipt() {
+            window.print();
+        }
+    </script>
+
+    <script>
+
+        function printReceipt() {
+            window.print();
+        }
+
+         function closeWindow() {
+            window.location.href = '@Url.Action("PendingInstallmentsAsyncAD", "Accountant")';
+        }
+
+    </script>
+
+    <script>
+        // Set a marker when the RecietOfCollectedFeesAsyncAD view is opened
+        sessionStorage.setItem('visitedRecietOfCollectedFees', 'true');
+    </script>
+
+</body>
+
+
+</html>
+

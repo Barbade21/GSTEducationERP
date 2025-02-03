@@ -1,0 +1,207 @@
+﻿@model GSTEducationERPLibrary.Accountant.Accountant
+<!DOCTYPE html>
+<html>
+<body>
+    <div class="container">
+        <h3 class="text-center mb-4">Name :<strong> @Model.StaffName</strong></h3>
+
+        <div class="form-group row">
+            <label for="netSalary" class="col-sm-2 col-form-label">Net Salary:</label>
+            <div class="col-sm-10">
+                <input type="text" id="netSalary" class="form-control" value="@Model.NetSalary" readonly />
+            </div>
+        </div>
+
+        <div class="form-group row">
+            <label for="advanceAmount" class="col-sm-2 col-form-label">Advance Amount Cut:</label>
+            <div class="col-sm-10">
+                <input type="number" id="advanceAmount" class="form-control" value="@Model.AdvanceAmount" />
+            </div>
+        </div>
+
+        <div class="form-group row">
+            <label for="finalAmount" class="col-sm-2 col-form-label">Final Amount:</label>
+            <div class="col-sm-10">
+                <input type="text" id="finalAmount" class="form-control" value="@Model.FinalAmount" readonly />
+            </div>
+        </div>
+
+        <div class="text-center mt-4">
+            <button class="btn btn-primary" id="submitBtn">Submit</button>
+        </div>
+    </div>
+
+    <style>
+        .btn-primary:hover {
+            background-color: #0056b3;
+            transform: scale(1.05);
+            transition: all 0.3s ease;
+        }
+
+        .close {
+            position: absolute;
+            right: 10px;
+            top: 10px;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+            .close:hover {
+                color: red;
+            }
+    </style>
+
+    <script>
+    $(document).ready(function () {
+        var originalAdvanceAmount = parseFloat('@Model.AdvanceAmount');
+        var netSalary = parseFloat($('#netSalary').val());
+
+        // Add close button functionality
+        $('.close').on('click', function() {
+            $('#BankModal').modal('hide');
+        });
+
+        // Event listener for AdvanceAmount changes
+        $('#advanceAmount').on('input', function () {
+            var input = $(this).val();
+            var advanceAmount = parseFloat(input);
+
+            // If the input is empty, allow it to be empty (don't set to 0)
+            if (input === '') {
+                advanceAmount = 0;
+            }
+            // If the input is not a valid number, reset to empty
+            else if (isNaN(advanceAmount)) {
+                $(this).val('');
+                advanceAmount = 0;
+            }
+            // If input exceeds the original AdvanceAmount, reset to original value
+            else if (advanceAmount > originalAdvanceAmount) {
+                Swal.fire({
+                    toast: true,
+                    position: 'top-end',
+                    icon: 'warning',
+                    title: 'Advance Amount cannot exceed the original amount.',
+                    showConfirmButton: false,
+                    timer: 3000
+                });
+                $(this).val(originalAdvanceAmount); // Set the value to originalAdvanceAmount
+                advanceAmount = originalAdvanceAmount; // Update the variable to reflect the original amount
+            }
+            // If it's a valid number starting with 0 (except 0 itself), remove the leading 0
+            else if (input.length > 1 && input[0] === '0') {
+                $(this).val(parseFloat(input));
+            }
+
+            var finalAmount = netSalary - advanceAmount;
+            $('#finalAmount').val(finalAmount.toFixed(2));
+        });
+
+          $('#submitBtn').on('click', function () {
+        var advanceAmount = $('#advanceAmount').val().trim();
+
+        if (advanceAmount === '' || parseFloat(advanceAmount) === 0) {
+            Swal.fire({
+                toast: true,
+                position: 'top-end',
+                icon: 'warning',
+                title: 'Please enter a valid Advance Amount',
+                showConfirmButton: false,
+                timer: 3000
+            });
+            return; // Stop execution if validation fails
+        }
+
+        var staffCode = '@Model.StaffCode';
+        var finalAmount = parseFloat($('#finalAmount').val());
+        var netSalary = parseFloat($('#netSalary').val());
+        var month = '@Session["month"]';
+        var year = '@Session["year"]';
+
+        var selectedStaffWithAdvance = {};
+        selectedStaffWithAdvance[staffCode] = {
+            netSalary: netSalary,
+            advanceAmount: parseFloat(advanceAmount)
+        };
+
+        $.ajax({
+            url: '@Url.Action("ConfirmationStaffPayasyncSS", "Accountant")',
+            type: 'POST',
+            data: JSON.stringify({
+                selectedStaffWithAdvance: selectedStaffWithAdvance,
+                selectedStaffCodes: Object.keys(selectedStaffWithAdvance),
+                ExpenseId: 3,  // Example ExpenseId
+                FinalAmount: advanceAmount,
+                month: month,
+                year: year
+            }),
+            contentType: 'application/json',
+            success: function (response) {
+                $('#BankModal .modal-body').html(response);
+
+                // Display success message using Swal.fire
+                Swal.fire({
+                   icon: 'success',
+                   title: 'Salary paid successfully!',
+                   showConfirmButton: false,
+                   timer: 4000
+                });
+
+                // Close the modal
+                $('#BankModal').modal('hide');
+
+                // Call the function to refresh staff attendance data
+                callAttendanceOfStaff();
+            },
+            error: function () {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'An error occurred while processing the request.'
+                });
+            }
+        });
+    });
+
+        function callAttendanceOfStaff() {
+            var month = '@Session["month"]';
+            var year = '@Session["year"]';
+
+            $.ajax({
+                url: '@Url.Action("AttendenceOfStaffssAsync", "Accountant")',
+                type: 'GET',
+                data: { month: month, year: year },
+                success: function (html) {
+                    $('#staffList').html($(html).find('#staffList').html());
+                    $('#count').html($(html).find('#count').html());
+
+                    selectedStaff = {};
+                    $('.staffCheckbox').prop('checked', false);
+                    $('#selectAll').prop('checked', false);
+                    updateTotalSalary();
+                    updateStaffCounts();
+                },
+                error: function () {
+                    Swal.fire({
+                        title: 'Error!',
+                        text: 'An error occurred while retrieving staff attendance.',
+                        icon: 'error'
+                    });
+                }
+            });
+        }
+
+        // These functions need to be defined or imported from the parent scope
+        function updateTotalSalary() {
+            // Implementation needed
+        }
+
+        function updateStaffCounts() {
+            // Implementation needed
+        }
+    });
+    </script>
+</body>
+
+</html>

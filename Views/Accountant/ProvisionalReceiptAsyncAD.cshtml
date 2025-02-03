@@ -1,0 +1,245 @@
+﻿@model GSTEducationERPLibrary.Accountant.Accountant
+
+@{
+    ViewBag.Title = "recieptkk";
+    Layout = "~/Views/Shared/_LayoutERP.cshtml";
+}
+
+<button onclick="window.print(); printReceipt();" class="print-button"><span class="print-icon"></span></button>
+<style>
+    button.print-button {
+        width: 50px;
+        height: 50px;
+        margin-left: 90%;
+        position: relative;
+        padding: 0;
+        border: none;
+        background: transparent;
+    }
+
+        span.print-icon, span.print-icon::before, span.print-icon::after, button.print-button:hover .print-icon::after {
+            border: solid 2px #333;
+            box-sizing: border-box;
+            background-color: #fff;
+        }
+
+            span.print-icon::after {
+                border-width: 1px;
+            }
+
+    span.print-icon {
+        position: relative;
+        display: inline-block;
+        width: 40%;
+        height: 20%;
+        background: #fff;
+        border-radius: 20% 20% 0 0;
+    }
+
+        span.print-icon::before {
+            content: "";
+            position: absolute;
+            bottom: 100%;
+            left: 12%;
+            right: 12%;
+            height: 110%;
+            transition: height .2s .15s;
+        }
+
+        span.print-icon::after {
+            content: "";
+            position: absolute;
+            top: 55%;
+            left: 12%;
+            right: 12%;
+            height: 0;
+            background: #fff;
+            background-repeat: no-repeat;
+            background-size: 70% 90%;
+            background-position: center;
+            background-image: linear-gradient(to top, #fff 0, #fff 14%, #333 14%, #333 28%, #fff 28%, #fff 42%, #333 42%, #333 56%, #fff 56%, #fff 70%, #333 70%, #333 84%, #fff 84%, #fff 100%);
+            transition: height .2s, border-width 0s .2s, width 0s .2s;
+        }
+
+    button.print-button:hover {
+        cursor: pointer;
+    }
+
+        button.print-button:hover .print-icon::before {
+            height: 0;
+            transition: height .2s;
+        }
+
+        button.print-button:hover .print-icon::after {
+            height: 120%;
+            transition: height .2s .15s, border-width 0s .16s;
+        }
+
+    .receipt-voucher {
+        margin: 0 auto;
+        width: 70%;
+        padding: 10px;
+        overflow: hidden;
+        font-size: 0.9em;
+    }
+
+    .receipt-section {
+        margin: 0 auto;
+        width: 100%;
+        text-align: center;
+        padding: 10px;
+    }
+
+        .receipt-section h2 {
+            display: inline-flex;
+            text-align: center;
+            padding-bottom: 5px;
+            font-size: 1.2em;
+        }
+
+    .receipt-data {
+        display: flex;
+        justify-content: space-between;
+        padding: 5px 0;
+    }
+
+        .receipt-data p {
+            margin: 0;
+        }
+
+    .remark, .note {
+        margin-top: 5px;
+    }
+
+    .authorized-signatory {
+        text-align: right;
+        font-size: 0.9em;
+    }
+
+    img {
+        display: block;
+        margin: 0 auto;
+        width: 100px;
+        padding-bottom: 10px;
+    }
+
+    th {
+        background-color: #64bbc9;
+        color: #000;
+        text-align: center !important;
+        font-size: 0.9em;
+    }
+
+    table {
+        margin: 0 auto;
+        width: 70%;
+        border-collapse: collapse;
+        padding: 2px;
+    }
+
+    td {
+        text-align: center;
+        color: black !important;
+        padding: 4px;
+        font-size: 0.9em;
+    }
+
+    .dataTables_filter {
+        margin-top: -25px;
+    }
+
+    .receipt-data {
+        font-weight: bold;
+        text-align: center;
+    }
+</style>
+
+<!DOCTYPE html>
+<html>
+<head>
+</head>
+<body>
+    <div class="receipt-voucher">
+        <div class="row">
+            <div class="col-md-12">
+                <img src="~/Content/Counseller/img/logo-removebg-preview.png" alt="Logo" />
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <p style="margin: 10px auto 0; width: 80%; text-align: center; padding-bottom: 10px; font-weight: bold;">
+                    09, 3rd Floor, Upendra1, opp.Nisaraga Hotel, Nal Stop, Erandwane, Pune, Maharashtra 411004
+                    &nbsp;|&nbsp;
+                    +91 9960796660, 4421776337/47
+                    &nbsp;|&nbsp;
+                    Website - www.rahitech.com
+                </p>
+            </div>
+        </div>
+        <div class="receipt-section">
+            <h2><u>Provisional Receipt</u></h2>
+            <div class="receipt-data">
+                <p id="receipt-no">Receipt no : @Model.ReciptCode </p>
+
+                <p>Payment Mode : @Model.PaymentModeId</p>
+            </div>
+            <div class="receipt-data">
+                <p>Course : @Model.CourseName </p>
+                <p>Total Amount : @Model.TotalFees</p>
+            </div>
+            <div class="receipt-data">
+                <p>Batch : @Model.Batch</p>
+                <p>TransactionID / Cheque Number : @Model.TransactionID_checqueNumber</p>
+            </div>
+            <div class="receipt-data" style="text-align:left">
+                <p>Receipt Date : @Model.InstallmentDate</p>
+                <p>Enrolment No. : @Model.CandidateCode</p>
+            </div>
+            <div class="receipt-data">
+                <p>Drawn On :</p>
+            </div>
+            <br /><br />
+            <div>
+                <table border="1">
+                    <tr>
+                        <th>NAME</th>
+                        <th>ADMISSION TYPE</th>
+                        <th>DISCOUNT IN %</th>
+                        <th>CREDIT AMOUNT</th>
+                    </tr>
+                    <tr>
+                        <td>@Model.Name</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                </table>
+            </div>
+            <br /><br />
+            <div class="receipt-data">
+                <p>Remark : Total Fee - @Model.TotalFees</p>
+                <p>Outstanding Amount - @Model.RemainingFees </p>
+                <p>Next Installment Date - </p>
+            </div>
+            <br />
+            <div class="note">
+                <div class="receipt-data">
+                    <p><strong>Note -</strong> 1) Receipt valid subject to realization of cheque.<br> 2) Fees once paid are non-refundable.</p>
+                </div>
+            </div>
+            <br /><br />
+            <div class="authorized-signatory">
+                <p>Authorized Signatory</p>
+            </div>
+        </div>
+    </div>
+    <script>
+        function printReceipt() {
+            const printButton = document.querySelector('.print-button');
+            printButton.style.display = 'none';
+            window.print();
+            printButton.style.display = 'block';
+        }
+    </script>
+</body>
+</html>

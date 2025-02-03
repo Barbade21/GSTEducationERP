@@ -1,0 +1,929 @@
+﻿@model GSTEducationERPLibrary.Accountant.Accountant
+@{
+    ViewBag.Title = "ExpenseDashboardAsyncMB";
+    Layout = "~/Views/Shared/_LayoutERP.cshtml";
+    @Html.Partial("_LoadingOverlay")
+
+}
+
+
+
+<html lang="en" style="height: auto;">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap and other styles/scripts -->
+    <link href="~/Content/plugins/fontawesome-free/css/all.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="~/Content/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+    <link rel="stylesheet" href="~/Content/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
+    <link rel="stylesheet" href="~/Content/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
+    <link href="~/Content/plugins/daterangepicker/daterangepicker.css" rel="stylesheet" />
+    <!-- Include jQuery -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    @*<script src="~/Content/plugins/jquery/jquery.min.js"></script>
+
+    <script src="~/Content/Admin/js/Icon.js"></script>
+    <script src="~/Content/Admin/js/overlay.js"></script>*@
+
+    <style>
+        h2 {
+            padding-top: 10px;
+            margin-bottom: 8px;
+            font-family: Verdana;
+            font-weight: bold;
+            font-size: medium;
+            color: #33CCCC;
+        }
+        /*THIS IS THE POPOVER CSS*/
+        
+        #counter {
+            font-size: 30px; /* Increase the font size */
+            color: blue; /* Set the color to blue */
+            font-weight: bold; /* Make the text bold */
+        }
+
+        .dataTables_wrapper .btn-secondary {
+            color: #235;
+            background-color: transparent !important;
+            border-color: transparent;
+            font-size: x-large;
+            margin: 0px !important;
+        }
+
+        .card-primary.card-outline-tabs > .card-header a.active {
+            border-top: 3px solid #33CCCC;
+        }
+
+        a {
+            color: #33CCCC;
+        }
+
+        .card.card-outline-tabs .card-header a:hover {
+            color: #33CCCC;
+        }
+
+        .card-primary.card-outline-tabs > .card-header a.active, .card-primary.card-outline-tabs > .card-header a.active:hover {
+            border-top: 3px solid #33CCCC;
+        }
+
+        .card-body {
+            font-family: Calibri !important;
+            padding-bottom: 0px !important;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        th {
+            background-color: #33CCCC;
+            color: #000;
+            text-align: center !important;
+        }
+
+        td {
+            text-align: center;
+            color: black !important;
+        }
+
+        .table td {
+            padding: 0px 0px 0px 0px !important;
+            font-size: 14px !important;
+        }
+
+        .table th {
+            padding: 5px 5px 4px 10px !important;
+            font-size: 14px !important;
+        }
+
+        table.dataTable > thead .sorting:after, table.dataTable > thead .sorting:before {
+            font-size: xx-small !important;
+        }
+
+        div.dataTables_wrapper div.dataTables_filter {
+            margin-top: -40px !important;
+        }
+
+        div.dt-buttons {
+            /*margin-top: -20px !important;*/
+        }
+
+        .btn-group > .btn:not(:last-child):not(.dropdown-toggle), .btn-group > .btn-group:not(:last-child) > .btn {
+            padding-left: 5px !important;
+            padding-right: 5px !important;
+        }
+
+        div.dataTables_wrapper div.dataTables_filter label {
+            font-size: small !important;
+        }
+
+        div.dataTables_wrapper div.dataTables_filter input {
+            height: 20px !important;
+        }
+
+        div.dataTables_wrapper div.dataTables_info {
+            padding: 0px !important;
+            font-size: small !important;
+        }
+
+        div.dataTables_wrapper div.dataTables_paginate ul.pagination {
+            margin-top: -20px !important;
+        }
+
+        div.dataTables_wrapper div.dataTables_paginate {
+            font-size: small !important;
+        }
+
+        .page-item.active .page-link {
+            z-index: 3;
+            color: #fff;
+            background-color: #64bbc9;
+            border-color: #007bff;
+        }
+        /* Loading Overlay */
+        #loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Loader GIF */
+        #loader-gif {
+            width: auto; /* Adjust size as needed */
+            height: auto;
+        }
+
+        .amount-text {
+            font-size: 1.2rem; /* Increase the font size of the amount */
+            font-weight: bold;
+        }
+
+        #toggleCard {
+            padding: 0;
+            background: none;
+            border: none;
+        }
+
+        #arrowIcon {
+            font-size: 20px;
+        }
+
+        #cardContent {
+            opacity: 1;
+            transition: opacity 0.5s ease-in-out;
+        }
+
+            #cardContent.hidden {
+                opacity: 0;
+            }
+
+        #arrowIcon {
+            transition: transform 0.3s ease-in-out; /* Arrow rotation duration */
+        }
+
+            #arrowIcon.rotate {
+                transform: rotate(180deg); /* Rotate the arrow when the content is visible */
+            }
+    </style>
+</head>
+<body style="margin: 0; padding: 0;">
+    <br />
+
+    <div class="card card-primary card-outline card-outline-tabs">
+        <div class="card-header p-3 d-flex justify-content-start align-items-center">
+            <!-- Bell Icon with Badge -->
+            <div class="position-relative">
+                <i class="fas fa-bell" style="font-size: 20px; position: relative;"></i>
+                <span class="position-absolute badge rounded-pill bg-danger text-white"
+                      style="font-size: 10px; top: -5px; right: -10px;">
+                    @ViewBag.TotalBillsToPay
+                </span>
+            </div>
+            <h5 class="font-weight-bold text-primary mb-0 mr-3 ml-3">Reminders</h5>
+            <button class="btn btn-link text-primary" id="toggleCard" style="font-size: 20px; cursor: pointer;">
+                <i class="fas fa-chevron-down" id="arrowIcon"></i>
+            </button>
+        </div>
+        <div class="card-body" id="cardContent" style="display: none;">
+            <div class="row">
+                <!-- Left Column -->
+                <div class="col-md-6">
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-header bg-light font-weight-bold">Outstanding Bills</div>
+                        <ul class="list-unstyled mb-0">
+                            <li class="mb-3">
+                                <div class="d-flex align-items-center">
+                                    <span class="badge rounded-pill bg-danger text-white px-4 py-2">
+                                        @ViewBag.TotalBillsToPay
+                                    </span>
+                                    <span class="font-weight-bold ml-3">Total Bills to Pay</span>
+                                    <span class="badge rounded-pill bg-light text-dark px-3 py-2">
+                                        <span class="amount-text" data-amount="@ViewBag.TotalBalanceAmount">
+                                            ₹0.00
+                                        </span>
+                                    </span>
+                                </div>
+                            </li>
+                            <!-- Rent Bills (Direct Expense) -->
+                            <li class="mb-3">
+                                <div class="d-flex align-items-center">
+                                    <span class="badge rounded-pill bg-warning text-dark px-4 py-2">
+                                        @ViewBag.RentBillsToPay
+                                    </span>
+                                    <span class="font-weight-bold ml-3">Rent Bills (Direct Expense)</span>
+                                    <span class="badge rounded-pill bg-light text-dark px-3 py-2">
+                                        <span class="amount-text" data-amount="@ViewBag.RentBalanceAmount">
+                                            ₹0.00
+                                        </span>
+                                    </span>
+
+                                </div>
+                            </li>
+                            <!-- Light Bills (Direct Expense) -->
+                            <li class="mb-3">
+                                <div class="d-flex align-items-center">
+                                    <span class="badge rounded-pill bg-success text-white px-4 py-2">
+                                        @ViewBag.LightBillsToPay
+                                    </span>
+                                    <span class="font-weight-bold ml-3">Light Bills (Direct Expense)</span>
+                                    <span class="badge rounded-pill bg-light text-dark px-3 py-2">
+                                        <span class="amount-text" data-amount="@ViewBag.LightBalanceAmount">
+                                            ₹0.00
+                                        </span>
+                                    </span>
+
+                                </div>
+                            </li>
+
+                            <!-- Light Bills (Direct Expense) -->
+                            <li class="mb-3">
+                                <div class="d-flex align-items-center">
+                                    <span class="badge rounded-pill bg-success text-white px-4 py-2">
+                                        @ViewBag.WaterBillsToPay
+                                    </span>
+                                    <span class="font-weight-bold ml-3">Water Supplier Bills (Direct Expense)</span>
+                                    <span class="badge rounded-pill bg-light text-dark px-3 py-2">
+                                        <span class="amount-text" data-amount="@ViewBag.WaterSupplierBalanceAmount">
+                                            ₹0.00
+                                        </span>
+                                    </span>
+
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Right Column -->
+                <div class="col-md-6">
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-header bg-light font-weight-bold">Other Outstanding Bills</div>
+                        <ul class="list-unstyled mb-0">
+                            <li class="mb-3">
+                                <div class="d-flex align-items-center">
+                                    <span class="badge rounded-pill bg-purple text-white px-4 py-2">
+                                        @ViewBag.RefundBillsToPay
+                                    </span>
+                                    <span class="font-weight-bold ml-3">Refund Bills (Indirect Expense)</span>
+                                    <span class="badge rounded-pill bg-light text-dark px-3 py-2">
+                                        <span class="amount-text" data-amount="@ViewBag.RefundBalanceAmount">
+                                            ₹0.00
+                                        </span>
+                                    </span>
+
+                                </div>
+                            </li>
+                            <li class="mb-3">
+                                <div class="d-flex align-items-center">
+                                    <span class="badge rounded-pill bg-primary text-white px-4 py-2">
+                                        @ViewBag.ReferenceBillsToPay
+                                    </span>
+                                    <span class="font-weight-bold ml-3">Reference Bills (Indirect Expense)</span>
+                                    <span class="badge rounded-pill bg-light text-dark px-3 py-2">
+                                        <span class="amount-text" data-amount="@ViewBag.ReferenceBalanceAmount">
+                                            ₹0.00
+                                        </span>
+                                    </span>
+
+                                </div>
+                            </li>
+                            <li class="mb-3">
+                                <div class="d-flex align-items-center">
+                                    <span class="badge rounded-pill bg-secondary text-white px-4 py-2">
+                                        @ViewBag.OtherBillsToPay
+                                    </span>
+                                    <span class="font-weight-bold ml-3">Other Bills (Indirect Expense)</span>
+                                    <span class="badge rounded-pill bg-light text-dark px-3 py-2">
+                                        <span class="amount-text" data-amount="@ViewBag.OtherBalanceAmount">
+                                            ₹0.00
+                                        </span>
+                                    </span>
+
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+
+            </div>
+        </div>
+    </div>
+
+
+
+
+
+    <div class="card " style="padding: 10px;">
+
+
+        <div class="container" style="margin-left: 1vw">
+            <div class="row">
+                <div class="col-7.5" style="margin-top: 1.8vw;">
+                    <div class="card card-primary card-outline card-outline-tabs">
+                        <div class="card-header p-0 border-bottom-0">
+
+                            <ul class="nav nav-tabs" id="custom-tabs-four-tab" role="tablist">
+                                <li class="nav-item">
+                                    <a class="nav-link active" data-toggle="pill" href="@Url.Action("ListOfExpensesAsyncMB","Accountant")"
+                                       id="RegularExpenseTab" role="tab" aria-controls="custom-tabs-four-home" aria-selected="true">Regular Expense</a>
+                                </li>
+
+                                <li class="nav-item">
+                                    <a class="nav-link" data-toggle="pill" href="@Url.Action("ListOfExpensesAsyncMB","Accountant")"
+                                       id="ReferenceExpenseTab" role="tab" aria-controls="custom-tabs-four-home" aria-selected="true">Reference Expense</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" data-toggle="pill" href="@Url.Action("ListOfExpensesAsyncMB","Accountant")"
+                                       id="RefundExpenseTab" role="tab" aria-controls="custom-tabs-four-home" aria-selected="true">Refund Expense</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" data-toggle="pill" href="@Url.Action("ListOfExpensesAsyncMB","Accountant")"
+                                       id="OtherExpenseTab" role="tab" aria-controls="custom-tabs-four-home" aria-selected="true">Other Expense</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" data-toggle="pill" href="@Url.Action("ListOfExpensesAsyncMB","Accountant")"
+                                       id="AdvanceExpenseTab" role="tab" aria-controls="custom-tabs-four-home" aria-selected="true">Advance</a>
+                                </li>
+                            </ul>
+
+                        </div>
+                    </div>
+
+
+                </div>
+                <div class="col-5">
+                    <div class="input-group">
+                        <div class="form-group col-md-4">
+                            <div id="CourseSection">
+                                <label>Status</label>
+                                <select id="statusFilter" class="form-control">
+                                    <option value="SelectAll">Select All</option>
+                                    <option value="Pending">Pending</option>
+                                    <option value="Completed">Completed</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-8 row">
+                            <div class="form-group col-md-6">
+                                <label>Start Date</label>
+                                <input type="date" class="form-control" id="startDateFilter" name="startDate">
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label>End Date</label>
+                                <input type="date" class="form-control" id="endDateFilter" name="endDate">
+
+                            </div>
+                        </div>
+
+
+
+                    </div>
+                    <div class="col-md-0 text-right" style="margin-top:-3.5vw; margin-left:29vw;">
+                        <a id="AddExpenseLink" title="Add New Expense">
+                            <img src="~/Content/Admin/icon/add-button.png" style="height:35px; width:35px;" />
+
+                        </a>
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Loader Overlay -->
+        <div id="loading-overlay" style="display: none;">
+
+            <img src="~/Content/Admin/icon/AccountantLoader.gif" alt="Loading" id="loader-gif">
+        </div>
+
+
+
+
+        <div id="ExpenseList"></div>
+
+    </div>
+
+
+
+
+
+    <script src="~/Content/plugins/jquery/jquery.min.js"></script>
+    <!-- DataTables -->
+    <script src="~/Content/plugins/popper/popper.min.js"></script>
+    <!-- Bootstrap -->
+    <script src="~/Content/plugins/bootstrap/js/bootstrap.min.js"></script>
+    <script src="~/Content/plugins/datatables/jquery.dataTables.min.js"></script>
+    <script src="~/Content/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
+    <script src="~/Content/plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
+    <script src="~/Content/plugins/datatables-buttons/js/dataTables.buttons.min.js"></script>
+    <script src="~/Content/plugins/datatables-buttons/js/buttons.bootstrap4.min.js"></script>
+    <!-- DataTables Extensions -->
+    <script src="~/Content/plugins/jszip/jszip.min.js"></script>
+    <script src="~/Content/plugins/pdfmake/pdfmake.min.js"></script>
+    <script src="~/Content/plugins/pdfmake/vfs_fonts.js"></script>
+    <script src="~/Content/plugins/datatables-buttons/js/buttons.html5.min.js"></script>
+    <script src="~/Content/plugins/datatables-buttons/js/buttons.print.min.js"></script>
+    <script src="~/Content/plugins/datatables-buttons/js/buttons.colVis.min.js"></script>
+    <!-- Moment and Daterangepicker -->
+    <script src="~/Content/plugins/moment/moment.min.js"></script>
+    <script src="~/Content/plugins/daterangepicker/daterangepicker.js"></script>
+    <!-- Toastr and SweetAlert -->
+    <script src="~/Content/plugins/sweetalert2/sweetalert2.min.js"></script>
+    <script src="~/Content/plugins/toastr/toastr.min.js"></script>
+    <!-- Custom Script -->
+    <script src="~/Content/Admin/js/Icon.js"></script>
+    <!--overlay script -->
+    <script src="~/Content/Admin/js/overlay.js"></script>
+
+    
+
+    <script>
+        // here we apply logic of remainder card
+
+        $(document).ready(function () {
+            $('#toggleCard').click(function () {
+                var cardContent = $('#cardContent');
+                var arrowIcon = $('#arrowIcon');
+
+                if (cardContent.is(':visible')) {
+                    // Slide up the content and reset amounts to ₹0.00
+                    cardContent.stop(true, true).slideUp(1500, function () {
+                        resetAmounts();
+                    });
+                    arrowIcon.removeClass('fa-chevron-up').addClass('fa-chevron-down');
+                } else {
+                    // Slide down the content and start counter animation
+                    cardContent.stop(true, true).slideDown(1500, function () {
+                        animateCounter();
+                    });
+                    arrowIcon.removeClass('fa-chevron-down').addClass('fa-chevron-up');
+                }
+            });
+
+            // Function to reset amounts to ₹0.00
+            function resetAmounts() {
+                $('.amount-text').each(function () {
+                    $(this).text("₹0.00");
+                });
+            }
+
+            // Counter animation function
+            function animateCounter() {
+                $('.amount-text').each(function () {
+                    var amountElement = $(this);
+                    var targetAmount = parseFloat(amountElement.attr('data-amount')) || 0;
+
+                    // Reset initial text to ₹0.00 (if not already reset)
+                    amountElement.text("₹0.00");
+
+                    // Animate to the target amount
+                    $({ countNum: 0 }).animate({ countNum: targetAmount }, {
+                        duration: 1000,
+                        easing: 'swing',
+                        step: function () {
+                            amountElement.text("₹" + this.countNum.toFixed(2));
+                        },
+                        complete: function () {
+                            amountElement.text("₹" + targetAmount.toFixed(2));
+                        }
+                    });
+                });
+            }
+        });
+
+
+
+
+        document.getElementById('startDateFilter').addEventListener('change', function () {
+            var startDate = this.value;
+            var endDateInput = document.getElementById('endDateFilter');
+            endDateInput.min = startDate; // Set the minimum selectable end date to the selected start date
+            if (endDateInput.value && endDateInput.value < startDate) {
+                endDateInput.value = ''; // Clear the end date if it is earlier than the start date
+            }
+        });
+    </script>
+
+    <script type="text/javascript">
+
+        jQuery.noConflict();
+
+        jQuery(document).ready(function ($) {
+
+             // Load initial tab content
+
+            loadTabContent('@Url.Action("ListOfExpensesAsyncMB", "Accountant")', 1);
+
+
+            // Initialize and refresh filters
+
+            refreshFilter();
+
+            // Filter purchases based on status, start date, and end date
+            function filterPurchases(status, startDate, endDate) {
+
+                var url = '@Url.Action("FilterforlistMB", "Accountant")' +
+                    '?status=' + encodeURIComponent(status) +
+                    '&startDate=' + encodeURIComponent(startDate) +
+                    '&endDate=' + encodeURIComponent(endDate);
+                showLoadingOverlay();
+                $.ajax({
+                    url: url,
+                    type: 'GET',
+                    success: function (data) {
+                        $('#ExpenseList').html(data);
+                        initializeDataTable();
+                    },
+                    error: function () {
+                        alert('Error loading filtered content.');
+                    },
+                    complete: function () {
+
+                        hideLoadingOverlay();
+                    }
+                });
+            }
+
+            // Load tab content based on status ID
+            function loadTabContent(tabContentUrl, statusId) {
+
+                $.ajax({
+                    url: tabContentUrl,
+                    data: { id: statusId },
+                    type: 'GET',
+                    success: function (data) {
+                        $('#ExpenseList').html(data);
+                        initializeDataTable();
+                    },
+                    error: function () {
+                        alert('Error loading content.');
+                    }
+                });
+
+
+            }
+
+            // Initialize DataTables with buttons
+            function initializeDataTable() {
+
+                var table = $('#ExpenseList table').DataTable({
+                    "responsive": true,
+                    "lengthChange": false,
+                    "autoWidth": false,
+                    "paging": true,
+                    /* "info": false, */   // Remove info (Showing X to Y of Z entries)
+                    "ordering": false, // Disable sorting
+                    "stateSave": true,
+                    "dom": 'Bfrtip',
+                    "buttons": [
+                        {
+                            extend: 'copy',
+                            text: '<img src="/Content/Admin/icon/copy.png" title="Copy" alt="Copy" height="20" width="20" />',
+                            titleAttr: 'Copy',
+                            title: function () {
+                                return "Expense Details";
+                            },
+                            messageTop: function () {
+                                return 'Filtered Date Range: ' +
+                                    new Date($('#startDateFilter').val()).toLocaleDateString('en-GB') + ' to ' +
+                                    new Date($('#endDateFilter').val()).toLocaleDateString('en-GB');
+                            },
+                            messageBottom: function () {
+                                return 'Company Name';
+                            },
+                            exportOptions: {
+
+                                columns: ':visible:not(:last-child)' // Export only visible columns, excluding the last one
+                            }
+                        },
+                        {
+                            extend: 'csv',
+                            text: '<img src="/Content/Admin/icon/csv.jpg" title="CSV" alt="CSV" height="20" width="20" />',
+                            titleAttr: 'CSV',
+                            title: function () {
+                                return "Expense Details";
+                            },
+                            messageTop: function () {
+                                return 'Filtered Date Range: ' +
+                                    new Date($('#startDateFilter').val()).toLocaleDateString('en-GB') + ' to ' +
+                                    new Date($('#endDateFilter').val()).toLocaleDateString('en-GB');
+                            },
+                            messageBottom: function () {
+                                return 'Company Name';
+                            },
+                            exportOptions: {
+                                columns: ':visible:not(:last-child)' // Export only visible columns, excluding the last one
+                            }
+                        },
+                        {
+                            extend: 'excel',
+                            text: '<img src="/Content/Admin/icon/xls-file.png" title="xls" alt="xls" height="20" width="20" />',
+                            titleAttr: 'Excel',
+                            title: function () {
+                                return "Expense Details";
+                            },
+                            messageTop: function () {
+                                return 'Filtered Date Range: ' +
+                                    new Date($('#startDateFilter').val()).toLocaleDateString('en-GB') + ' to ' +
+                                    new Date($('#endDateFilter').val()).toLocaleDateString('en-GB');
+                            },
+                            messageBottom: function () {
+                                return 'Company Name';
+                            },
+                            exportOptions: {
+                                columns: ':visible:not(:last-child)' // Export only visible columns, excluding the last one
+                            }
+                        },
+                        {
+                            extend: 'pdf',
+                            text: '<img src="/Content/Admin/icon/pdf-file.png" title="pdf" alt="pdf" height="20" width="20" />',
+                            titleAttr: 'PDF',
+                            title: function () {
+                                return "Expense Details";
+                            },
+                            customize: function (doc) {
+                                // Check the number of columns or specific table width condition
+                                if ($('#ExpenseList table').width() > 500) {
+                                    doc.pageOrientation = 'landscape'; // Switch to landscape if table is too wide
+                                }
+
+                                doc.content.splice(0, 0, {
+                                    text: 'GayaSoft\nFiltered Date Range: ' +
+                                        new Date($('#startDateFilter').val()).toLocaleDateString('en-GB') + ' to ' +
+                                        new Date($('#endDateFilter').val()).toLocaleDateString('en-GB') +
+                                        '\nExported on: ' + new Date().toLocaleDateString('en-GB'),
+                                    margin: [0, 0, 0, 12],
+                                    alignment: 'center',
+                                    fontSize: 10
+                                });
+
+                                doc.footer = function (currentPage, pageCount) {
+                                    return {
+                                        columns: [
+                                            { text: 'Company Name', alignment: 'left', margin: [20, 0] },
+                                            { text: 'Page ' + currentPage.toString() + ' of ' + pageCount, alignment: 'right', margin: [0, 0, 20] }
+                                        ],
+                                        margin: [0, 0, 0, 12],
+                                        fontSize: 10
+                                    };
+                                };
+                            },
+                            exportOptions: {
+                                columns: ':visible:not(:last-child)' // Export only visible columns, excluding the last one
+                            }
+                        },
+                        {
+                            extend: 'print',
+                            text: '<img src="/Content/Admin/icon/printer.png" title="printer" alt="printer" height="20" width="20" />',
+                            titleAttr: 'Print',
+                            title: function () {
+                                return "Expense Details";
+                            },
+                            messageTop: function () {
+                                return 'Filtered Date Range: ' +
+                                    new Date($('#startDateFilter').val()).toLocaleDateString('en-GB') + ' to ' +
+                                    new Date($('#endDateFilter').val()).toLocaleDateString('en-GB') +
+                                    '\nExported on: ' + new Date().toLocaleDateString('en-GB');
+                            },
+                            messageBottom: function () {
+                                return 'Company Name';
+                            },
+                            exportOptions: {
+                                columns: ':visible:not(:last-child)' // Export only visible columns, excluding the last one
+                            }
+                        },
+                        {
+                            extend: 'colvis',
+                            text: '<img src="/Content/Admin/icon/column.jpg" title="column" alt="column" height="20" width="20" />',
+                            titleAttr: 'Columns'
+                        }
+                    ]
+                });
+            }
+
+
+            // here we handle filters event
+
+            function initializeFilterEventHandlers() {
+
+                var status = $('#statusFilter').val();
+                var startDate = $('#startDateFilter').val();
+                var endDate = $('#endDateFilter').val();
+
+                $('#statusFilter').off('change').on('change', function () {
+                    var startDate = $('#startDateFilter').val();
+                    var endDate = $('#endDateFilter').val();
+                    status = $(this).val();
+                    filterPurchases(status, startDate, endDate);
+                });
+
+                $('#startDateFilter').off('change').on('change', function () {
+                    startDate = $(this).val();
+                    filterPurchases(status, startDate, endDate);
+                });
+
+                $('#endDateFilter').off('change').on('change', function () {
+                    var startDate = $('#startDateFilter').val();
+                    var endDate = $(this).val();
+
+                    filterPurchases(status, startDate, endDate);
+                });
+
+            }
+
+            // Initialize filter event handlers
+
+            initializeFilterEventHandlers();
+
+            // Refresh filter with default dates and status
+            function refreshFilter() {
+
+                var today = new Date();
+                // Calculate one year before the current date
+                var before = new Date();
+                before.setMonth(today.getMonth());
+                before.setDate(1); // Set the date to the first day of the next month
+
+                // Format dates as YYYY-MM-DD strings
+                var startDate = formatDate(before);
+                var formattedEndDate = formatDate(today);
+
+                // Set the values of start date and end date inputs
+                $('#startDateFilter').val(startDate);
+                $('#endDateFilter').val(formattedEndDate);
+
+                $('#startDateFilter').attr('max', formattedEndDate);
+                $('#endDateFilter').attr('max', formattedEndDate);
+
+                // Other JavaScript code goes here...
+
+                // Function to format date as YYYY-MM-DD
+                function formatDate(date) {
+                    var month = String(date.getMonth() + 1).padStart(2, '0');
+                    var day = String(date.getDate()).padStart(2, '0');
+                    var year = date.getFullYear();
+
+                    return year + '-' + month + '-' + day;
+                }
+                $('[data-toggle="tooltip"]').tooltip();
+
+                // Initial load of purchases with default dates and status
+                var status = $('#statusFilter').val();
+                var startDate = $('#startDateFilter').val();
+                var endDate = $('#endDateFilter').val();
+
+                filterPurchases(status, startDate, endDate);
+            }
+
+             // Tab click event handlers
+
+           $("#RegularExpenseTab").on("click", function () {
+                loadTabContent('@Url.Action("ListOfExpensesAsyncMB", "Accountant")', 1);
+                refreshFilter();
+           });
+
+            $("#ReferenceExpenseTab").on("click", function () {
+
+                loadTabContent('@Url.Action("ListOfExpensesAsyncMB", "Accountant")', 3);
+
+                refreshFilter();
+
+            });
+
+            $("#RefundExpenseTab").click(function () {
+
+                loadTabContent('@Url.Action("ListOfExpensesAsyncMB", "Accountant")', 2);
+                refreshFilter();
+
+            });
+
+            $("#OtherExpenseTab").click(function () {
+
+                 loadTabContent('@Url.Action("ListOfExpensesAsyncMB", "Accountant")', 5);
+                 refreshFilter();
+            });
+
+            $("#AdvanceExpenseTab").click(function () {
+
+                 loadTabContent('@Url.Action("ListOfExpensesAsyncMB", "Accountant")', 4);
+                 refreshFilter();
+            });
+
+
+
+            // Redirect to Add Expense view
+            $("#AddExpenseLink").click(function (e) {
+                e.preventDefault(); // Prevent default form submission
+                redirectToAddExpense();
+            });
+
+            function redirectToAddExpense() {
+                var url = '/Accountant/AddExpensesAsyncMB';
+                showLoadingOverlay();
+                $.ajax({
+                    url: url,
+                    type: 'GET',
+                    success: function (data) {
+                        $('#NewExpenseModal .modal-body').html(data);
+                        $('#NewExpenseModal').modal('show');
+                    },
+                    error: function () {
+                        alert('Error loading content.');
+                    },
+                    complete: function () {
+                        hideLoadingOverlay();
+                    }
+                });
+            }
+
+            // Clear modal content when it is hidden
+            $('#NewExpenseModal').on('hidden.bs.modal', function () {
+                $(this).find('.modal-body').empty(); // Clear the modal content
+            });
+
+
+
+
+
+
+    });
+    </script>
+
+
+
+    <div class="modal fade" id="NewExpenseModal" role="dialog" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content" style="background-color: white; width: 50vw;">
+                <div class="card-header">
+                    <h5 class="card-title" id="BankModalLabel">Add Expense</h5>
+                    <button type="button" class="close text-danger" data-dismiss="modal" aria-label="Close" style="font-size: 150%;">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <!-- Content for Add Expense Modal -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade custom-modal-width" id="AddVendorModal" role="dialog" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content" style="width:40vw;">
+                <div class="modal-body">
+                    <!-- Content for Schedule Modal -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="BankModal" tabindex="-1" role="dialog" aria-labelledby="BankModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="BankModalLabel">Add Voucher</h5>
+                    <button type="button" class="close text-danger" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</body>
+</html>

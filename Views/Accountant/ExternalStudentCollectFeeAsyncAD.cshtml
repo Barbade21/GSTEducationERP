@@ -1,0 +1,566 @@
+﻿
+@model GSTEducationERPLibrary.Accountant.Accountant
+
+@{
+    ViewBag.Title = "StudentCollectFeeAsyncAD";
+    Layout = "~/Views/Shared/_LayoutERP.cshtml";
+}
+
+
+
+@using (Html.BeginForm("ExternalfeeCollectedAsyncAD", "Accountant", FormMethod.Post, new { @class = "form-horizontal", role = "form", id = "feeCollectionForm" }))
+{
+
+    <style>
+        h3 {
+            color: #64bbc9;
+            font-weight: bold;
+            font-size: 20px;
+            margin-left: 17px;
+            margin-bottom: -10px;
+            font-family: sans-serif;
+            color: #33CCCC;
+        }
+
+        .custom-card-width {
+            max-width: 80%; /* Adjust as needed */
+            margin: auto; /* Center the card */
+        }
+
+        .breadcrumb a {
+            color: #33CCCC; /* Base color for breadcrumb links */
+            text-decoration: none; /* Optional: removes underline */
+        }
+
+            .breadcrumb a:hover,
+            .breadcrumb a:focus {
+                color: #009999; /* Lighter shade on hover or focus */
+            }
+
+        .breadcrumb .breadcrumb-item.active {
+            color: #009999; /* Color for the active breadcrumb item */
+        }
+
+        /* Optional: If you want to add a faint background on click (active state) */
+        .breadcrumb a:active {
+            color: #009999;
+            background-color: #e6f9ff; /* Light background on click */
+        }
+    </style>
+
+    <div class="card custom-card-width">
+        <div class="card-body">
+            <div class="container">
+                <div class="col-md-10 justify-content-lg-start">
+                    <h3 class="text-center">Pending Installment Collection</h3>
+                </div>
+
+                @Html.AntiForgeryToken()
+                <div class="form-horizontal">
+                    <hr />
+                    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+                    <div class="row justify-content-center">
+                        <div class="col-md-5">
+
+
+
+
+                            @Html.HiddenFor(model => model.StudentType, new { id = "RemainingFees" })
+
+                            @Html.HiddenFor(model => model.BranchAddress, new { id = "RemainingFees" })
+
+
+                            <div class="form-group" style="display:none;">
+                                @Html.LabelFor(model => model.CandidateCode, htmlAttributes: new { @class = "control-label" })
+                                @Html.EditorFor(model => model.CandidateCode, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+                                @Html.ValidationMessageFor(model => model.CandidateCode, "", new { @class = "text-danger" })
+                            </div>
+
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.Name, htmlAttributes: new { @class = "control-label" })
+                                @Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+                                @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
+                            </div>
+
+
+
+                            <div class="form-group" id="TransactionID_checqueNumber">
+                                <label style="font-size: 15px;">
+                                    Transaction ID/Cheque Number <span class="required-star" style="color: red;">*</span>
+                                </label>
+                                @Html.EditorFor(model => model.TransactionID_checqueNumber, new { htmlAttributes = new { @class = "form-control", @required = "required" } })
+                                @Html.ValidationMessageFor(model => model.TransactionID_checqueNumber, "", new { @class = "text-danger" })
+                            </div>
+
+                            <div class="form-group" id="CheckBankName">
+                                <label style="font-size: 15px;">
+                                    Cheque Bank Name <span class="required-star" style="color: red;">*</span>
+                                </label>
+                                @Html.EditorFor(model => model.CheckBankName, new { htmlAttributes = new { @class = "form-control", @required = "required", id = "CheckBankNameInput" } })
+                                @Html.ValidationMessageFor(model => model.CheckBankName, "", new { @class = "text-danger" })
+                            </div>
+
+                            <div class="form-group" id="BankField">
+                                <label style="font-size: 15px;">
+                                    Bank <span class="required-star" style="color: red;">*</span>
+                                </label>
+                                @Html.DropDownListFor(model => model.BankId, (SelectList)ViewBag.Bank, "Select Bank", new { @class = "form-control select2", id = "BankNameID" })
+                                @Html.ValidationMessageFor(model => model.BankId, "", new { @class = "text-danger" })
+                            </div>
+
+                            <div class="form-group" id="AccountHolderField">
+                                <label style="font-size: 15px;">
+                                    Account Holder <span class="required-star" style="color: red;">*</span>
+                                </label>
+                                @Html.DropDownListFor(model => model.AccountHolderId, Enumerable.Empty<SelectListItem>(), "Select Account Holder name", new { @class = "form-control select2", id = "AccountHolder" })
+                                @Html.ValidationMessageFor(model => model.AccountHolderId, "", new { @class = "text-danger" })
+                                @Html.HiddenFor(model => model.AccountHolderName, new { id = "AccountHolderText" })
+                            </div>
+
+                            
+
+
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.Description, htmlAttributes: new { @class = "control-label" })
+                                @Html.EditorFor(model => model.Description, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.Description, "", new { @class = "text-area" })
+                            </div>
+
+
+                        </div>
+
+                        <div class="col-md-5">
+
+                            <div class="form-group">
+                                <label class="control-label">Fee Type</label>
+                                @Html.HiddenFor(model => model.FeeTypeId, new { @Value = "4" })
+                                <input type="text" class="form-control" value="External student Fee" readonly />
+                                @Html.ValidationMessageFor(model => model.FeeTypeId, "", new { @class = "text-danger" })
+                            </div>
+
+
+                            <div class="form-group" id="InstallmentAmount">
+                                <label style="font-size: 15px;">
+                                    payble Amount <span class="required-star" style="color: red;">*</span>
+                                </label>
+                                @Html.EditorFor(model => model.InstallmentAmount, new { htmlAttributes = new { @class = "form-control", @required = "required", @readonly = "readonly" } })
+                                @Html.ValidationMessageFor(model => model.InstallmentAmount, "", new { @class = "text-danger" })
+                            </div>
+
+                            @Html.HiddenFor(model => model.RemainingFees, new { id = "RemainingFees" })
+
+
+                            <div class="form-group" id="paymentMode">
+                                <label style="font-size: 15px;">Payment Mode <span class="required-star" style="color: red;">*</span></label>
+                                @Html.DropDownListFor(model => model.PaymentModeId,
+                                                       new SelectList(new List<Object>
+                                                       {
+                                                           new { value = "Cash", text = "Cash" },
+                                                           new { value = "Bank", text = "Bank" },
+                                                           new { value = "Cheque", text = "Cheque" }
+                                                       },
+                                                       "value",
+                                                       "text"),
+                                                       "Select Payment Mode",
+                                                       new { @class = "form-control select2", @id = "paymentModeDropdown" })
+                                @Html.ValidationMessageFor(model => model.PaymentModeId, "", new { @class = "text-danger" })
+                                @Html.HiddenFor(model => model.PaymentMode, new { id = "PaymentModeText" })
+                            </div>
+
+
+
+                            <div class="form-group" id="paymentType">
+                                <label style="font-size: 15px;">Payment Type <span class="required-star" style="color: red;">*</span></label>
+                                @Html.DropDownListFor(model => model.PaymentType,
+                                                       new SelectList(new List<Object>
+                                                       {
+                                                           new { value = "NEFT", text = "NEFT" },
+                                                           new { value = "RTGS", text = "RTGS" },
+                                                           new { value = "UPI", text = "UPI" }
+                                                       },
+                                                       "value",
+                                                       "text"),
+                                                       "Select Payment Mode",
+                                                       new { @class = "form-control select2", @id = "paymentTypeDropdown" })
+                                @Html.ValidationMessageFor(model => model.PaymentType, "", new { @class = "text-danger" })
+                            </div>
+
+                            <div class="form-group" id="ChequeDateField">
+                                <label style="font-size: 15px;">
+                                    Cheque Date <span class="required-star" style="color: red;">*</span>
+                                </label>
+                                @Html.EditorFor(model => model.ChequeDate, new { htmlAttributes = new { @class = "form-control", @id = "ChequeDate" } })
+                                @Html.ValidationMessageFor(model => model.ChequeDate, "", new { @class = "text-danger" })
+                            </div>
+
+
+
+                            <div class="form-group" id="CheckAccountNumber">
+                                <label style="font-size: 15px;">
+                                    Cheque Account Number <span class="required-star" style="color: red;">*</span>
+                                </label>
+                                @Html.EditorFor(model => model.CheckAccountNumber, new { htmlAttributes = new { @class = "form-control", @required = "required", id = "CheckAccountNumberInput" } })
+                                @Html.ValidationMessageFor(model => model.CheckAccountNumber, "", new { @class = "text-danger" })
+                            </div>
+
+
+                        </div>
+                    </div>
+
+                    <div class="row justify-content-center">
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <input type="submit" value="Collect Fee" class="btn btn-primary" id="collectFeeButton" />
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+}
+<!-- jQuery -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<!-- Bootstrap -->
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet" />
+
+<!-- SweetAlert -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+
+
+
+
+<script>
+    $(document).ready(function () {
+        $('#AccountHolderField').hide();
+        $("#ChequeDateField").hide();
+        $("#BankField").hide();
+        $("#TransactionID_checqueNumber").hide();
+        $("#ChequeBankName").hide();
+        $("#TransactionID_checqueNumber_cheque").hide();
+        $("#CheckBankName").hide();
+        $("#CheckAccountNumber").hide();
+        $("#PaymentType").hide(); // Hides PaymentType but doesn't validate it anymore
+    });
+</script>
+
+<script>
+    $(document).ready(function () {
+        // Handle change event of Bank dropdown
+        $('#BankNameID').change(function () {
+            var bankId = $(this).val();
+            if (bankId) {
+                $.ajax({
+                    url: '@Url.Action("AccountHolder", "Accountant")',
+                    type: 'GET',
+                    dataType: 'json',
+                    data: { BankId: bankId },
+                    success: function (data) {
+                        // Clear and populate Account Holder dropdown
+                        var dropdown = $('#AccountHolder');
+                        dropdown.empty();
+                        dropdown.append($('<option>').val('').text('Select Account Holder name'));
+                        $.each(data, function (index, item) {
+                            dropdown.append($('<option>').val(item.Value).text(item.Text));
+                        });
+                    },
+                    error: function () {
+                        alert('Failed to load account holders.');
+                    }
+                });
+            } else {
+                // Clear Account Holder dropdown if bank is not selected
+                $('#AccountHolder').empty();
+            }
+        });
+    });
+</script>
+
+<script>
+    $(document).ready(function () {
+        $('#AccountHolder').change(function () {
+            var selectedText = $('#AccountHolder option:selected').text();
+            $('#AccountHolderText').val(selectedText);
+        });
+
+        $('#paymentModeDropdown').change(function () {
+            var selectedText = $('#paymentModeDropdown option:selected').text();
+            $('#PaymentModeText').val(selectedText);
+        });
+    });
+</script>
+
+<script>
+    $(document).ready(function () {
+        $("#ChequeDate").datepicker({
+            dateFormat: 'yy-mm-dd', // Specify the date format
+            changeMonth: true,
+            changeYear: true
+        });
+    });
+</script>
+
+<script>
+    $(document).ready(function () {
+        $('#InstallmentAmount').on('input', function () {
+            var inputVal = $(this).val();
+            if (!/^\d*$/.test(inputVal)) {
+                swal("Validation Error", "Please enter a valid numeric value.", "error");
+                $(this).val(inputVal.replace(/\D/g, '')); // Remove non-numeric characters
+                return;
+            }
+
+            var installmentAmount = parseFloat(inputVal);
+            var remainingFees = parseFloat($('#RemainingFees').val());
+
+            if (!isNaN(installmentAmount) && installmentAmount > remainingFees) {
+                swal("Validation Error", "Installment Amount cannot be greater than the remaining fees.", "error");
+                $(this).val(remainingFees);
+            }
+        });
+    });
+</script>
+
+<script>
+    // Add event listener for input validation
+    document.getElementById("CheckBankNameInput").addEventListener("input", function () {
+        var inputValue = this.value.trim();
+        if (/^[a-zA-Z]+$/.test(inputValue)) {
+            this.setCustomValidity("");
+        } else {
+            this.setCustomValidity("Only letters are allowed.");
+        }
+    });
+</script>
+
+<script>
+    // Add event listener for input validation
+    document.getElementById("CheckAccountNumberInput").addEventListener("input", function () {
+        var inputValue = this.value.trim();
+        if (/^\d+$/.test(inputValue)) {
+            this.setCustomValidity("");
+        } else {
+            this.setCustomValidity("Only numbers 0-9 are allowed.");
+        }
+    });
+</script>
+
+<script>
+    $(document).ready(function () {
+
+        $("#paymentType").hide().find('select').removeAttr('required').val('');
+
+        $("#paymentModeDropdown").change(function () {
+            var selectedText = $(this).find("option:selected").text();
+            var transactionInput = $("#TransactionID_checqueNumber input");
+
+
+            if (selectedText === "Cash") {
+                $("#BankField").hide().find('select').removeAttr('required');
+                $("#AccountHolderField").hide().find('select').removeAttr('required');
+                $("#ChequeDateField").hide().find('input').removeAttr('required');
+                $("#TransactionID_checqueNumber").hide().find('input').removeAttr('required');
+                $("#CheckBankName").hide().find('input').removeAttr('required');
+                $("#CheckAccountNumber").hide().find('input').removeAttr('required');
+                $("#paymentType").hide().find('select').removeAttr('required').val('');
+            }
+            else if (selectedText === "Bank") {
+                transactionInput.val('');
+                $("#BankField").show().find('select').attr('required', 'required');
+                $("#TransactionID_checqueNumber").show().find('input').attr('required', 'required');
+                $("#AccountHolderField").show().find('select').attr('required', 'required');
+                $("#ChequeDateField").hide().find('input').removeAttr('required');
+                $("#CheckBankName").hide().find('input').removeAttr('required');
+                $("#CheckAccountNumber").hide().find('input').removeAttr('required');
+                $("#paymentType").show().find('select').attr('required', 'required');
+            }
+            else if (selectedText === "Cheque") {
+                transactionInput.val('');
+                $("#ChequeDateField").show().find('input').attr('required', 'required');
+                $("#BankField").show().find('select').attr('required', 'required');
+                $("#AccountHolderField").show().find('select').attr('required', 'required');
+                $("#TransactionID_checqueNumber").show().find('input').attr('required', 'required');
+                $("#CheckBankName").show().find('input').attr('required', 'required');
+                $("#CheckAccountNumber").show().find('input').attr('required', 'required');
+                $("#paymentType").hide().find('select').removeAttr('required').val('');
+            }
+        });
+
+        $('#InstallmentAmount input').on('input', function () {
+            var inputVal = $(this).val();
+
+            if (!/^\d+$/.test(inputVal)) {
+                toastr.error("Please enter a valid numeric value.");
+                $(this).val('');
+                return;
+            }
+
+            var installmentAmount = parseFloat(inputVal);
+
+            if (installmentAmount <= 0) {
+                toastr.error("Installment Amount cannot be zero or empty.");
+                $(this).val('');
+                return;
+            }
+
+            var remainingFees = parseFloat($('#RemainingFees').val());
+
+            if (!isNaN(installmentAmount) && installmentAmount > remainingFees) {
+                toastr.error("Installment Amount cannot be greater than the remaining fees.");
+                $(this).val(remainingFees);
+            }
+        });
+
+        $('#ChequeDate').on('change', function () {
+            var inputVal = $(this).val();
+            var inputDate = new Date(inputVal);
+            var today = new Date();
+            var minDate = new Date(today.setDate(today.getDate() - 85));
+
+            if (inputDate < minDate) {
+                toastr.error("Cheque Date cannot be less than 85 days before today's date.");
+                $(this).val('');
+            }
+        });
+
+        $('#CheckBankName input').on('input', function () {
+            var inputVal = $(this).val();
+            if (!/^[a-zA-Z\s]+$/.test(inputVal)) {
+                toastr.error("Check Bank Name should only contain letters.");
+                $(this).val(inputVal.replace(/[^a-zA-Z\s]/g, ''));
+            }
+        });
+
+        $('#CheckAccountNumber input').on('input', function () {
+            var inputVal = $(this).val();
+
+            if (!/^\d+$/.test(inputVal)) {
+                toastr.error("Check Account Number should only contain numeric values.");
+                $(this).val(inputVal.replace(/\D/g, ''));
+                return;
+            }
+
+            if (inputVal === "0") {
+                toastr.error("Check Account Number cannot be zero.");
+                $(this).val('');
+            }
+        });
+
+        $("#collectFeeButton").click(function (event) {
+            event.preventDefault();
+            var selectedText = $("#paymentModeDropdown option:selected").text();
+            var isValid = true;
+
+            function validateField(field, isRequired) {
+                var isFieldValid = true;
+
+                if (isRequired && field.val().trim() === "") {
+                    toastr.error(field.closest('.form-group').find('label').text() + " is required.");
+                    isFieldValid = false;
+                }
+                return isFieldValid;
+            }
+
+            
+
+
+            if ($("#paymentModeDropdown").val() === "") {
+                toastr.error("Payment Mode is required.");
+                isValid = false;
+            }
+
+            if (selectedText === "Bank") {
+                isValid &= validateField($("#paymentTypeDropdown"), true);
+            }
+
+            if (selectedText === "Cash") {
+                // No specific fields to validate for Cash
+            }
+            else if (selectedText === "Bank") {
+                isValid &= validateField($("#BankField").find('select'), true);
+                isValid &= validateField($("#AccountHolderField").find('select'), true);
+                isValid &= validateField($("#TransactionID_checqueNumber").find('input'), true);
+            }
+            else if (selectedText === "Cheque") {
+                isValid &= validateField($("#ChequeDateField").find('input'), true);
+                isValid &= validateField($("#BankField").find('select'), true);
+                isValid &= validateField($("#AccountHolderField").find('select'), true);
+                isValid &= validateField($("#TransactionID_checqueNumber").find('input'), true);
+                isValid &= validateField($("#CheckBankName").find('input'), true);
+                isValid &= validateField($("#CheckAccountNumber").find('input'), true);
+            }
+
+            if (selectedText === "Cheque") {
+                // Validate Cheque Date
+                var inputVal = $('#ChequeDate').val();
+                var inputDate = new Date(inputVal);
+
+                var today = new Date();
+                var todayFormatted = today.toISOString().split('T')[0];
+                var minDate = new Date();
+                minDate.setDate(today.getDate() - 85);
+                var maxDate = new Date();
+                maxDate.setDate(today.getDate() + 5);
+
+                if (inputDate < minDate || inputDate > maxDate) {
+                    toastr.error("Cheque Date should be between 85 days before and 5 days after today's date.");
+                    isValid = false;
+                }
+
+                // Validate Installment Amount
+                var installmentAmount = parseFloat($('#InstallmentAmount input').val());
+                var remainingFees = parseFloat($('#RemainingFees').val());
+
+                if (installmentAmount <= 0 || isNaN(installmentAmount) || installmentAmount > remainingFees) {
+                    toastr.error("Invalid Installment Amount for Cheque payment.");
+                    isValid = false;
+                }
+            }
+        
+
+            if (isValid) {
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: 'Do you want to proceed with fee collection?',
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonText: 'Yes, collect it!',
+                    cancelButtonText: 'No, cancel'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // Show success message after confirmation
+                        Swal.fire({
+                            title: 'Success!',
+                            text: 'Fee collection is being processed.',
+                            icon: 'success',
+                            showConfirmButton: false,
+                            timer: 2000
+                        }).then(() => {
+                            // Submit the form after the success message
+                            $(this).closest('form').submit();
+                        });
+                    }
+                });
+            }
+
+        });
+    });
+</script>
+
+
+
+
+

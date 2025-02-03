@@ -1,0 +1,288 @@
+﻿@model GSTEducationERPLibrary.Accountant.Accountant
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Update Cheque Details</title>
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap4.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css">
+
+    <style>
+        h2 {
+            color: #007bff;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .back-button {
+            font-size: 20px;
+            margin-right: 180px;
+            color: #007bff;
+            transition: color 0.3s ease;
+            background: none;
+            border: none;
+            cursor: pointer;
+            text-decoration: none;
+            position: absolute;
+            top: 80px;
+        }
+
+        .text-danger {
+            color: red;
+            font-weight: bold;
+            margin-top: 5px;
+        }
+
+        .validation-summary-errors {
+            color: red;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+            .validation-summary-errors ul {
+                list-style-type: none;
+                padding-left: 0;
+            }
+    </style>
+</head>
+<body>
+    @using (Html.BeginForm("UpdateExpenseChequeDateAsyncSM", "Accountant", FormMethod.Post, new { id = "chequeForm" }))
+    {
+        @Html.AntiForgeryToken()
+
+        <div class="form-horizontal">
+            <div class="form-container">
+
+
+                <div class="form-group row">
+                    <div class="col-md-6">
+                        <label class="control-label">Purchase/Expense Code</label>
+                        @*@Html.LabelFor(model => model.TransactionCode, htmlAttributes: new { @class = "control-label" })*@
+                        @Html.EditorFor(model => model.TransactionCodeSM, new { htmlAttributes = new { @class = "form-control", style = "width: 300px;", @readonly = "readonly" } })
+                        @Html.ValidationMessageFor(model => model.TransactionCodeSM, "", new { @class = "text-danger" })
+                    </div>
+                    <div class="col-md-6">
+                        <label class="control-label">Vendor Name</label>
+                        @*@Html.LabelFor(model => model.VendorName, htmlAttributes: new { @class = "control-label" })*@
+                        @Html.EditorFor(model => model.VendorNameSM, new { htmlAttributes = new { @class = "form-control", style = "width: 300px;", @readonly = "readonly" } })
+                        @Html.ValidationMessageFor(model => model.VendorNameSM, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <div class="col-md-6">
+                        <label class="control-label">Cheque Number</label>
+                        @*@Html.LabelFor(model => model.ChequeNumber, htmlAttributes: new { @class = "control-label" })*@
+                        @Html.EditorFor(model => model.ChequeNumberSM, new { htmlAttributes = new { @class = "form-control", style = "width: 300px;", @readonly = "readonly" } })
+                        @Html.ValidationMessageFor(model => model.ChequeNumberSM, "", new { @class = "text-danger" })
+                    </div>
+                    <div class="col-md-6">
+                        <label class="control-label">Amount</label>
+                        <input type="text" class="form-control" style="width: 300px;" value="₹ @Model.AmountSM.00" readonly />                        @*@Html.EditorFor(model => model.AmountSM, new { htmlAttributes = new { @class = "form-control", style = "width: 300px;", @readonly = "readonly" } })*@
+                        @Html.ValidationMessageFor(model => model.AmountSM, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <div class="col-md-6">
+                        <label class="control-label">Bank Name</label>
+                        @Html.EditorFor(model => model.BankNameSM, new { htmlAttributes = new { @class = "form-control", style = "width: 300px;", @readonly = "readonly" } })
+                        @Html.ValidationMessageFor(model => model.BankNameSM, "", new { @class = "text-danger" })
+                    </div>
+                    <div class="col-md-6">
+                        <label class="control-label">Account Number</label>
+                        @Html.EditorFor(model => model.AccountNumberSM, new { htmlAttributes = new { @class = "form-control", style = "width: 300px;", @readonly = "readonly" } })
+                        @Html.ValidationMessageFor(model => model.AccountNumberSM, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <div class="col-md-6">
+                        <label class="control-label">Cheque Date</label>
+                        @*@Html.Label("Cheque Date", htmlAttributes: new { @class = "control-label" })*@
+                        @Html.EditorFor(model => model.ChequeDateSM, new { htmlAttributes = new { @class = "form-control datepicker", style = "width: 300px;", id = "ChequeDateReceipt", @readonly = "readonly" } })
+                        @Html.ValidationMessageFor(model => model.ChequeDateSM, "", new { @class = "text-danger" })
+                    </div>
+                    <div class="col-md-6">
+                        <label class="control-label">Cheque given date</label>
+                        @*@Html.LabelFor(model => model.DrawnOn, htmlAttributes: new { @class = "control-label" })*@
+                        @Html.EditorFor(model => model.TransactionDateSM, new { htmlAttributes = new { @class = "form-control", style = "width: 300px;", id = "TransactionDateSM", @readonly = "readonly" } })
+                        @Html.ValidationMessageFor(model => model.TransactionDateSM, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-md-6">
+                        <label class="control-label">Cheque Clearance Date <span style="color: red;">*</span></label>
+                        @*@Html.Label("Cheque Clearance Date", htmlAttributes: new { @class = "control-label" })*@
+                        @Html.EditorFor(model => model.NewClearanceDateSM, new { htmlAttributes = new { @class = "form-control datepicker", style = "width: 300px;", id = "NewClearanceDate" } })
+                        @Html.ValidationMessageFor(model => model.NewClearanceDateSM, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+
+
+
+                @Html.HiddenFor(model => model.VoucherCodeSM)
+
+                <div class="form-group text-center">
+                    <input type="submit" value="Save" class="btn btn-primary btn-success btn-custom" @*onclick="location.href='@Url.Action("UpdateExpenseChequeDateAsyncSM", "Accountant")'"*@ />
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+
+    }
+    <!-- DataTables Core -->
+    <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+
+    <!-- DataTables Bootstrap 4 Integration -->
+    <script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap4.min.js"></script>
+
+
+    <!-- Load jQuery first -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <!-- Bootstrap's JavaScript (Optional, if needed for Toastr or other plugins) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- DataTables and its Bootstrap integration -->
+    <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap4.min.js"></script>
+
+    <!-- Toastr for notifications -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+
+    <!-- Your custom script -->
+    <script type="text/javascript">
+        jQuery(document).ready(function ($) {
+            var admissionType = $('#AdmissionType').val();
+            if (admissionType === "EXTERNAL") {
+                $('.batch-course').hide();
+            }
+        });
+    </script>
+    <script type="text/javascript">
+        jQuery(document).ready(function ($) {
+            $('#chequeForm').on('submit', function (e) {
+                e.preventDefault(); // Prevent the form from submitting automatically
+
+                var chequeDate = $('#ChequeDateReceipt').val();
+                var selectedDate = $('#NewClearanceDate').val();
+                var receivedDate = $('#TransactionDateSM').val();
+
+                if ($('#StatusId').val() === "") {
+                    toastr.error('Please select cheque status.', 'Status Required');
+                    return;
+                }
+
+                if (!isDateValid(chequeDate, selectedDate, receivedDate)) {
+                    toastr.error('Please ensure the Cheque Clearance Date is valid.', 'Validation Error');
+                    return;
+                }
+
+                Swal.fire({
+                    title: 'Are you sure you want to update?',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Yes, update it!',
+                    cancelButtonText: 'No, cancel!',
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        Swal.fire({
+                            title: 'Success!',
+                            text: 'The cheque details have been saved successfully.',
+                            icon: 'success',
+                            showConfirmButton: false,
+                            timer: 2000,
+                            timerProgressBar: true,
+                        }).then(() => {
+                            // Submit the form after the success alert
+                            $('#chequeForm')[0].submit();
+                        });
+                    } else if (result.dismiss === Swal.DismissReason.cancel) {
+                        Swal.close(); // Close the SweetAlert without doing anything
+                    }
+                });
+            });
+
+            function parseDate(dateString) {
+                // Handle different formats of date input
+                const dateFormats = [
+                    "YYYY-MM-DD", // ISO format
+                    "DD/MM/YYYY",
+                    "MM/DD/YYYY",
+                    "DD-MM-YYYY",
+                    "MM-DD-YYYY",
+                ];
+                const parsedDate = moment(dateString, dateFormats, true);
+
+                if (!parsedDate.isValid()) {
+                    console.error("Invalid date format:", dateString);
+                    return new Date(NaN); // Return invalid date
+                }
+                return parsedDate.toDate();
+            }
+
+            function isDateValid(referenceDate, selectedDate, receivedDate) {
+                const refDate = parseDate(referenceDate);
+                const selDate = parseDate(selectedDate);
+                const recDate = parseDate(receivedDate);
+                const currentDate = new Date();
+                currentDate.setHours(0, 0, 0, 0); // Reset time to start of day
+
+                if (isNaN(refDate.getTime()) || isNaN(selDate.getTime()) || isNaN(recDate.getTime())) {
+                    console.error("Invalid date input - Ref:", referenceDate, "Selected:", selectedDate, "Received:", receivedDate);
+                    return false;
+                }
+
+                const threeMonthsLater = new Date(refDate.getFullYear(), refDate.getMonth() + 3, refDate.getDate());
+
+                // Validate against all conditions
+                return (
+                    selDate >= refDate &&
+                    selDate <= threeMonthsLater &&
+                    selDate <= currentDate &&
+                    selDate >= recDate
+                );
+            }
+
+            function formatDate(date) {
+                const day = String(date.getDate()).padStart(2, '0');
+                const month = String(date.getMonth() + 1).padStart(2, '0');
+                const year = date.getFullYear();
+                return `${day}-${month}-${year}`;
+            }
+
+            $('#NewClearanceDate').on('change', function () {
+                var chequeDate = $('#ChequeDateReceipt').val();
+                var selectedDate = $(this).val();
+                var receivedDate = $('#TransactionDateSM').val();
+
+                if (isDateValid(chequeDate, selectedDate, receivedDate)) {
+                    // Valid date, no action needed
+                } else {
+                    var refDate = parseDate(chequeDate);
+                    var recDate = parseDate(receivedDate);
+                    var maxDate = new Date(refDate.getFullYear(), refDate.getMonth() + 3, refDate.getDate());
+                    var currentDate = new Date();
+                    var formattedMaxDate = formatDate(maxDate > currentDate ? currentDate : maxDate);
+
+                    toastr.error(
+                        `Selected date must be between ${formatDate(refDate)} and ${formattedMaxDate},
+not later than today, and not before the received date: ${formatDate(recDate)}`,
+                        'Invalid Date'
+                    );
+                    $('#NewClearanceDate').val('');
+                }
+            });
+        });
+
+
+    </script>
+</body>
+</html>
+
+

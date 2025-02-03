@@ -1,0 +1,202 @@
+﻿@model GSTEducationERPLibrary.Counsellor.BALCounsellor
+
+@{
+    ViewBag.Title = "PersonalEnquiryDashboard";
+    Layout = "~/Views/Shared/_LayoutERP.cshtml";
+}
+
+<h2>PersonalEnquiryDashboard</h2>
+<Body>
+    <div class="col-3 text-right">
+        <button type="button" class="btn btn-block bg-gradient-info active" value="List" onclick="location.href = '@Url.Action("CounsellorDashboardAsyncHP", "Counsellor")' ">Organization Dashboard</button>
+    </div>
+    <div class="col-3 text-right">
+        <button type="button" class="btn btn-block bg-gradient-info active" value="List" onclick="location.href = '@Url.Action("PersonalEnquiryDashboard", "Counsellor")'">Personal Dashboard</button>
+    </div>
+    <div>
+        <div class="" row ml-5 mr-3">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="form-group">
+
+
+                            <div class="card-body">
+                                <section class="content">
+                                    <div class="container-fluid">
+                                        <div class="row">
+
+
+
+                                            <div class="col-lg-3 col-6">
+                                                <!-- small box -->
+
+                                                <div class="small-box bg-success">
+                                                    <div class="inner">
+                                                        <p> <i class='fas fa-calendar-alt' style='font-size:24px'></i> Monthly  Enquiry  </p>
+                                                        <span class="count" id="enquiry_count">@Html.ViewBag.StaffCode</span>
+                                                        @*<p>Monthly Lead Enquiry</p>*@
+                                                    </div>
+
+                                                </div>
+                                            </div>
+
+
+                                            <div class="col-lg-3 col-6">
+                                                <div class="small-box bg-info">
+                                                    <div class="inner">
+                                                        <p> <i class='fas fa-calendar-alt' style='font-size:24px'></i> Monthly  Addmission  </p>
+                                                        <span class="count" id="Addmission">@Html.ViewBag.StaffCode1</span>
+                                                        @*<p>Monthly Lead Enquiry</p>*@
+                                                    </div>
+                                                </div>
+
+                                            </div>
+
+
+                                            <div class="col-lg-3 col-6">
+                                                <div class="small-box bg-gradient-gray">
+                                                    <div class="inner">
+                                                        <p> <i class='fas fa-calendar-alt' style='font-size:24px'></i> Monthly Lost Enquiry  </p>
+                                                        <span class="count" id="LostEnquiry">@Html.ViewBag.StaffCode2</span>
+                                                        @*<p>Monthly Lead Enquiry</p>*@
+                                                    </div>
+                                                </div>
+
+                                            </div>
+
+
+                                            <div class="col-lg-3 col-6">
+
+                                                <div class="small-box bg-warning">
+                                                    <div class="inner">
+                                                        <p> <i class='fas fa-calendar-alt' style='font-size:24px'></i> Monthly Pending Enquiry  </p>
+                                                        <span class="count" id="PendingEnquiry">@Html.ViewBag.StaffCode3</span>
+                                                        @*<p>Monthly Lead Enquiry</p>*@
+                                                    </div>
+
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </section>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</Body>
+<div class="row">
+    <div class="col-md-1" style="padding-right:0px !important">
+        <label>Start Date</label>
+    </div>
+    <div class="col-md-2">
+        <input type="date" class="form-control" id="startDate" name="startDate" onchange="updateChart()">
+    </div>
+    <div class="col-md-1" style="padding-right:0px !important; padding-left:0px !important">
+        <label>End Date</label>
+    </div>
+    <div class="col-md-2">
+        <input type="date" class="form-control" id="endDate" name="endDate" onchange="updateChart()">
+    </div>
+</div>
+<br>
+<div class="container">
+    <div class="row">
+        <div class="col-lg-7">
+            <div class="card">
+                <div class="card-body">
+                    <div id="container1" style="min-width: 310px; height: 400px; max-width:2000px; margin: 0 auto">
+                        <canvas id="myChart" width="600" height="400"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>Enquiry vs Admission Count</title>
+            <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        </head>
+        <body>
+
+            <!-- Graph Section -->
+            <script>
+        // Set default dates from the ViewBag
+        window.onload = function() {
+            document.getElementById('startDate').value = '@ViewBag.StartDate1';
+            document.getElementById('endDate').value = '@ViewBag.EndDate1';
+
+            // Trigger chart update after setting the default date range
+            updateChart();
+        };
+
+        // Parse the JSON data passed from the controller
+        var data = JSON.parse('@Html.Raw(ViewBag.DataPoint2)');
+
+        // Create a chart context
+        var ctx = document.getElementById('myChart').getContext('2d');
+
+        // Initialize the chart
+        var myChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: 'Enquiry Count',
+                    data: [],
+                    backgroundColor: 'rgba(255, 99, 132, 0.5)',
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    borderWidth: 1
+                }, {
+                    label: 'Admission Count',
+                    data: [],
+                    backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+        // Function to update the chart based on the selected date range
+        function updateChart() {
+            var startDate = document.getElementById('startDate').value;
+            var endDate = document.getElementById('endDate').value;
+
+            // Filter data based on the date range
+            var filteredData = data.filter(function(item) {
+                var itemDate = new Date(item.Label);
+                return (!startDate || itemDate >= new Date(startDate)) && (!endDate || itemDate <= new Date(endDate));
+            });
+
+            // Extract labels, enquiry counts, and admission counts from the filtered data
+            var labels = filteredData.map(function(item) { return item.Label; });
+            var enquiries = filteredData.map(function(item) { return item.enquiry; });
+            var admissions = filteredData.map(function(item) { return item.Admission; });
+
+            // Update the chart data
+            myChart.data.labels = labels;
+            myChart.data.datasets[0].data = enquiries;
+            6
+            myChart.data.datasets[1].data = admissions;
+            myChart.update();
+        }
+            </script>
+        </body>
+    </html>
+
+
+
+

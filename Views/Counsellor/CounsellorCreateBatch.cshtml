@@ -1,0 +1,301 @@
+﻿@model GSTEducationERPLibrary.Counsellor.Counsellor
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+    <form id="quickForm">
+        <div class="card-body">
+            <div class="card card-primary">
+                <div class="form-group form-inline">
+                    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                    <div class="col-md-4">
+                        <h6><b>Batch Name:</b> @Html.ValidationMessageFor(model => model.BatchName, "*", new { @class = "text-danger" })</h6>
+                        <div class="col-md-10">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text"><i class="fas fa-object-group"></i></span>
+                                @Html.EditorFor(model => model.BatchName, new { htmlAttributes = new { @class = "form-control", @placeholder = "Batch Name", style = "width:280px;", id = "BatchName" } })
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <h6><b>Course:@Html.ValidationMessageFor(model => model.CourseCode, "*", new { @class = "text-danger" })</b></h6>
+                        <div class="col-md-10">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text"><i class="fas fa-book" id="enquiryfromError"></i></span>
+                                @Html.DropDownListFor(model => model.CourseCode, new SelectList(ViewBag.CourseName, "Value", "Text"), "---Select---", new { @class = "form-control", id = "CourseCode", Style = "width:250px;" })
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <h6><b>Batch Type:@Html.ValidationMessageFor(model => model.Typeid, "*", new { @class = "text-danger" })</b></h6>
+                        <div class="col-md-10">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text"><i class="fas fa-hand-spock"></i></span>
+                                @Html.DropDownListFor(model => model.Typeid, new SelectList(ViewBag.TypeBatchName, "Value", "Text"), "---Select---", new { @class = "form-control", id = "TypeId", Style = "width:250px;" })
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group form-inline">
+
+                    <div class="col-md-4">
+                        <h6><b>Tentative Date:@Html.ValidationMessageFor(model => model.TentativeBatchDate, "*", new { @class = "text-danger" })</b></h6>
+                        <div class="col-md-10">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text"><i class="fas fa-calendar" id="tentativedateerror"></i></span>
+                                @Html.EditorFor(model => model.TentativeBatchDate, new { htmlAttributes = new { @class = "form-control datepicker col-md-12", min = DateTime.Now.ToString("yyyy-MM-dd"), required = "required", id = "TentativeBatchDate", Style = "width:160px;" } })
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <h6><b>Batch Capacity:</b> @Html.ValidationMessageFor(model => model.BatchCapacity, "*", new { @class = "text-danger" })</h6>
+                        <div class="col-md-10">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text"><i class="fas fa-sort-numeric-up"></i></span>
+                                @Html.EditorFor(model => model.BatchCapacity, new { htmlAttributes = new { @class = "form-control", @placeholder = "00", style = "width:100px;", id = "BatchCapacity", @min = "0" } })
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="padding-top:10px; position:relative;">
+                    <div class="container" style="margin-right:-310px">
+                        <input type="submit" class="btn btn-success" value="Create" id="saveButton" style="display: inline-block;" />
+                        <input type="button" class="btn btn-danger" value="Cancel" style="display: inline-block; margin-right: 10px;" onclick="showCancelConfirmation()" />
+                    </div>
+                </div>
+                <br />
+            </div>
+        </div>
+    </form>
+}
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+<script>
+    jQuery(document).ready(function ($) {
+
+        var today = new Date();
+        var formattedToday = today.toISOString().split('T')[0]; // Format to YYYY-MM-DD
+        $('#TentativeBatchDate').val(formattedToday);
+        function validateForm() {
+
+
+            var BatchName = $('#BatchName').val();
+            var CourseCode = $('#CourseCode').val();
+            var TypeId = $('#TypeId').val();
+            var BatchCapacity = $('#BatchCapacity').val();
+            var TentativeBatchDate = $('#TentativeBatchDate').val();
+
+            if (BatchName === "") {
+                toastr.error('Enter Batch Name.');
+                return false;
+            }
+
+            if (CourseCode === "") {
+                toastr.error('Please Select Course.');
+                return false;
+            }
+
+            if (TypeId === "") {
+                toastr.error('Please select Type Batch.');
+                return false;
+            }
+
+            if (BatchCapacity === "") {
+                toastr.error('Enter Batch Capacity.');
+                return false;
+            }
+
+            if (TentativeBatchDate === "") {
+                toastr.error('Please Select Date.');
+                return false;
+            }
+
+            // Additional validation based on batch type
+            if (TypeId == 'Demo' && BatchCapacity < 5) {
+                toastr.error('For Demo batches, the capacity must be at least 5.');
+                return false;
+            }
+
+            if (TypeId != 'Demo' && BatchCapacity < 5) {
+                toastr.error('For non-Demo batches, the capacity must be at least 5.');
+                return false;
+            }
+
+            return true;
+        }
+
+        function toggleSaveButton() {
+            var TypeId = $('#TypeId').val();
+            var BatchCapacity = $('#BatchCapacity').val();
+			 var BatchName = $('#BatchName').val();
+            if (BatchCapacity.length > 2) {
+                BatchCapacity = BatchCapacity.slice(0, 2); // Restrict to the first two digits
+                $('#BatchCapacity').val(BatchCapacity);   // Update the input field
+            }
+
+          if ((TypeId == 'Demo' && BatchCapacity >= 5 && BatchName) || (TypeId != 'Demo' && BatchCapacity >= 5 && BatchName)) {
+                $('#saveButton').prop('disabled', false);
+            } else {
+                $('#saveButton').prop('disabled', true);
+            }
+        }
+
+        $('#saveButton').on('click', function (e) {
+            e.preventDefault();
+
+            if (validateForm()) {
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: "Do you want to Create this Batch?",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes, create it!'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // If user confirms, submit the form
+                        $('form').submit();
+                    }
+                });
+            }
+        });
+
+        // Event listeners for TypeId and BatchCapacity changes
+        $('#TypeId, #BatchCapacity').on('change keyup', function () {
+            toggleSaveButton();
+        });
+
+        // Initial check to set the correct state of the saveButton
+        toggleSaveButton();
+    });
+</script>
+
+<script>
+    jQuery(document).ready(function ($) {
+        $('#saveButton').on('click', function (e) {
+            e.preventDefault();
+
+            // Perform form validation here if needed
+            var BatchName = $('#BatchName').val();
+            if (!BatchName == null || BatchName === "") {
+                toastr.error('Enter Batch Name.');
+                return;
+            }
+
+            var CourseCode = $('#CourseCode').val();
+            if (!CourseCode == null || CourseCode === "") {
+                toastr.error('Please Select Course.');
+                return;
+            }
+
+            var TypeId = $('#TypeId').val();
+            if (!TypeId == null || TypeId === "") {
+                toastr.error('Please select Type Batch.');
+                return;
+            }
+
+            var BatchCapacity = $('#BatchCapacity').val();
+            if (!BatchCapacity == null || BatchCapacity === "") {
+                toastr.error('Enter Batch Capacity.');
+                return;
+            }
+
+            var TentativeBatchDate = $('#TentativeBatchDate').val();
+            if (!TentativeBatchDate == null || TentativeBatchDate === "") {
+                toastr.error('Please Select Date.');
+                return;
+            }
+
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "Do you want to Create this Batch?",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, create it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // If user confirms, submit the form
+                    $('form').submit();
+                }
+            });
+        });
+    });
+</script>
+
+
+<script>
+    function showCancelConfirmation() {
+        // Using SweetAlert for confirmation
+        Swal.fire({
+            title: 'Are you sure?',
+            //text: 'You will not be able to undo this action!',
+            icon: 'warning',
+            //showCancelButton: true,
+            confirmButtonColor: '#d33',
+            //cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Yes, cancel it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Add any form cancellation logic here if needed
+
+                // Redirect to the specified URL
+                window.location.href = '@Url.Action("MainDashboardAsyncHP", "Counsellor")';
+            }
+        });
+    }
+</script>
+
+<script>
+    $(document).ready(function () {
+        // Attach an event listener to the Batch Name input field
+        $('#BatchName').on('blur', function () {
+            var batchName = $(this).val();
+
+            // If the batch name is not empty, proceed to check it on the server
+            if (batchName) {
+                $.ajax({
+                    url: '@Url.Action("ReadbatchnameAsyncHP", "Counsellor")', // Replace 'Counsellor' with your actual controller name
+                    type: 'GET',
+                    data: { batchName: batchName },
+                    success: function (response) {
+                        if (response.success) {
+                            // Show toaster message if the batch name already exists
+                            if (response.success == "Batch Name already existed") {
+                                toastr.error(response.success);
+                                $('#saveButton').prop('disabled', true).hide(); // Disable and hide the save button
+                            } else {
+                                $('#saveButton').prop('disabled', false).show(); // Enable and show the save button
+                            }
+                        }
+                    },
+                    error: function () {
+                        toastr.error('Error checking batch name.');
+                        $('#BatchNameError').text('Error checking batch name.');
+                    }
+                });
+            } else {
+                $('#saveButton').prop('disabled', true).hide(); // Hide the save button if the batch name is empty
+            }
+        });
+
+        // Form submission event listener
+        $('#quickForm').on('submit', function (e) {
+            var batchNameError = $('#BatchNameError').text();
+            if (batchNameError) {
+                e.preventDefault(); // Prevent form submission if there's an error
+            }
+        });
+    });
+</script>

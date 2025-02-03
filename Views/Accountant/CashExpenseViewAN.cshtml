@@ -1,0 +1,398 @@
+﻿@model GSTEducationERPLibrary.Accountant.Accountant
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Animated payment display with floating bills">
+    <title>Payment Display</title>
+    <style>
+        /* CSS Reset */
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* CSS Variables */
+        :root {
+            --primary-color: #4CAF50;
+            --primary-color-dark: #3d8b40;
+            --secondary-color: #45a049;
+            --text-color: #2d3748;
+            --background-color: #f7fafc;
+            --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+            --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
+            --shadow-lg: 0 10px 30px rgba(0,0,0,0.1);
+            --transition-base: all 0.3s ease;
+            --border-radius: 15px;
+        }
+
+        /* Dark mode support */
+        @@media (prefers-color-scheme: dark) {
+            :root {
+                --text-color: #e2e8f0;
+                --background-color: #1a202c;
+            }
+
+            .container {
+                background-color: #2d3748;
+            }
+
+            .icon-container {
+                background: linear-gradient(145deg, #2d3748, #1a202c);
+            }
+
+            .amount {
+                color: #68d391;
+            }
+        }
+
+
+        .container {
+            background-color: white;
+            padding: 2rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-lg);
+            transition: var(--transition-base);
+            max-width: 400px;
+            width: 90%;
+            text-align: center;
+        }
+
+        .icon-container {
+            width: 180px;
+            height: 180px;
+            margin: 0 auto 1.25rem;
+            position: relative;
+            background: linear-gradient(145deg, #ffffff, #f0f2f5);
+            border-radius: 50%;
+            box-shadow: 20px 20px 60px rgba(209, 213, 217, 0.8), -20px -20px 60px rgba(255, 255, 255, 0.8);
+            overflow: hidden;
+            will-change: transform;
+        }
+
+        .background-glow {
+            position: absolute;
+            inset: -50%;
+            background: conic-gradient( from 0deg, transparent 0%, rgba(76, 175, 80, 0.1) 25%, rgba(76, 175, 80, 0.2) 50%, rgba(76, 175, 80, 0.1) 75%, transparent 100% );
+            animation: rotateGlow 8s linear infinite;
+        }
+
+        .bills-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80px;
+            height: 48px;
+            transform-style: preserve-3d;
+            animation: floatBills 4s ease-in-out infinite;
+        }
+
+        .bill {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border-radius: 6px;
+            transform-style: preserve-3d;
+            box-shadow: var(--shadow-md);
+            overflow: hidden;
+        }
+
+        .bill-1 {
+            transform: translateZ(0);
+        }
+
+        .bill-2 {
+            transform: translateZ(-3px) translate(-4px, -4px) rotate(3deg);
+        }
+
+        .bill-3 {
+            transform: translateZ(-6px) translate(-8px, -8px) rotate(6deg);
+        }
+
+        .bill-4 {
+            transform: translateZ(-9px) translate(-12px, -12px) rotate(9deg);
+        }
+
+        .bill::before {
+            content: '₹';
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 2rem;
+            font-weight: bold;
+        }
+
+        .amount-container {
+            margin: 1.25rem 0;
+            opacity: 0;
+            animation: slideUpFadeIn 0.2s ease-out .5s forwards;
+        }
+
+        .amount {
+            font-size: 2.25rem;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .pattern {
+            position: absolute;
+            inset: 0;
+            opacity: 0.1;
+            background-image: repeating-linear-gradient( 45deg, #fff 0px, #fff 1px, transparent 1px, transparent 6px ), repeating-linear-gradient( -45deg, #fff 0px, #fff 1px, transparent 1px, transparent 6px );
+        }
+
+        .shine {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient( 45deg, transparent 0%, rgba(255, 255, 255, 0) 35%, rgba(255, 255, 255, 0.4) 50%, rgba(255, 255, 255, 0) 65%, transparent 100% );
+            animation: shineEffect 4s ease-in-out infinite;
+        }
+
+        .button {
+            display: inline-block;
+            width: 100%;
+            padding: 0.75rem;
+            margin-top: 1.25rem;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 0.375rem;
+            font-size: 1.125rem;
+            cursor: pointer;
+            transition: var(--transition-base);
+            text-decoration: none;
+        }
+
+            .button:hover, .button:focus-visible {
+                background-color: var(--primary-color-dark);
+                transform: translateY(-2px);
+                box-shadow: var(--shadow-md);
+            }
+
+            .button:focus-visible {
+                outline: 2px solid var(--primary-color);
+                outline-offset: 2px;
+            }
+
+        /* Reduced motion preferences */
+        @@media (prefers-reduced-motion: reduce) {
+            .bills-container,
+            .background-glow,
+            .shine {
+                animation: none;
+            }
+
+            .button {
+                transform: none;
+            }
+
+            * {
+                transition-duration: 0.01ms !important;
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+            }
+        }
+
+        @@keyframes floatBills {
+            0%, 100% {
+                transform: translate(-50%, -50%) rotate(0deg) scale(1);
+            }
+
+            50% {
+                transform: translate(-50%, -65%) rotate(5deg) scale(1.05);
+            }
+        }
+
+        @@keyframes rotateGlow {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        @@keyframes shineEffect {
+            from {
+                transform: translateX(-100%) skewX(-45deg);
+                opacity: 0;
+            }
+
+            25%, 75% {
+                opacity: 1;
+            }
+
+            to {
+                transform: translateX(100%) skewX(-45deg);
+                opacity: 0;
+            }
+        }
+
+        @@keyframes slideUpFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+
+        /* Apply even faster animation to the details container */
+        .details {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        /* Define the animation for each detail-item with an even shorter delay */
+        .detail-item {
+            opacity: 0;
+            animation: fadeIn 0.5s ease-in-out forwards;
+            animation-delay: calc(var(--i) * 0.05s); /* Very short delay */
+        }
+
+        /* Animation keyframes for faster fade-in */
+        @@keyframes fadeIn {
+            0% {
+                opacity: 0;
+                transform: translateY(3px); /* Slight upward movement */
+            }
+
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Adding index for staggered effect */
+        .detail-item:nth-child(1) {
+            --i: 1;
+        }
+
+        .detail-item:nth-child(2) {
+            --i: 2;
+        }
+
+        .detail-item:nth-child(3) {
+            --i: 3;
+        }
+
+        .detail-item:nth-child(4) {
+            --i: 4;
+        }
+
+        .detail-item:nth-child(5) {
+            --i: 5;
+        }
+
+        .detail-item:nth-child(6) {
+            --i: 6;
+        }
+
+        /* Styling text for emphasis */
+        .detail-item span, .detail-item strong span {
+            font-size: 1.1em;
+            color: #333;
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="icon-container" aria-hidden="true">
+            <div class="background-glow"></div>
+            <div class="bills-container">
+                <div class="bill bill-4">
+                    <div class="pattern"></div>
+                </div>
+                <div class="bill bill-3">
+                    <div class="pattern"></div>
+                </div>
+                <div class="bill bill-2">
+                    <div class="pattern"></div>
+                </div>
+                <div class="bill bill-1">
+                    <div class="pattern"></div>
+                    <div class="shine"></div>
+                </div>
+            </div>
+        </div>
+        <div class="amount-container">
+            <div class="amount">
+                <strong> @Html.Raw("&#8377;" + String.Format("{0:N2}", @Model.Amount))</strong>
+            </div>
+        </div>
+        <div class="details">
+            <div class="detail-item">
+                <span>Paid to:</span>
+                <strong><span>@Model.VendorName</span> </strong>
+            </div>
+            <div class="detail-item">
+                <span>Paid Date:</span>
+                <strong><span>@Model.Date.ToString("dd/MM/yyyy")</span> </strong>
+            </div>
+
+            <div class="detail-item">
+                <span>Status:</span>
+                <strong><span style="color:red">@Model.Status</span> </strong>
+            </div>
+            <div class="detail-item">
+                <span>Description:</span>
+                <strong><span>@Model.Description</span> </strong>
+            </div>
+
+        </div>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const amount = @Model.Amount; // Example amount
+            const transactionId = '@Model.TransactionCode';
+            const accountNumber = 'XXXX' + Math.floor(1000 + Math.random() * 9000);
+
+            document.querySelector('.amount').textContent = '₹' + amount.toLocaleString('en-IN');
+
+            const container = document.querySelector('.container');
+            container.addEventListener('mouseenter', () => container.style.transform = 'scale(1.02)');
+            container.addEventListener('mouseleave', () => container.style.transform = 'scale(1)');
+
+            // Confetti effect
+            function createConfetti() {
+                const confetti = document.createElement('div');
+                confetti.style.position = 'absolute';
+                confetti.style.width = '10px';
+                confetti.style.height = '10px';
+                confetti.style.backgroundColor = ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff'][Math.floor(Math.random() * 5)];
+                confetti.style.left = Math.random() * window.innerWidth + 'px';
+                confetti.style.top = '-10px';
+                confetti.style.borderRadius = '50%';
+                confetti.style.opacity = Math.random();
+                document.body.appendChild(confetti);
+
+                const animation = confetti.animate([
+                    { transform: 'translateY(0) rotate(0deg)', opacity: 1 },
+                    { transform: `translateY(${window.innerHeight}px) rotate(${Math.random() * 360}deg)`, opacity: 0 }
+                ], {
+                    duration: Math.random() * 3000 + 2000,
+                    easing: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)',
+                    iterations: 1
+                });
+
+                animation.onfinish = () => document.body.removeChild(confetti);
+            }
+
+            for (let i = 0; i < 100; i++) {
+                createConfetti();
+            }
+        });
+    </script>
+</body>
+</html>
+

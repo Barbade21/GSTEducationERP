@@ -1,0 +1,145 @@
+﻿
+<style>
+    .centered-text {
+        text-align: center;
+    }
+</style>
+
+
+
+
+<div class="container">
+    <div class="row">
+
+        <!-- Stationary Fees -->
+        <div class="col-xl-3 col-lg-4 col-md-6 col-sm-12 mb-4">
+            <div class="card mb-4">
+                <div class="d-flex flex-column justify-content-between h-100">
+                    <div class="stats-box" style="width:100%">
+                        <h5 class="mb-2 fw-normal">
+                            <img src="~/Content/StudentTemplate/images/tuition (1).png" style="width: 50px; height: 50px;"> Stationary Fees
+                        </h5>
+                    </div>
+                    <div class="p-3">
+                        <div class="badge rounded-pill mb-3 fs-3 bg-primary-subtle text-primary centered-text">
+                            <canter>
+                                <span class="count" id="StationaryFeesCount">
+                                    @Html.ViewBag.StationaryFeecount1G ₹
+                                </span>
+                            </canter>
+                        </div>
+                        <span class="badge bg-primary-subtle text-primary small"> Fees in Rs.</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Event Fees -->
+        <div class="col-xl-3 col-lg-4 col-md-6 col-sm-12 mb-4">
+            <div class="card mb-4">
+                <div class="d-flex flex-column justify-content-between h-100">
+                    <div class="stats-box" style="width:100%">
+                        <h5 class="mb-2 fw-normal">
+                            <img src="~/Content/StudentTemplate/images/cost (1).png" style="width: 50px; height: 50px;"> Event Fees
+                        </h5>
+                    </div>
+                    <div class="p-3">
+                        <div class="badge rounded-pill mb-3 fs-3 bg-primary-subtle text-primary">
+                            <span class="count" id="EventFeesCount">
+                                @Html.ViewBag.EventFeesCount1G ₹
+                            </span>
+                        </div>
+                        <span class="badge bg-primary-subtle text-primary small"> Fees in Rs.</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Library Fees -->
+        <div class="col-xl-3 col-lg-4 col-md-6 col-sm-12 mb-4">
+            <div class="card mb-4">
+                <div class="d-flex flex-column justify-content-between h-100">
+                    <div class="stats-box" style="width:100%">
+                        <h5 class="mb-2 fw-normal">
+                            <img src="~/Content/StudentTemplate/images/tuition.png" style="width: 50px; height: 50px;"> Library Fees
+                        </h5>
+                    </div>
+                    <div class="p-3">
+                        <div class="badge rounded-pill mb-3 fs-3 bg-primary-subtle text-primary">
+                            <span class="count" id="LibraryFeesCount">
+                                @Html.ViewBag.LibraryFeecount1G ₹
+                            </span>
+                        </div>
+                        <span class="badge bg-primary-subtle text-primary small"> Fees in Rs.</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Exam Fees -->
+        <div class="col-xl-3 col-lg-4 col-md-6 col-sm-12 mb-4">
+            <div class="card mb-4">
+                <div class="d-flex flex-column justify-content-between h-100">
+                    <div class="stats-box" style="width:100%">
+                        <h5 class="mb-2 fw-normal">
+                            <img src="~/Content/StudentTemplate/images/examfee.png" style="width: 50px; height: 50px;"> Exam Fees
+                        </h5>
+                    </div>
+                    <div class="p-3">
+                        <div class="badge rounded-pill mb-3 fs-3 bg-primary-subtle text-primary">
+                            <span class="count" id="ExamFeesCount">
+                                @Html.ViewBag.ExamFeecount1G ₹
+                            </span>
+                        </div>
+                        <span class="badge bg-primary-subtle text-primary small"> Fees in Rs.</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Activity Fees -->
+        <div class="col-xl-3 col-lg-4 col-md-6 col-sm-12 mb-4" style="margin-left:330px">
+            <div class="card mb-4">
+                <div class="d-flex flex-column justify-content-between h-100">
+                    <div class="stats-box" style="width:100%">
+                        <h5 class="mb-2 fw-normal">
+                            <img src="~/Content/StudentTemplate/images/activityfee.png" style="width: 50px; height: 50px;"> Extra Curriculum
+                        </h5>
+                    </div>
+                    <div class="p-3">
+                        <div class="badge rounded-pill mb-3 fs-3 bg-primary-subtle text-primary">
+                            <span class="count" id="ActivityFeesCount">
+                                @Html.ViewBag.ActivityFeesCount1G ₹
+                            </span>
+                        </div>
+                        <span class="badge bg-primary-subtle text-primary small"> Fees in Rs.</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        
+        <!-- Late Fees -->
+        <div class="col-xl-3 col-lg-4 col-md-6 col-sm-12 mb-4">
+            <div class="card mb-4">
+                <div class="d-flex flex-column justify-content-between h-100">
+                    <div class="stats-box" style="width:100%">
+                        <h5 class="mb-2 fw-normal">
+                            <img src="~/Content/StudentTemplate/images/fees (1).png" /style="width: 50px; height: 50px;" />
+                             Late Fee
+                        </h5>
+                    </div>
+                    <div class="p-3">
+                        <div class="badge rounded-pill mb-3 fs-3 bg-primary-subtle text-primary">
+                            <span class="count" id="LateFeesCount">
+                                @Html.ViewBag.LateFeecount1G ₹
+                            </span>
+                        </div>
+                        <span class="badge bg-primary-subtle text-primary small"> Fees in Rs. </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>

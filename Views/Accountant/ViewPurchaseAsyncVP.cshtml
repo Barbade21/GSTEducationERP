@@ -1,0 +1,457 @@
+﻿@model GSTEducationERPLibrary.Accountant.Accountant
+@{
+    ViewBag.Title = "View purchase invoice";
+    var currency = Html.Raw(ViewBag.Currency);
+    var mode = ViewBag.Mode;
+    var lsttransaction = ViewBag.transactionList;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Purchase | Invoice</title>
+    <!-- Font Awesome-->
+    <link rel="stylesheet" href="~/Content/plugins/fontawesome-free/css/all.min.css">
+    <!-- Theme style -->
+    @*<link rel="stylesheet" href="~/Content/dist/css/adminlte.min.css">*@
+    <style>
+        a {
+            color: #33CCCC;
+        }
+
+        h2 {
+            padding-top: 10px;
+            margin-bottom: 10px;
+            font-family: Verdana;
+            font-weight: bold;
+            font-size: medium;
+            color: #33CCCC;
+            align-content: center;
+            text-align: center;
+        }
+
+        .invoice-col {
+            padding-right: 2vw;
+        }
+
+        @@media print {
+            body {
+                width: 210mm;
+                height: 297mm;
+                margin: 0;
+                padding: 0;
+                /*color-adjust: exact;
+                */
+            }
+
+            .invoice {
+                padding: 10mm;
+                width: 100%;
+            }
+
+            .table {
+                width: 100%;
+                margin-bottom: 10px;
+                font-size: 12px;
+            }
+            /* Hide the print button in print mode */
+            #printButton, .back-link, video {
+                display: none;
+            }
+            /* Align header and footer for A4 */
+            h4, h2 {
+                text-align: center;
+            }
+
+            .invoice-info {
+                margin-bottom: 20px;
+            }
+
+            .card-title {
+                margin-top: 20px;
+            }
+
+            .card {
+                margin-bottom: 10mm;
+            }
+            /* Optional: Adjust the table font size for readability */
+            .table th, .table td {
+                font-size: 12px;
+            }
+            /* Ensure no page breaks within table rows */
+            tr {
+                page-break-inside: avoid;
+            }
+            /* Hide the URL on the print page */
+            a[href^="http://localhost"], a[href^="https://localhost"] {
+                display: none !important;
+            }
+            /* Optionally, hide any unwanted URLs */
+            a[href^="/Accountant/ViewPurchaseAsyncVP"] {
+                display: none !important;
+            }
+            /* Hide the footer for this view */
+            footer {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <form id="ViewPurchaseFormAsyncVP">
+        <div class="invoice p-3 mb-3">
+            <!-- title row -->
+            <div class="row">
+                <div class="col-12">
+                    <h4 style="text-align:center">
+                        <img src="~/Content/Admin/img/@ViewBag.Logo " height="45" />
+                        @ViewBag.ClientName
+                        @*<small class="float-right">Date: @ViewBag.TransactionDate</small>*@
+                    </h4>
+                </div>
+                <!-- /.col -->
+            </div>
+            <!-- info row -->
+            <div class="row invoice-info">
+                <div class="col-sm-4 invoice-col">
+                    From
+                    <address>
+                        <strong>@ViewBag.BranchName,</strong><br>
+                        @*@ViewBag.BranchCity<br>*@
+                        @ViewBag.BranchAddress,<br>
+                        Phone: @ViewBag.BranchContact,<br>
+                        Email-Id:@ViewBag.BranchEmailId.
+                    </address>
+                </div>
+                <!-- /.col -->
+                <div class="col-sm-4 invoice-col">
+                    To
+                    <address>
+                        <strong>@ViewBag.VendorName,</strong><br>
+                        @ViewBag.VendorCity,<br>
+                        @ViewBag.VendorAddress,<br>
+                        Phone: @ViewBag.VendorNo,<br>
+                        Email: @ViewBag.VendorMail.
+                    </address>
+                </div>
+                <!-- /.col -->
+                <div class="col-sm-4 invoice-col">
+                    <b>Purchase Code : </b>@ViewBag.TransactionCode<br>
+                    <b>Bill No :</b> @ViewBag.BillNumber<br>
+                    <b>Payment Date:</b> @ViewBag.TransactionDate<br>
+                    @* <b>Account:</b> 968-34567*@
+                </div>
+                <!-- /.col -->
+            </div>
+            <!-- /.row -->
+            <!-- Table row -->
+            <div class="row">
+                <div class="col-12 table-responsive">
+                    <table class="table table-striped" id="tblPurchasedItem">
+                        <thead>
+                            <tr>
+                                <th>Item Name</th>
+                                <th>Quantity (units)</th>
+                                <th>Unit Price (@currency)</th>
+                                <th class="discount">Discount(%)</th>
+                                <th class="discount">Discount Amount (@currency)</th>
+                                <th class="tax">Tax(%)</th>
+                                <th class="tax">Tax Amount (@currency)</th>
+                                <th>Total Price (@currency)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model != null && Model.lstPurchaseItemVP != null)
+                            {
+                                for (int i = 0; i < Model.lstPurchaseItemVP.Count; i++)
+                                {
+                                    var item = Model.lstPurchaseItemVP[i];
+                                    <tr>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.ItemName)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.Quantity)
+                                        </td>
+
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.UnitPrice)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.Discount)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.Balance)<!--this is discounted price-->
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.Tax)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.AppliedTax)<!--this is applied tax amount calculation -->
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.TransactionAmount)<!--this is total amount for the total item price-->
+                                        </td>
+                                    </tr>
+
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+                <!-- /.col -->
+            </div>
+            <!-- /.row -->
+
+            <div class="row">
+                <!-- accepted payments column -->
+                <div class="col-6">
+
+                   
+                    <p class="lead">Description :</p>
+                    <p class="text-muted well well-sm shadow-none" style="margin-top: 10px;">
+                        @ViewBag.Description
+                    </p>
+                </div>
+                <!-- /.col -->
+                <div class="col-6">
+
+                    <div class="table-responsive">
+                        <table class="table">
+                            <tr>
+                                <th style="width:50%">Subtotal:</th>
+                                <td>@Html.Raw(@currency) <span class="lblsubtotalAmount"></span></td>
+                            </tr>
+                            <tr>
+                                <th>Discount :</th>
+                                <td>@Html.Raw(@currency) <span class="lbldiscountedAmount"></span></td>
+                            </tr>
+                            <tr>
+                                <th>Tax :</th>
+                                <td>@Html.Raw(@currency) <span class="lbltaxAmount"></span></td>
+                            </tr>
+                            <tr>
+                                <th>Total:</th>
+                                <td>@Html.Raw(@currency) <strong><span class="lbltotalAmount"></span></strong></td>
+                            </tr>
+                        </table>
+                    </div>
+
+                </div>
+                <!-- /.col -->
+            </div>
+            <div class="row" style="padding:0 10px 0 10px">
+                <label style="font-weight: 500;">Amount in words : </label> <strong><span id="amountinword"> </span></strong>
+            </div>
+            <!-- for print button -->
+            <div class="row">
+                <div class="col-md-11">
+                    <strong>Terms and Conditions :</strong><br />
+                    <span class="text-danger"><em>1. This is a system-generated slip.</em></span><br />
+                    <span class="text-danger"><em>2. Reproduction or unauthorized use of this document is prohibited and may be subject to legal action.</em></span><br />
+                    <span class="text-danger"><em>3. This slip is for informational purposes only and is issued under @ViewBag.ClientName's standard policies and guidelines.</em></span><br />
+                </div>
+                <div class="col-1 text-right">
+                    <button type="button" class="btn btn-primary" id="printButton">
+                        <i class="fa fa-print"></i> Print
+                    </button>
+                </div>
+            </div>
+        </div>
+        <!--div for transactions here -->
+        <div class="card" id="divtransaction">
+            <!--show the transactions in table -->
+            <div class="card-title">
+                <h2>
+                    Payment voucher
+                </h2>
+            </div>
+            <hr />
+            <div class="card-body">
+                <table class="table" id="tbltransactions">
+                    <thead>
+                        <tr>
+                            <th>Date </th>
+                            <th>Voucher Code</th>
+                            <th>Payment Mode</th>
+                            <th>TransactionId/Cheque No.</th>
+                            <th hidden>Cheque Date</th>
+                            <th hidden>Cheque Clearence Date</th>
+                            <th>Total Amount (@currency)</th>
+
+                            <th>Paid (@currency)</th>
+                            <th>Remaning(@currency)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </form>
+    <!--scripts here-->
+    <script src="~/Content/plugins/jquery/jquery.min.js"></script>
+    <!--scripts for pdf-->
+    <script src="~/Content/plugins/pdfmake/pdfmake.js"></script>
+    <script src="~/Content/plugins/pdfmake/pdfmake.min.js"></script>
+    <script src="~/Content/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            // Function to calculate the totals
+            function calculateTotals() {
+                debugger;
+                let discountTotal = 0; // Total of all discounts
+                let taxTotal = 0;      // Total of all taxes
+                let transactionTotal = 0; // Total of all transaction amounts
+                let subtotal = 0;      // Subtotal of all row prices (before discounts)
+
+                $('#tblPurchasedItem tbody tr').each(function () {
+                    debugger;
+                    // Fetch values directly from the table
+                    let unit = parseFloat($(this).find('td:eq(1)').text().trim()) || 0; // Quantity
+                    let price = parseFloat($(this).find('td:eq(2)').text().trim()) || 0; // Unit Price
+                    let discountAmount = parseFloat($(this).find('td:eq(4)').text().trim()) || 0; // Discount Amount
+                    let taxAmount = parseFloat($(this).find('td:eq(6)').text().trim()) || 0; // Tax Amount
+                    let transactionAmount = parseFloat($(this).find('td:eq(7)').text().trim()) || 0; // Total Price
+
+                    let rowSubtotal = unit * price;
+
+                    subtotal += rowSubtotal;          // Sum of all subtotals
+                    discountTotal += discountAmount; // Sum of all discounts
+                    taxTotal += taxAmount;           // Sum of all taxes
+                    transactionTotal += transactionAmount; // Sum of all total prices
+                });
+
+                // Update the summary labels with calculated totals
+                $('.lbldiscountedAmount').text(discountTotal.toFixed(2));  // Total discount
+                $('.lbltaxAmount').text(taxTotal.toFixed(2));              // Total tax
+                $('.lblsubtotalAmount').text(subtotal.toFixed(2));         // Subtotal before discounts
+                $('.lbltotalAmount').text(transactionTotal.toFixed(2));    // Final transaction total
+            }
+
+
+            calculateTotals();
+        });
+    </script>
+    <!--script for the print button-->
+    <script>
+        $(document).ready(function () {
+            $('#printButton').on('click', function () {
+                window.print();
+            });
+        });
+    </script>
+    <!--script for table of transaction-->
+    <script>
+        $(document).ready(function () {
+            var transactionList = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(ViewBag.transactionList));
+            var currency = "@currency";
+
+            function formatDate(dateString) {
+                var date = new Date(dateString);
+                var day = ("0" + date.getDate()).slice(-2);
+                var month = ("0" + (date.getMonth() + 1)).slice(-2);
+                var year = date.getFullYear();
+                return `${day}-${month}-${year}`;
+            }
+
+            function addTransactionRows(transactionList) {
+                var tbody = $('#tbltransactions tbody');
+                tbody.empty();
+
+                var totalAmount = parseFloat($('.lbltotalAmount').text()) || 0;
+                var remainingAmount = totalAmount;
+
+                if (transactionList && transactionList.length > 0) {
+                    transactionList.forEach(function (item) {
+                        remainingAmount -= item.TransactionAmount;
+                        remainingAmount < 0 ? remainingAmount = 0 : remainingAmount;
+                        var row = '<tr>' +
+                            '<td>' + formatDate(item.TransactionDate) + '</td>' +
+                            '<td>' + item.VoucherCode + '</td>' +
+                            '<td>' + item.PaymentMode + '</td>' +
+                            '<td>' + (item.TranId_CheqNo || '') + '</td>' +
+                            '<td hidden>' + (item.ChequeDate ? formatDate(item.ChequeDate) : '') + '</td>' +
+                            '<td hidden>' + (item.ChequeClearenceDate ? formatDate(item.ChequeClearenceDate) : '') + '</td>' +
+                            '<td>' + totalAmount.toFixed(2) + '</td>' +
+                            '<td>' + item.TransactionAmount.toFixed(2) + '</td>' +
+                            '<td>' + remainingAmount.toFixed(2) + '</td>' +
+                            '</tr>';
+
+                        tbody.append(row);
+                    });
+                } else {
+                    tbody.append('<tr><td colspan="9">No data found...</td></tr>');
+                }
+            }
+
+            addTransactionRows(transactionList);
+        });
+    </script>
+    @*script for the converting the amount into words*@
+    <script>
+        function numberToWords(num) {
+            if (num === 0) return "Zero";
+
+            const belowTwenty = [
+                "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten",
+                "eleven", "twelve", "thirteen", "fourteen", "fifteen", "sixteen", "seventeen",
+                "eighteen", "nineteen"
+            ];
+            const tens = [
+                "", "", "twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eighty", "ninety"
+            ];
+            const thousands = ["", "Thousand", "Million", "Billion"];
+
+            let word = "";
+            let place = 0;
+
+            function convertChunk(num) {
+                let chunkWord = "";
+                if (num >= 100) {
+                    chunkWord += belowTwenty[Math.floor(num / 100) - 1] + " hundred ";
+                    num %= 100;
+                }
+                if (num >= 20) {
+                    chunkWord += tens[Math.floor(num / 10)] + " ";
+                    num %= 10;
+                }
+                if (num > 0) {
+                    chunkWord += belowTwenty[num - 1] + " ";
+                }
+                return chunkWord.trim();
+            }
+
+            while (num > 0) {
+                const chunk = num % 1000;
+                if (chunk > 0) {
+                    word = convertChunk(chunk) + " " + thousands[place] + " " + word;
+                }
+                num = Math.floor(num / 1000);
+                place++;
+            }
+
+            return word.trim();
+        }
+
+        function toPascalCase(str) {
+            return str
+                .split(" ")
+                .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+                .join(" ");
+        }
+
+        $(document).ready(function () {
+            const totalAmount = parseInt($(".lbltotalAmount").text());
+
+            const amountInWords = toPascalCase(numberToWords(totalAmount)) + " Rupees Only";
+
+            $("#amountinword").text(amountInWords);
+        });
+    </script>
+
+</body>
+</html>

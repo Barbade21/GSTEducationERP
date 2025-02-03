@@ -1,0 +1,148 @@
+﻿@model GSTEducationERPLibrary.Accountant.Accountant
+@using System.Globalization
+
+<html>
+<head>
+    <link href="~/Content/Admin/css/UI.css" rel="stylesheet" />
+    <style>
+        .modal-header .close {
+            font-size: 2.5rem;
+            padding: 15px;
+            transition: color 0.3s;
+        }
+
+            .modal-header .close:hover {
+                color: red;
+            }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <div class="card-body">
+            <table id="ShortlistedStudents" class="table table-bordered table-striped">
+                <thead>
+
+                    
+                   @{
+                       int month = Convert.ToInt32( Session["QueryMonth"]);
+
+                       int year = Convert.ToInt32(Session["QueryYear"]);
+
+                    }
+                    <tr>
+                        <th>Staff Name</th>
+                        @for (int day = 1; day <= DateTime.DaysInMonth(year,month); day++)
+                        {
+                            <th>@day</th>
+                        }
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="staffListBody">
+                    @if (Model != null && Model.lstAllEmpAttendance != null)
+                    {
+                        var groupedByStaff = Model.lstAllEmpAttendance.GroupBy(a => a.StaffName).ToList();
+                        foreach (var staffGroup in groupedByStaff)
+                        {
+                            <tr>
+                                <td>@Html.DisplayFor(modelItem => staffGroup.Key)</td>
+                                @for (int day = 1; day <= DateTime.DaysInMonth(year, month); day++)
+                                {
+                                    var attendance = staffGroup.FirstOrDefault(a =>
+                                    {
+                                        DateTime date;
+                                        bool isValidDate = DateTime.TryParseExact(a.DateS, "dd/MM/yyyy", null, System.Globalization.DateTimeStyles.None, out date);
+                                        return isValidDate && date.Day == day;
+                                    });
+
+                                    string status = "S";
+                                    if (attendance != null)
+                                    {
+                                        switch (attendance.Status)
+                                        {
+                                            case "Present":
+                                                status = "P";
+                                                break;
+                                            case "Half Day":
+                                                status = "HD";
+                                                break;
+                                            case "Leave":
+                                                status = "L";
+                                                break;
+                                            case "Absent":
+                                                status = "A";
+                                                break;
+                                            case "Late Mark":
+                                                status = "LM";
+                                                break;
+                                            case "Holiday":
+                                                status = "H";
+                                                break;
+                                            case "Mispunch":
+                                                status = "M";
+                                                break;
+                                            case "Early Leave":
+                                                status = "EL";
+                                                break;
+                                        }
+                                    }
+
+                                    <td>
+                                        @if (status == "P")
+                                        {
+                                            <span class="text-green text-bold">@status</span>
+                                        }
+                                        else if (status == "HD")
+                                        {
+                                            <span class="badge bg-warning">@status</span>
+                                        }
+                                        else if (status == "L")
+                                        {
+                                            <span class="badge bg-info">@status</span>
+                                        }
+                                        else if (status == "A")
+                                        {
+                                            <span class="text-danger text-bold">@status</span>
+                                        }
+                                        else if (status == "LM")
+                                        {
+                                            <span class="badge bg-warning">@status</span>
+                                        }
+                                        else if (status == "H")
+                                        {
+                                            <span class="badge bg-purple">@status</span> <!-- Updated color for "H" -->
+                                        }
+                                        else if (status == "M")
+                                        {
+                                            <span class="badge bg-secondary">@status</span>
+                                        }
+                                        else if (status == "EL")
+                                        {
+                                            <span class="badge bg-warning">@status</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-blue">@status</span>
+                                        }
+                                    </td>
+
+                                }
+                                <td style="text-align: center;">
+                                    <a href="@Url.Action("GetPersonalAttendanceAsyncJY", "Accountant", new { StaffCode = staffGroup.First().StaffCode, month = Session["QueryMonth"], year = Session["QueryYear"], Breadcrumbs="FromSalaryPayRoll" })" class="icon" title="View">
+                                        <video width="25" height="25" playsinline loop>
+                                            <source src="~/Content/Admin/icon/view.mp4" type="video/mp4" />
+                                        </video>
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script src="~/Content/plugins/jquery/jquery.min.js" type="text/javascript"></script>
+    <script src="~/Content/plugins/bootstrap/js/bootstrap.bundle.min.js" type="text/javascript"></script>
+</body>
+</html>

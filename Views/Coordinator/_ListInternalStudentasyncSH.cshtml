@@ -1,0 +1,502 @@
+@model GSTEducationERPLibrary.Coordinator.Coordinator
+
+<!DOCTYPE html>
+<html>
+<head>
+    <link href="~/Content/Admin/css/UI.css" rel="stylesheet" />
+    <link href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css" rel="stylesheet" />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <style>
+        .custom-modal-size {
+            max-width: 90%; /* Adjust the percentage as needed */
+            width: auto; /* Ensure it adapts to the content */
+        }
+
+        
+        .progress-container {
+            display: flex;
+            width: 100%;
+            height: 25px;
+            background-color: #f3f3f3;
+            border-radius: 5px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-bar {
+            display: flex;
+            height: 100%;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            transition: width 0.6s ease;
+        }
+
+            .progress-bar.completed {
+                background-color: #4caf50;
+            }
+
+            .progress-bar.pending {
+                background-color: #e0e0e0;
+            }
+
+        .progress-step {
+            flex: 1;
+            border-right: 1px solid white;
+        }
+
+            .progress-step:last-child {
+                border-right: none;
+            }
+
+        .progress-bar.overdue {
+            background-color: #f44336;
+        }
+    </style>
+</head>
+<body>
+    <div class="card-body">
+        <div class="col-4">
+            <div class="row justify-content-center">
+                <div class="col-auto">
+                    <div class="form-group">
+                        <!-- This section is commented out; ensure it is intentional -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <table id="StudentList" class="table table-bordered table-striped">
+        <thead>
+            <tr>
+                <th hidden>
+                    @Html.DisplayNameFor(model => model.StudetCode)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.StudentName)
+                </th>
+                <th>
+                    Contact
+                </th>
+                <th>
+                    Email
+                </th>
+                <th hidden>
+                    Course
+                </th>
+                <th>
+                    Batch
+                </th>
+                <th hidden>
+                    Course Fee
+                </th>
+                <th hidden>
+                    Registration Fee
+                </th>
+                <th hidden>
+                    Discount
+                </th>
+                <th>
+                    Total Fees
+                </th>
+                <th>
+                    Paid Fees
+                </th>
+                <th>
+                    Remaining Fees
+                </th>
+                <th>
+                    Installment Amount
+                </th>
+                <th>
+                    Last Paid Date
+                </th>
+                <th>
+                    Next Installment Date
+                </th>
+                <th hidden>
+                    Student Type
+                </th>
+                <th hidden>
+                    Branch Address
+                </th>
+                <th>
+                    Payment Progress
+                </th>
+                <th>
+                    Fee Status
+                </th>
+                <th>
+                    Action
+                </th>
+
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model != null && Model.lstStudentFees != null)
+            {
+                for (int i = 0; i < Model.lstStudentFees.Count; i++)
+                {
+                    var item = Model.lstStudentFees[i];
+                    <tr>
+                        <td hidden>
+                            @Html.HiddenFor(modelItem => item.StudetCode)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.StudentName)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Contact)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Email)
+                        </td>
+                        <td hidden>
+                            @Html.DisplayFor(modelItem => item.Course)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Batch)
+                        </td>
+                        <td hidden>
+                            ₹ @Html.DisplayFor(modelItem => item.CourseFee).00
+                        </td>
+                        <td hidden>
+                            ₹ @Html.DisplayFor(modelItem => item.RegistrationFee).00
+                        </td>
+                        <td hidden>
+                            @Html.DisplayFor(modelItem => item.Discount)
+                        </td>
+                        <td>
+                            ₹ @Html.DisplayFor(modelItem => item.TotalFeesSH).00
+                        </td>
+                        <td>
+                            ₹ @Html.DisplayFor(modelItem => item.PaidFees).00
+                        </td>
+                        <td>
+                            ₹ @Html.DisplayFor(modelItem => item.RemainingFees).00
+                        </td>
+                        <td>
+                            ₹ @Html.DisplayFor(modelItem => item.InstallmentAmount).00
+                        </td>
+                        <td>
+                            @((item.LastInstallmentDate == DateTime.MinValue) ? "Not Available" : item.LastInstallmentDate.ToString("dd-MM-yyyy"))
+                        </td>
+                        @*<td>
+                                @((item.NextInstallmentDate == DateTime.MinValue) ? "All Installments Paid" : item.NextInstallmentDate.ToString("dd-MM-yyyy"))
+                            </td>*@
+                        <td>
+                            @Html.DisplayFor(modelItem => item.NextInstallmentDates)
+                        </td>
+                        <td hidden>
+                            @Html.DisplayFor(modelItem => item.StudentType)
+                        </td>
+                        <td hidden>
+                            @Html.DisplayFor(modelItem => item.BranchAddress)
+                        </td>
+
+                        <td>
+                            <div class="progress-container">
+                                @{
+                                    var totalInstallments = item.NoOfInstallments;
+                                    var paidInstallments = item.InstallmentNo; // Use Math.Floor to get integer part
+                                    DateTime nextInstallmentDate = item.NextInstallmentDate; // Directly use the DateTime
+                                    var currentDate = DateTime.Now;
+
+                                    // Check if nextInstallmentDate is valid (not default) and compare
+                                    bool isValidDate = nextInstallmentDate != default(DateTime);
+                                }
+                                @for (int j = 0; j < totalInstallments; j++)
+                                {
+                                    var stepClass = "";
+
+                                    if (j < paidInstallments)
+                                    {
+                                        // If it's a paid installment, mark it as completed
+                                        stepClass = "progress-bar completed progress-step";
+                                    }
+                                    else if (j == paidInstallments && isValidDate && nextInstallmentDate < currentDate)
+                                    {
+                                        // If it's the next unpaid installment and it's overdue, mark it as overdue
+                                        stepClass = "progress-bar overdue progress-step";
+                                    }
+                                    else
+                                    {
+                                        // If it's not paid and not overdue, mark it as pending
+                                        stepClass = "progress-bar pending progress-step";
+                                    }
+
+                                    <div class="@stepClass">@Html.Raw(j + 1)</div>
+                                }
+                            </div>
+
+
+                        </td>
+                        <td>
+                            @if (item.Status == "Completed")
+                            {
+                                <span class="badge bg-success">@Html.DisplayFor(modelItem => item.Status)</span>
+                            }
+                            @if (item.Status == "Pending")
+                            {
+                                <span class="badge bg-orange">@Html.DisplayFor(modelItem => item.Status)</span>
+                            }
+                            @if (item.Status == "Not Paid")
+                            {
+                                <span class="badge bg-red">@Html.DisplayFor(modelItem => item.Status)</span>
+                            }
+                        </td>
+                        <td>
+
+
+                            @*<a class="icon submit-row" data-student-code="@item.StudetCode" title="Add performance">
+                                    <video width="25" height="25" playsinline loop>
+                                        <source src="~/Content/Admin/icon/add.mp4" type="video/mp4" />
+                                    </video>
+                                </a>*@
+
+                            @if (item.RemainingFees != 0)
+                            {
+                                <a class="icon submit-row" data-student-code="@item.StudetCode" title="Add performance">
+                                    <video width="25" height="25" playsinline loop>
+                                        <source src="~/Content/Admin/icon/add.mp4" type="video/mp4" />
+                                    </video>
+                                </a>
+                            }
+
+
+                            @*<a href="#" id="ViewFees" class="icon" data-id="@item.StudetCode" data-action="@Url.Action("ViewFeeFollowupDetailsAsyncRs", "Coordinator", new { StudentId = item.StudetCode })"
+                               data-toggle="modal" data-target="#PerformanceModal" title="View performance">
+                                <video width="25" height="25" playsinline loop>
+                                    <source src="~/Content/Admin/icon/view.mp4" type="video/mp4">
+                                </video>
+                            </a>*@
+                        </td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+
+
+
+
+
+
+    <div class="modal fade" id="PerformanceModal" tabindex="-1" role="dialog" aria-labelledby="PerformanceModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="PerformanceModalLabel">Performance Details</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+     Modal content will be loaded here via AJAX 
+    </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+
+
+
+    <script src="~/Content/plugins/jquery/jquery.min.js" type="text/javascript"></script>
+    <script src="~/Content/plugins/bootstrap/js/bootstrap.bundle.min.js" type="text/javascript"></script>
+    <script src="~/Content/Admin/js/Icon.js"></script>
+    <script src="~/Content/plugins/jquery/jquery.min.js" type="text/javascript"></script>
+    <script src="~/Content/plugins/bootstrap/js/bootstrap.bundle.min.js" type="text/javascript"></script>
+    <script src="~/Content/plugins/datatables/jquery.dataTables.min.js" type="text/javascript"></script>
+    <script src="~/Content/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js" type="text/javascript"></script>
+    <script src="~/Content/plugins/datatables-responsive/js/dataTables.responsive.min.js" type="text/javascript"></script>
+    <script src="~/Content/plugins/datatables-responsive/js/responsive.bootstrap4.min.js" type="text/javascript"></script>
+    <script src="~/Content/plugins/datatables-buttons/js/dataTables.buttons.min.js" type="text/javascript"></script>
+    <script src="~/Content/plugins/datatables-buttons/js/buttons.bootstrap4.min.js" type="text/javascript"></script>
+    <script src="~/Content/plugins/jszip/jszip.min.js" type="text/javascript"></script>
+    <script src="~/Content/plugins/pdfmake/pdfmake.min.js" type="text/javascript"></script>
+    <script src="~/Content/plugins/pdfmake/vfs_fonts.js" type="text/javascript"></script>
+    <script src="~/Content/plugins/datatables-buttons/js/buttons.html5.min.js" type="text/javascript"></script>
+    <script src="~/Content/plugins/datatables-buttons/js/buttons.print.min.js" type="text/javascript"></script>
+    <script src="~/Content/plugins/datatables-buttons/js/buttons.colVis.min.js" type="text/javascript"></script>
+
+    <script>
+        $(document).ready(function () {
+            // Function to close the modal
+            function closeModal() {
+                $('#resultModal').modal('hide');
+            }
+
+            // Event listener for the Cancel button
+            $('#resultModal').on('click', '#btnCancel', function () {
+                closeModal();
+            });
+
+            // Alternatively, you can use the following approach
+            // $('#btnCancel').on('click', function () {
+            //     closeModal();
+            // });
+        });
+        $.ajax({
+            url: url,
+            type: 'GET',
+            success: function (response) {
+                $('#InternalStudents').html(response);
+
+                var table = $('#StudentList table').DataTable({
+                    "responsive": true,
+                    "lengthChange": false,
+                    "autoWidth": false,
+                    "stateSave": true,
+                    "dom": 'Bfrtip',
+                    "buttons": [
+                        { extend: 'copy', text: '<img src="/Content/Admin/icon/copy.png" title="Copy" alt="Copy" height="20" width="20" />', titleAttr: 'Copy' },
+                        { extend: 'csv', text: '<img src="/Content/Admin/icon/csv.jpg" title="CSV" alt="CSV" height="20" width="20" />', titleAttr: 'CSV' },
+                        { extend: 'excel', text: '<img src="/Content/Admin/icon/xls-file.png" title="xls" alt="xls" height="20" width="20" />', titleAttr: 'Excel' },
+                        { extend: 'pdf', text: '<img src="/Content/Admin/icon/pdf-file.png" title="pdf" alt="pdf" height="20" width="20" />', titleAttr: 'PDF' },
+                        { extend: 'print', text: '<img src="/Content/Admin/icon/printer.png" title="printer" alt="printer" height="20" width="20" />', titleAttr: 'Print' },
+                        { extend: 'colvis', text: '<img src="/Content/Admin/icon/column.jpg" title="column" alt="column" height="20" width="20" />', titleAttr: 'Columns' }
+                    ]
+                });
+
+                table.buttons().container().appendTo('#StudentList .col-md-6:eq(0)');
+            },
+            error: function (xhr, status, error) {
+                console.error('AJAX Error:', status, error);
+            }
+        });
+    </script>
+
+
+
+
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+
+
+
+
+    <script>
+        jQuery(document).on('click', '#ViewFees', function (e) {
+            e.preventDefault();
+            debugger
+            var studentCode = jQuery(this).data('id');
+            var actionUrl = jQuery(this).data('action');
+
+            jQuery.ajax({
+                url: '@Url.Action("ViewFeeFollowupDetailsAsyncRs", "Coordinator")',
+                type: 'GET',
+                data: { StudentId: studentCode },
+                success: function (response) {
+                    jQuery('#PerformanceModal .modal-body').html(response);
+                    jQuery('#PerformanceModal').modal('show');
+                },
+                error: function () {
+                    alert('Failed to load modal content.');
+                }
+            });
+        });
+    </script>
+
+
+
+    <script>
+     $(document).ready(function () {
+    $(document).on("click", ".submit-row", function () {
+        var studentCode = $(this).data("student-code");
+        var row = $(this).closest("tr");
+
+
+
+        // Convert the string to a Date object
+       // let nextInstallmentDate = new Date(nextInstallmentDateText);
+       debugger
+        var data = {
+            StudentCode: studentCode,
+            FullName: row.find("td:eq(1)").text().trim(),
+            ContactNumber: row.find("td:eq(2)").text().trim(),
+            EmailId: row.find("td:eq(3)").text().trim(),
+            CourseName: row.find("td:eq(4)").text().trim(),
+            CourseFee: parseFloat(row.find("td:eq(6)").text().replace("₹", "").trim()) || 0.0,
+            RemainingFee: parseFloat(row.find("td:eq(11)").text().replace("₹", "").trim()) || 0.0,
+            InstallmentAmount: parseFloat(row.find("td:eq(12)").text().replace("₹", "").trim()) || 0.0,
+            NextInstallmentDate: row.find("td:eq(14)").text().trim(),
+        };
+
+        console.log("Data to be sent:", data);
+
+        $.ajax({
+            url: '@Url.Action("AddFeeFollowUpDetailsAsyncRS", "Coordinator")',
+            type: "GET",
+            data: data,
+            success: function (response) {
+                $("#PerformanceModal .modal-content").html(response);
+                $("#PerformanceModal").modal("show");
+            },
+            error: function (xhr) {
+                console.error("Error loading modal content:", xhr.responseText);
+                alert("Failed to load modal content.");
+            }
+        });
+    });
+});
+    </script>
+
+    <script>
+$(document).ready(function () {
+    function submitData(StudetCode) {
+        console.log("submitData function called with candidateCode:", StudetCode);
+
+        // Find the corresponding table row
+        var row = $("a[onclick=\"submitData('" + StudetCode + "')\"]").closest("tr");
+
+        // Extract data from the table row
+        var data = {
+            candidateCode: StudetCode,
+            name: row.find("td:eq(1)").text().trim(),
+            courseName: row.find("td:eq(4)").text().trim(),
+            batch: row.find("td:eq(5)").text().trim(),
+            courseFee: parseFloat(row.find("td:eq(6)").text().replace("₹", "").trim()) || 0.0,
+            DiscountPercentage: row.find("td:eq(8)").text().trim(),
+            totalFees: parseFloat(row.find("td:eq(9)").text().replace("₹", "").trim()) || 0.0,
+            totalPaid: parseFloat(row.find("td:eq(10)").text().replace("₹", "").trim()) || 0.0,
+            remainingFees: parseFloat(row.find("td:eq(11)").text().replace("₹", "").trim()) || 0.0,
+            installmentAmount: parseFloat(row.find("td:eq(12)").text().replace("₹", "").trim()) || 0.0,
+            installmentDate: row.find("td:eq(14)").text().trim(),
+            studentType: row.find("td:eq(15)").text().trim(),
+            BranchAddress: row.find("td:eq(16)").text().trim(),
+        };
+
+        console.log("Data to be sent:", data);
+
+        // Validation: Check if totalPaid >= totalFees
+        if (data.totalPaid >= data.totalFees) {
+            // Show error toaster using Toastr
+            toastr.error("Fee is already completed.");
+            return; // Stop execution if validation fails
+        }
+
+        // Create the query string parameters
+        var queryString = $.param(data);
+
+        // Redirect to the action method
+        window.location.href = '@Url.Action("StudentCollectFeeAsyncAD", "Accountant")' + '?' + queryString;
+    }
+
+    window.submitData = submitData;
+});
+    </script>
+
+
+
+
+
+</body>
+</html>

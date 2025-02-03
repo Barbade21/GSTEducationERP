@@ -1,0 +1,403 @@
+﻿@model GSTEducationERPLibrary.Accountant.Accountant
+@{
+    var currency = Html.Raw(ViewBag.Currency);
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Match Voucher</title>
+    <!-- Select2 CSS -->
+    <link href="~/Content/plugins/select2/css/select2.min.css" rel="stylesheet" />
+    <link href="~/Content/plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css" rel="stylesheet" />
+
+    <!-- Select2 JS -->
+    <script src="~/Content/plugins/select2/js/select2.full.min.js"></script>
+    <style>
+        h2 {
+            padding-top: 10px;
+            margin-bottom: 10px;
+            font-family: Verdana;
+            font-weight: bold;
+            font-size: medium;
+            color: #33CCCC;
+        }
+
+        .select2-container .select2-selection--single {
+            height: 38px !important;
+        }
+
+        .select2 select2-container select2-container--default select2-container--below select2-container--focus {
+            width: 100% !important;
+            font-size: medium !important;
+        }
+        .select2-container--default .select2-selection--multiple .select2-selection__choice {
+            background-color: #33CCCC; 
+            color: white; 
+        }
+            .select2-container--default .select2-selection--multiple .select2-selection__choice:hover {
+                background-color: darkviolet; 
+                color: white;
+            }
+    </style>
+</head>
+<body>
+    <div class="card" style="margin:0px;">
+        <div class="card-header">
+            <h2 class="card-title">Match Transaction</h2>
+        </div>
+
+        <div class="card-body">
+            <div class="row">
+                <div class="input-group">
+                    <label for="TransactionCode" class="form-check-control col-md-4">Purchase no. :</label>
+                    @Html.EditorFor(model => model.TransactionCode, new { htmlAttributes = new { @class = "form-control col-md-7", @readonly = "true" } })
+
+                </div>
+            </div>
+            <br />
+            <div class="row">
+                <div class="input-group">
+                    <label for="VendorName" class="control-label col-md-4">Vendor Name :</label>
+                    @Html.EditorFor(model => model.VendorName, "Vendor Name :", new { htmlAttributes = new { @class = "form-control col-md-7", @readonly = "true" } })
+
+                </div>
+            </div>
+            <br />
+            <div class="row">
+                <div class="input-group">
+                    <label for="Amount" class="form-check-control col-md-4">Amount to pay :</label>
+                    <div class="input-group-prepend ">
+                        <span class="input-group-text">
+                            <i class="fas fa-rupee-sign"></i>
+                        </span>
+                    </div>
+                    @Html.EditorFor(model => model.Amount, new { htmlAttributes = new { @class = "form-control col-md-6", @readonly = "true" } })
+
+                </div>
+            </div>
+            <br />
+            <div class="container">
+                <div class="row">
+                    <input type="hidden" id="Context" value="matchVoucher" /> <!-- Set to "voucherModule" or "matchVoucher" -->
+
+                    <label for="VoucherCode" class="label-comtrol col-md-4">Vouchers<span class="text-danger">*</span> :</label>
+
+                    <select id="VoucherCode" class="form-control col-md-6" multiple="multiple">
+                        <option>-select voucher-</option>
+                        @foreach (var voucher in ViewBag.VoucherCode)
+                        {
+                            <option value="@voucher.Value">@voucher.Text</option>
+                        }
+                    </select>
+                    <span>
+                        <a href="javascript:void(0);" class="icon" id="addvoucherButton">
+                            <video width="40" muted playsinline loop>
+                                <source src="~/Content/Admin/icon/add.mp4" type="video/mp4">
+                            </video>
+                        </a>
+                    </span>
+
+                </div>
+            </div>
+            <br />
+            <div class="row">
+                <div class="col-md-4">
+                    <label>Voucher Amount:</label>
+                </div>
+                <div class="col-md-4">
+                    <span>@currency</span>
+                    <span id="totalAmountLabel">0.00</span>
+                </div>
+            </div>
+            <br />
+            <div class="row">
+                <div class="input-group">
+                    <label for="TransactionAmount" class="form-check-control col-md-4">Match Amount<span class="text-danger">*</span> :</label>
+                    <div class="input-group-prepend ">
+                        <span class="input-group-text">
+                            <i class="fas fa-rupee-sign"></i>
+                        </span>
+                    </div>
+                    @Html.EditorFor(model => model.TransactionAmount, new { htmlAttributes = new { @class = "form-control col-md-6" } })
+                </div>
+            </div>
+            <div class="row">
+                @Html.ValidationMessageFor(model => model.TransactionAmount, "", new { @class = "text-danger" })
+            </div>
+            <div class="form-group col-md-12">
+                <label for="Description" class="label-comtrol">Description <span class="text-danger">*</span> :</label>
+                @Html.TextAreaFor(model => model.Description, new { @class = "form-control", rows = 2 })
+            </div>
+            <div class="row">
+                @Html.ValidationMessageFor(model => model.Description, "", new { @class = "text-danger" })
+            </div>
+            <!---Here we can we add the buttons-->
+            <div class="form-group" style="text-align: center;">
+                <button class="btn btn-success" id="SubmitAmounts">Submit</button>
+                <a href="@Url.Action("DetailsPurchaseAsyncVP")" class="btn btn-danger">Cancel</a>
+            </div>
+        </div>
+    </div>
+    <button class="close text-danger" data-dismiss="modal" style="position: absolute; top: 25px; right: 25px;">&times;</button>
+    <!--div for the add voucher modal pop up -->
+    <div class="modal fade" id="BankModal" data-backdrop="static" data-keyboard="false" tabindex="-1" role="dialog" aria-labelledby="BankModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="BankModalLabel">Add Voucher</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        $(document).ready(function () {
+            $('#VoucherCode').select2({
+                placeholder: "Select Vouchers",
+                search: true,
+                allowClear: true
+            });
+            function updateTotalAmount() {
+                var totalAmount = 0;
+                var inputAmount = parseFloat($('#Amount').val()) || 0;
+
+                // Loop through selected options to calculate the total amount
+                $('#VoucherCode option:selected').each(function () {
+                    // Extract the voucher amount using regex
+                    var text = $(this).text();
+                    var amountMatch = text.match(/^(.*?):(.*?):(.*?):([\d.]+)$/);
+                    if (amountMatch) {
+                        totalAmount += parseFloat(amountMatch[4]);
+                    }
+                });
+
+                // Update the total amount label
+                $('#totalAmountLabel').text(totalAmount.toFixed(2));
+
+                // Check if the total amount is less than or greater than the input amount
+                if (totalAmount < inputAmount || totalAmount < 0) {
+                    $('#totalAmountLabel').css('color', 'red');
+
+                } else {
+                    $('#totalAmountLabel').css('color', 'green');
+                }
+
+                // Prevent selection of additional vouchers if total exceeds input amount
+                if (totalAmount > inputAmount) {
+                    $('#VoucherCode option:not(:selected)').prop('disabled', true);
+                } else {
+                    $('#VoucherCode option').prop('disabled', false);
+                }
+                if (totalAmount == 0) {
+                    $('#totalAmountLabel').text(0);
+
+                }
+                // Refresh Select2 to apply the disabled state
+                $('#VoucherCode').select2({
+                    placeholder: "Select Vouchers",
+                    allowClear: true
+                });
+            }
+
+            $(document).on('change', '#VoucherCode', function () {
+                var selectedText = $('#VoucherCode option:selected').text();
+                var matches = selectedText.match(/^(CHEQUE):.*?:.*?:([\d.]+)$/);
+                var amount = matches ? parseFloat(matches[2]) : null;
+                if (matches) {
+                    $('#TransactionAmount').val(amount).prop('disabled', true);
+                } else if (selectedText === 'Select voucher') {
+                    $('#TransactionAmount').val('').prop('disabled', false);
+                } else {
+                    $('#TransactionAmount').val('').prop('disabled', false);
+                }
+                updateTotalAmount();
+            });
+            $('#BankModal').on('hidden.bs.modal', function () {
+                $(this).find('.modal-body').empty(); // Clear modal content on close
+                $(this).find('form').off(); // Unbind all events related to the modal
+            });
+
+        });
+
+    </script>
+    <!--vishal done this script-->
+    <script>
+        $('#SubmitAmounts').on('click', function (e) {
+            e.preventDefault();
+            var fullText = $('#TransactionCode').val();
+            var description = $('#Description').val();
+            var TranscationCode = fullText.split('-')[0];
+            let voucheramount = parseFloat($('#totalAmountLabel').text());
+            var selectedVouchers = $('#VoucherCode option:selected');
+            var paidAmount = parseFloat($('#TransactionAmount').val());
+            const balamount = parseFloat($('#Amount').val());
+            // Ensure that paidAmount is a valid number and greater than 0
+            if (voucheramount > 0 && paidAmount > 0 && description != "" && paidAmount <= voucheramount && paidAmount <= balamount) {
+            // SweetAlert confirmation
+        Swal.fire({
+            title: 'Are you sure?',
+            text: 'Do you want to submit the payment?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, submit it!',
+            cancelButtonText: 'No, cancel!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                var Description = $('#Description').val();
+                // Disable the button to prevent multiple clicks
+                $('#SubmitAmounts').prop('disabled', true);
+                var vouchers = [];
+                // Loop through selected vouchers to gather their codes and amounts
+                selectedVouchers.each(function () {
+                    var voucherText = $(this).text();
+                    const regex = /^(.*?):(.*?):(.*?):([\d.]+)$/;
+                    const match = voucherText.match(regex);
+                    const voucherNumber = match[2].trim();
+                    const amount = parseFloat(match[4]);
+
+                    vouchers.push({
+                        VoucherCode: voucherNumber,
+                        Amount: amount
+                    });
+                });
+
+                // Send the data to the server
+                    $.ajax({
+                        url: '@Url.Action("MatchVoucherAsyncVM", "Accountant")',
+                        type: 'POST',
+                        contentType: 'application/json',
+                        data: JSON.stringify({
+                            TranscationCode : TranscationCode,
+                            TransactionAmount : paidAmount,
+                            vouchers: vouchers,
+                            description: Description
+                        }),
+                        success: function (response) {
+                            if (response.success) {
+                                Swal.fire({
+                                    position: "center",
+                                    icon: "success",
+                                    title: "Successful",
+                                    text: "Payment saved successfully!",
+                                    showConfirmButton: false,
+                                    timer: 3000
+                                }).then(() => {
+
+                                        window.location.href = response.redirectUrl;
+
+                                });
+                            } else {
+                                displayToast(response.message || 'Error allocating amount.', "error");
+                                $('#SubmitAmounts').prop('disabled', false);
+                            }
+                        },
+                        error: function (xhr, status, error) {
+                            toastr.error('An error occurred while processing your request.');
+                            $('#SubmitAmounts').prop('disabled', false);
+                        }
+                    });
+                }
+                });
+            } else {
+                let message="";
+                !(voucheramount) ? message += "Please select voucher for payment..!" : null;
+                !(paidAmount) ? message = "please fill the amount to pay..!" : null;
+                (paidAmount > voucheramount) ? message += "Payment amount cannot be greater than voucher amount...!" : null;
+                !(description) ? message = "please fill the description...!" : null;
+                (paidAmount > balamount) ? message = "please make sure cheque voucher amount is right , should not be greater than the actual ammount." : null;
+                if (message!="") {
+                    displayToast(message, "error")
+                }
+                else {
+                    return;
+                }
+
+            }
+        });
+
+    </script>
+    <script>
+        $(document).ready(function () {
+            $('#TransactionAmount').on('input', function () {
+                var enteredValue = $(this).val();
+                var amount = $('#Amount').val();
+                var numericValue = enteredValue.replace(/[^\d.]/g, '');
+                if (numericValue.length > 10) {
+                    numericValue = numericValue.substring(0, 10);
+                }
+                if (parseFloat(numericValue) > parseFloat(amount)) {
+                    numericValue = amount;
+                }
+                $(this).val(numericValue);
+            });
+
+        });
+    </script>
+    <!--toastr-->
+    <script>
+        function displayToast(message, type) {
+            toastr[type](message);
+            lastMessage = message;
+            lastType = type;
+        }
+
+        toastr.options = {
+            closeButton: true,
+            progressBar: true,
+            positionClass: 'toast-top-right',
+            showMethod: 'slideDown',
+            timeOut: 4000 // How long the toast will be displayed (in milliseconds)
+        };
+    </script>
+    <!--add voucher button  -->
+    <script>
+    $(document).ready(function () {
+        const modalSelector = '#BankModal';
+        const formSelector = '#AddVoucherForm';
+
+        // Open the Add Voucher modal
+        $('#addvoucherButton').off('click').on('click', function () {
+            const amountFor = $('#Amount').val();
+            const context = $('#Context').val();
+
+            $.ajax({
+                url: '@Url.Action("AddVoucherAsyncSGS", "Accountant")',
+                type: 'GET',
+                data: { voucherType: 1, amount: amountFor, context: context },
+                success: function (data) {
+                    $(`${modalSelector} .modal-body`).html(data); // Populate modal body
+                    $(modalSelector).modal('show'); // Show the modal
+                },
+                error: function () {
+                    Swal.fire('Error', 'Failed to load the Add Voucher form.', 'error');
+                }
+            });
+        });
+
+        // Handle form submission
+        $(document).on('submit', formSelector, function (e) {
+            e.preventDefault();
+            const context = $('#Context').val();
+
+            handleVoucherFormSubmission(formSelector, context, modalSelector);
+        });
+
+        // Ensure the modal is cleaned up on close
+        $(modalSelector).on('hidden.bs.modal', function () {
+            $(`${modalSelector} .modal-body`).html(''); // Clear modal content
+        });
+    });
+
+    </script>
+</body>
+</html>

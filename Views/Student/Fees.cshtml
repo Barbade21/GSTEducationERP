@@ -1,0 +1,56 @@
+﻿
+@model GSTEducationERPLibrary.Student.Student
+
+<table class="table">
+    <tr>
+        @*<th>
+            @Html.DisplayNameFor(model => model.TotalFeesCount)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.PaidFeesCount)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.RemainingFeesCount)
+        </th>*@
+
+            <th>
+                @Html.DisplayNameFor(model => model.TotalFees)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.PaidFees)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.RemainingFees)
+            </th>
+
+    </tr>
+
+    @foreach (var item in Model.lstFeesDetails)
+     {
+        <tr>
+
+
+            @*<td>
+                @Html.DisplayFor(modelItem => item.TotalFeesCount)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.PaidFeesCount)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.RemainingFeesCount)
+            </td>*@
+
+                <td>
+                    @Html.DisplayFor(modelItem => item.Totalfee)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.TotalPaidFees)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.TotalRemainingFees)
+                </td>
+
+        </tr>
+     }
+
+</table>

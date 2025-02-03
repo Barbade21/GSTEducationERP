@@ -1,0 +1,353 @@
+﻿@{
+    ViewBag.Title = "ListAllChequesAsyncSM";
+    Layout = "~/Views/Shared/_LayoutERP.cshtml";
+}
+<html>
+<head>
+    <script src="~/Content/plugins/jquery/jquery.min.js"></script>
+    <link href="~/Content/plugins/fontawesome-free/css/all.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="~/Content/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+    <link rel="stylesheet" href="~/Content/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
+    <link rel="stylesheet" href="~/Content/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
+    <style>
+        h2 {
+            padding-top: 10px;
+            margin-bottom: 10px;
+            font-family: Verdana;
+            font-weight: bold;
+            font-size: medium;
+            color: #33CCCC;
+        }
+
+        h3 {
+            font-size: 1.5rem;
+        }
+
+        .dataTables_wrapper .btn-secondary {
+            color: #235;
+            background-color: transparent !important;
+            border-color: transparent;
+            font-size: x-large;
+            margin: 0px !important;
+        }
+
+        .card-primary.card-outline-tabs > .card-header a.active {
+            border-top: 3px solid #33CCCC;
+        }
+
+        a {
+            color: #33CCCC;
+        }
+
+        .card.card-outline-tabs .card-header a:hover {
+            color: #33CCCC;
+        }
+
+        .card-primary.card-outline-tabs > .card-header a.active, .card-primary.card-outline-tabs > .card-header a.active:hover {
+            border-top: 3px solid #33CCCC;
+        }
+
+        .card-body {
+            font-family: Calibri !important;
+            padding-bottom: 0px !important;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        th {
+            background-color: #33CCCC;
+            color: #000;
+            text-align: center !important;
+        }
+
+        td {
+            text-align: center;
+            color: black !important;
+        }
+
+        .table td {
+            padding: 0px 0px 0px 0px !important;
+            font-size: 14px !important;
+        }
+
+        .table th {
+            padding: 5px 5px 4px 10px !important;
+            font-size: 14px !important;
+        }
+
+        table.dataTable > thead .sorting:after, table.dataTable > thead .sorting:before {
+            font-size: xx-small !important;
+        }
+
+        div.dataTables_wrapper div.dataTables_filter {
+            /*margin-top: -40px !important;*/
+        }
+
+        div.dt-buttons {
+            margin-top: -20px !important;
+        }
+
+        .btn-group > .btn:not(:last-child):not(.dropdown-toggle), .btn-group > .btn-group:not(:last-child) > .btn {
+            padding-left: 5px !important;
+            padding-right: 5px !important;
+        }
+
+        div.dataTables_wrapper div.dataTables_filter label {
+            font-size: small !important;
+        }
+
+        div.dataTables_wrapper div.dataTables_filter input {
+            height: 20px !important;
+        }
+
+        div.dataTables_wrapper div.dataTables_info {
+            padding: 0px !important;
+            font-size: small !important;
+        }
+
+        div.dataTables_wrapper div.dataTables_paginate ul.pagination {
+            /* margin-top: -20px !important;*/
+        }
+
+        div.dataTables_wrapper div.dataTables_paginate {
+            font-size: small !important;
+        }
+
+        .image-style {
+            width: 35px;
+            height: auto;
+        }
+
+        .icon-container {
+            margin-top: 8px; /* Adjust the margin as needed */
+        }
+        .fixed-heading {
+            position: relative; /* or fixed/absolute depending on the requirement */
+            left: 0;
+            top: 0;
+            margin: 0;
+            padding: 0;
+        }
+        .page-item.active .page-link {
+            z-index: 3;
+            color: #fff;
+            background-color: #64bbc9;
+            border-color: #007bff;
+        }
+        /* Loading Overlay */
+        #loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Loader GIF */
+        #loader-gif {
+            width: auto; /* Adjust size as needed */
+            height: auto;
+        }
+        .container{
+            margin:0;
+        }
+    </style>
+</head>
+<body style="margin:0; padding:0;">
+    <br />
+    @{
+        string currentAction = ViewContext.RouteData.Values["action"].ToString();
+        bool showAdmissionTypeFilter = currentAction == "ListAllChequeReceiptAsyncSM";
+    }
+    <div class="card" style="padding: 10px;">
+        <div class="row">
+            <div class="col-md-4">
+                <h3 class="fixed-heading">Cheque Details</h3>
+            </div>
+        </div>
+        <hr />
+
+        <div >
+            <div class="row" style="padding: 0 10px 0 10px;">
+                <div class="col-7.5" style="margin-top: 1.8vw;">
+                    <div class="card card-primary card-outline card-outline-tabs">
+                        <div class="card-header p-0 border-bottom-0">
+                            <ul class="nav nav-tabs" id="custom-tabs-four-tab" role="tablist">
+                                <li class="nav-item">
+                                    <a class="nav-link active" data-toggle="pill" href="@Url.Action("ListAllChequeReceiptAsyncSM", "Accountant")" role="tab" aria-controls="custom-tabs-four-home" aria-selected="true">Cheque Received</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" data-toggle="pill" href="@Url.Action("_ListAllChequeExpenseAsyncSM", "Accountant")" role="tab" aria-controls="custom-tabs-four-profile" aria-selected="true">Cheque Expense</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <label id="statusFilterLabel" for="statusFilter" style="font-size: 15px; margin-right: 10px;">Status</label>
+                    <select id="statusFilter" class="form-control">
+                        <option value="All">All</option>
+                        <option value="Pending">Pending</option>
+                        <option value="Completed">Completed</option>
+                    </select>
+                </div>
+            </div>
+            <div class="card card-primary card-outline card-outline-tabs p-2">
+                <div id="ChequeList" class="icon-container"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loader Overlay -->
+    <div id="loading-overlay" style="display: none;">
+
+        <img src="~/Content/Admin/icon/AccountantLoader.gif" alt="Loading" id="loader-gif">
+    </div>
+
+    <script src="~/Content/plugins/datatables/jquery.dataTables.min.js"></script>
+    <script src="~/Content/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
+    <script src="~/Content/plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
+    <script src="~/Content/plugins/datatables-responsive/js/responsive.bootstrap4.min.js"></script>
+    <script src="~/Content/plugins/datatables-buttons/js/dataTables.buttons.min.js"></script>
+    <script src="~/Content/plugins/datatables-buttons/js/buttons.bootstrap4.min.js"></script>
+    <script src="~/Content/plugins/jszip/jszip.min.js"></script>
+    <script src="~/Content/plugins/pdfmake/pdfmake.min.js"></script>
+    <script src="~/Content/plugins/pdfmake/vfs_fonts.js"></script>
+    <script src="~/Content/plugins/datatables-buttons/js/buttons.html5.min.js"></script>
+    <script src="~/Content/plugins/datatables-buttons/js/buttons.print.min.js"></script>
+    <script src="~/Content/plugins/datatables-buttons/js/buttons.colVis.min.js"></script>
+    <script>
+        jQuery(document).ready(function ($) {
+            function loadTabContent(tabContentUrl, admissionTypeFilter, statusFilter) {
+                showLoadingOverlay();
+                $.ajax({
+                    url: tabContentUrl,
+                    type: 'GET',
+                    data: { filter: admissionTypeFilter, status: statusFilter },
+                    success: function (data) {
+                        $('#ChequeList').html(data);
+                        var table = $('#ChequeList table').DataTable({
+                            "responsive": true,
+                            "lengthChange": false,
+                            "autoWidth": false,
+                            "stateSave": true,
+                            "ordering": false,
+                            "buttons": [
+                                { extend: 'copy', text: '<img src="/Content/Admin/icon/copy.png" title="Copy" alt="Copy" height="20" width="20" />', titleAttr: 'Copy' },
+                                { extend: 'csv', text: '<img src="/Content/Admin/icon/csv.jpg" title="CSV" alt="CSV" height="20" width="20" />', titleAttr: 'CSV' },
+                                { extend: 'excel', text: '<img src="/Content/Admin/icon/xls-file.png" title="xls" alt="xls" height="20" width="20" />', titleAttr: 'Excel' },
+                                { extend: 'pdf', text: '<img src="/Content/Admin/icon/pdf-file.png" title="pdf" alt="pdf" height="20" width="20" />', titleAttr: 'PDF' },
+                                { extend: 'print', text: '<img src="/Content/Admin/icon/printer.png" title="printer" alt="printer" height="20" width="20" />', titleAttr: 'Print' },
+                                { extend: 'colvis', text: '<img src="/Content/Admin/icon/column.jpg" title="column" alt="column" height="20" width="20" />', titleAttr: 'Columns' }
+                            ]
+                        });
+                        table.buttons().container().appendTo('#ChequeList .col-md-6:eq(0)');
+                    },
+                    error: function () {
+                        alert('Error loading filtered content.');
+                    },
+                    complete: function () {
+
+                        hideLoadingOverlay();
+                    }
+                    //error: function () {
+                    //    alert('Error loading content.');
+                    //}
+                });
+            }
+            var defaultTabUrl = '@Url.Action("ListAllChequeReceiptAsyncSM", "Accountant")';
+            var defaultAdmissionTypeFilter = $('#admissionTypeFilter').val();
+            var defaultStatusFilter = $('#statusFilter').val();
+
+            loadTabContent(defaultTabUrl, defaultAdmissionTypeFilter, defaultStatusFilter);
+
+            $('#custom-tabs-four-tab').on('click', '.nav-link', function (e) {
+                e.preventDefault();
+                var tabContentUrl = $(this).attr('href');
+                var admissionTypeFilter = $('#admissionTypeFilter').val();
+                var statusFilter = $('#statusFilter').val();
+                var isReceiptTab = $(this).attr('href').includes("ListAllChequeReceiptAsyncSM");
+                showLoadingOverlay();
+
+
+                if (isReceiptTab) {
+                    $('#admissionTypeFilter').show();
+                    $('#admissionTypeFilter1').show();
+                } else {
+                    $('#admissionTypeFilter').hide();
+                    $('#admissionTypeFilter1').hide();
+                }
+
+                loadTabContent(tabContentUrl, admissionTypeFilter, statusFilter);
+            });
+
+            $('#statusFilter').on('change', function () {
+                var tabContentUrl = $('#custom-tabs-four-tab .nav-link.active').attr('href');
+                var admissionTypeFilter = $('#admissionTypeFilter').val();
+                var statusFilter = $('#statusFilter').val();
+                loadTabContent(tabContentUrl, admissionTypeFilter, statusFilter);
+            });
+
+            function showLoadingOverlay() {
+                // Always start progress from 0
+                var progress = 0;
+
+                // Reset progress bar and text
+                $('#progress-bar').css('width', '0%');
+                $('#progress-percentage').text('0%');
+                $('#loading-overlay').css('opacity', '1').show(); // Show the overlay
+
+                // Function to simulate steady progress increment
+                var interval = setInterval(function () {
+                    if (progress < 100) { // Keep incrementing until 100%
+                        progress += Math.floor(Math.random() * 5) + 2; // Increment by a random value between 2 and 5
+                        if (progress > 100) progress = 100; // Ensure it does not exceed 100%
+                    }
+
+                    // Update the width of the progress bar and percentage text
+                    $('#progress-bar').css('width', progress + '%');
+                    $('#progress-percentage').text(progress + '%');
+
+                    // Stop the interval when progress reaches 100%
+                    if (progress >= 100) {
+                        clearInterval(interval);
+                        $('#progress-bar').css('width', '100%'); // Ensure it reaches 100%
+                        $('#progress-percentage').text('100%'); // Display 100% text
+                    }
+                }, 300); // Interval duration in milliseconds
+
+                // Return the interval ID for potential future reference
+                return interval;
+            }
+
+            // Function to finalize and hide the loading overlay
+            function hideLoadingOverlay(interval) {
+                // Ensure the progress bar is at 100% when hiding
+                $('#progress-bar').css('width', '100%');
+                $('#progress-percentage').text('100%');
+                $('#loading-overlay').fadeOut(500, function () {
+                    $(this).hide();
+                });
+                clearInterval(interval); // Clear the interval to stop progress increment
+            }
+
+            // Optional: Reset the progress bar for future use
+            function resetProgressBar() {
+                $('#progress-bar').css('width', '0%');
+                $('#progress-percentage').text('0%');
+                $('#loading-overlay').css('opacity', '0').hide(); // Hide the overlay initially
+            }
+        });
+    </script>
+
+</body>
+</html>
+

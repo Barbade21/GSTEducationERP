@@ -1,0 +1,411 @@
+﻿@model GSTEducationERPLibrary.Counsellor.Counsellor
+
+@{
+    ViewBag.Title = "PortalListStudentAsyncSS";
+}
+
+<link rel="stylesheet" href="~/Content/plugins/toastr/toastr.min.css">
+<script src="~/Content/plugins/toastr/toastr.min.js"></script>
+
+<style>
+    .single-line-ellipsis {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 200px; /* Adjust as necessary */
+    }
+
+    .popover-header {
+        background-color: #33CCCC;
+        color: /white/ black;
+        border-bottom: 1px solid #33CCCC;
+    }
+</style>
+<html>
+<body>
+    <div class=" card-body">
+         <table id="ByStudentReference" class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>
+                        Sr.No
+                    </th>
+                    <th hidden>
+                        Code
+                    </th>
+                    <th>
+                        Full Name
+                    </th>
+                    <th>
+                        Contact Number
+                    </th>
+                    <th>
+                        Email Id
+                    </th>
+
+                    <th>
+                        Enquiry For
+                    </th>
+                    <th>
+                        Intrested Course
+                    </th>
+                    <th>
+                        Enquiry Date
+                    </th>
+                    <th>
+                        Equiry Description
+                    </th>
+
+                    <th hidden>
+                        Alternate Number
+                    </th>
+                    <th>
+                        Status
+                    </th>
+                    <th hidden>
+                        @Html.HiddenFor(model => model.EnqStatusId)
+                    </th>
+                    <th>
+                        Action
+                    </th>
+                    <th>
+                        Link
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.lstReferenceAsyncSS)
+                {
+                <tr class="status-filtered-row" data-status="@item.EnquiryFor">
+                    <td>
+                        @Html.DisplayFor(modelItem => item.SerialNo)
+                    </td>
+                    <td hidden>
+                        @Html.DisplayFor(modelItem => item.CandidateCode)
+                    </td>
+                    <td class="single-line-ellipsis" data-toggle="popover" title="CandidateCode" data-content="@item.CandidateCode">
+                        @Html.DisplayFor(modelItem => item.FullName)
+                    </td>
+                    <td class="single-line-ellipsis" data-toggle="popover" title="Alternate Number" data-content="@item.AlternateNumber">
+                        @Html.DisplayFor(modelItem => item.ContactNumber)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.EmailId)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.EnquiryFor)
+                    </td>
+                    <td class="single-line-ellipsis" data-toggle="popover" title="CourseCode" data-content="@item.CourseName">
+                        @Html.DisplayFor(modelItem => item.CourseName)
+                    </td>
+                    <td>
+                        @item.EnquiryDate.ToString("dd-MMM-yyyy")
+                    </td>
+
+                    <td class="single-line-ellipsis" data-toggle="popover" title="EquiryDescription" data-content="@item.EquiryDescription">
+                        @Html.DisplayFor(modelItem => item.EquiryDescription)
+                    </td>
+                    <td hidden>
+                        @Html.DisplayFor(modelItem => item.AlternateNumber)
+                    </td>
+                    <td align="center">
+                        @if (item.Status == "Lead")
+                        {
+                            <span class="badge bg-gradient-yellow">@Html.DisplayFor(modelItem => item.Status)</span>
+                        }
+                        @if (item.Status == "Enquiry Form Pending")
+                        {
+                            <span class="badge bg-gradient-orange">@Html.DisplayFor(modelItem => item.Status)</span>
+                        }
+                    </td>
+                    <td hidden>
+                        @Html.DisplayFor(modelItem => item.EnqStatusId)
+                    </td>
+                    <td>
+                        <a href="#" class="UpdateLead icon" data-id="@item.CandidateCode" data-url="@Url.Action("UpdateStudentReferanceSS", "Counsellor", new { CandidateCode = item.CandidateCode })" data-toggle="modal" data-target="#partialModal" title="Edit">
+
+                            <!-- Embed the video element -->
+                            <video width="25" height="25" playsinline loop>
+                                <source src="~/Content/Admin/icon/Edit Details.mp4" type="video/mp4" />
+                            </video>
+                        </a>
+
+                        <a href="#" class="ViewDetails icon" data-id="@item.CandidateCode" data-url="@Url.Action("ViewStudentDetailsSS", "Counsellor", new { CandidateCode = item.CandidateCode })" data-toggle="modal" data-target="#partialModal1" title="View">
+                            @*<a href="@Url.Action("ViewStudentDetailsSS", "Counsellor", new { CandidateCode = item.CandidateCode })" class="icon" title="Details">*@
+                            <!-- Embed the video element -->
+                            <video width="25" height="25" playsinline loop>
+                                <source src="~/Content/Admin/icon/view.mp4" type="video/mp4" />
+                            </video>
+                        </a>
+
+                        <a href="#" class="addfollowup icon" data-id="@item.CandidateCode" data-url="@Url.Action("EnquiryFollowUpVU", "Counsellor", new { id = item.CandidateCode })" data-toggle="modal" data-target="#detailsModal" title="Add FollowUp">
+                            <video width="25" height="25" playsinline loop muted>
+                                <source src="~/Content/Admin/icon/add.mp4" type="video/mp4">
+                            </video>
+                        </a>
+
+                        @if (item.EnquiryFor == "Course")
+                        {
+                            <a href="@Url.Action("UpdateCourseEnquiryPK", "Counsellor", new { CandidateCode = item.CandidateCode, enqStatusId = item.EnqStatusId})" class="icon" title="Enqiury">
+                                <!-- Embed the video element -->
+                                <video width="25" height="25" playsinline loop>
+                                    <source src="~/Content/Admin/icon/Enquiry.mp4" type="video/mp4">
+                                </video>
+                            </a>
+                        }
+                        else if (item.EnquiryFor == "Placement")
+                        {
+                            <a href="@Url.Action("UpdateEnquirySks", "Counsellor", new { CandidateCode = item.CandidateCode , enqStatusId = item.EnqStatusId })" class="icon" title="Enqiury">
+                                <!-- Embed the video element -->
+                                <video width="25" height="25" playsinline loop>
+                                    <source src="~/Content/Admin/icon/Enquiry.mp4" type="video/mp4">
+                                </video>
+                            </a>
+                        }
+                    </td>
+                    <td>
+                        @if (item.EnquiryFor == "Course")
+                        {
+                            <a href="#" class="send-mail"
+                               data-url="@Url.Action("SendMailkk", "Counsellor", new {
+                                        EmailId = item.EmailId,
+                                        FullName = item.FullName,
+                                        mailtype = "EnquiryForm",
+                                        candidateCode = item.CandidateCode,
+                                        enqstatusid = item.EnqStatusId,
+                                        enquiryfor = item.EnquiryFor,
+                                        password = "NoPassword"
+                                   })" title="formlink">
+                                <label>enquiryformlink</label>
+                            </a>
+                        }
+                        else if (item.EnquiryFor == "Placement")
+                        {
+                            <a href="#" class="send-mail"
+                               data-url="@Url.Action("SendMailkk", "Counsellor", new {
+                                        EmailId = item.EmailId,
+                                        FullName = item.FullName,
+                                        mailtype = "EnquiryForm",
+                                        candidateCode = item.CandidateCode,
+                                        enqstatusid = item.EnqStatusId,
+                                        enquiryfor = item.EnquiryFor,
+                                        password = "NoPassword"
+                                   })" title="formlink">
+                                <label>enquiryformlink</label>
+                            </a>
+                        }
+                    </td>
+                </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <div id="partialModal1" class="modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document" style="margin: 0 auto; display: flex; justify-content: center; align-items: center;">
+            <div class="modal-content" style="height: 42vw; width: 55vw;">
+                <div class="modal-header" style="text-align: left;">
+                    <div style="width: 55vw;">
+                        <h2><b>Details</b></h2>
+                    </div>
+                    <button class="close text-danger" data-dismiss="modal">&times;</button>
+                </div>
+                <div class="modal-body1">
+                    <div class="modal-footer">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="partialModal" class="modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document" style="margin: 0 auto; display: flex; justify-content: center; align-items: center;">
+            <div class="modal-content" style="height:40vw; width:60vw;">
+                <div class="modal-header" style="text-align: left;">
+                    <div style="width:55vw;">
+                        <h2><b>Edit Lead</b></h2>
+                    </div>
+                    <button class="close text-danger" data-dismiss="modal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <!-- Your modal body content goes here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap Modal -->
+    <div class="modal fade" id="detailsModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content" style="width:58vw;">
+                <div class="modal-body">
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
+
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('.send-mail').click(function (e) {
+            e.preventDefault();
+            var url = $(this).data('url');
+
+            $.ajax({
+                url: url,
+                type: 'Post',
+                success: function (response) {
+                    // Handle success response
+                    displayToast('Mail Sent successfully!', 'success');
+                },
+                error: function (xhr, status, error) {
+                    // Handle error response
+
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error sending mail',
+                        text: error,
+                        showConfirmButton: false,
+                        timer: 1500
+                    });
+                }
+            });
+        });
+
+        function displayToast(message, type) {
+            // Display Toastr notification
+            toastr[type](message);
+        }
+
+        toastr.options = {
+            closeButton: true,
+            progressBar: true,
+            positionClass: 'toast-top-right',
+            showMethod: 'slideDown',
+            timeOut: 4000 // How long the toast will be displayed (in milliseconds)
+        };
+    });
+</script>
+
+<script src="~/Content/Admin/js/Icon.js"></script>
+<script type="text/javascript">
+    jQuery.noConflict();
+    jQuery(document).ready(function ($) {
+        $(".ViewDetails").click(function () {
+            var $buttonClicked = $(this);
+            var id = $buttonClicked.data('id');
+            var url = $buttonClicked.data('url');
+            $.ajax({
+                type: "GET",
+                url: url,
+                data: { CandidateCode: id },
+                contentType: "application/json; charset=utf-8",
+                dataType: "html",
+                success: function (response) {
+                    $("#partialModal1 .modal-body1").html(response);
+                    $("#partialModal1").modal('show');
+                },
+                error: function (xhr, status, error) {
+                    alert("Error: " + error);
+                }
+            });
+        });
+        $(".UpdateLead").click(function () {
+            var $buttonClicked = $(this);
+            var id = $buttonClicked.data('id');
+            var url = $buttonClicked.data('url');
+            $.ajax({
+                type: "GET",
+                url: url,
+                data: { CandidateCode: id },
+                contentType: "application/json; charset=utf-8",
+                dataType: "html",
+                success: function (response) {
+                    $("#partialModal .modal-body").html(response);
+                    $("#partialModal").modal('show');
+                },
+                error: function (xhr, status, error) {
+                    alert("Error: " + error);
+                }
+            });
+        });
+
+        $('.addfollowup').click(function () {
+            var candidateCode = $(this).data('id');
+            var url = $(this).data('url');
+
+            console.log("Candidate Code:", candidateCode);
+            console.log("URL:", url);
+
+            // Check if URL and candidate code are defined
+            if (url && candidateCode) {
+                $.ajax({
+                    url: url,
+                    type: 'GET',
+                    data: { CandidateCode: candidateCode },
+                    success: function (data) {
+                        $('#detailsModal .modal-body').html(data);
+                        $('#detailsModal').modal('show');
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        console.error("AJAX Error:", textStatus, errorThrown);
+                    }
+                });
+            } else {
+                console.error("URL or candidate code is not defined");
+            }
+        });
+    });
+</script>
+
+
+<script src="~/Content/plugins/jquery/jquery.min.js" type="text/javascript"></script>
+<script src="~/Content/Trainer/js/CourseContent.js"></script>
+<script src="~/Content/Admin/js/Icon.js"></script>
+@*Bootstrap 4*@
+<script src="~/Content/plugins/bootstrap/js/bootstrap.bundle.min.js" type="text/javascript"></script>
+@*DataTables  & Plugins*@
+<script src="~/Content/plugins/datatables/jquery.dataTables.min.js" type="text/javascript"></script>
+<script src="~/Content/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js" type="text/javascript"></script>
+<script src="~/Content/plugins/datatables-responsive/js/dataTables.responsive.min.js" type="text/javascript"></script>
+<script src="~/Content/plugins/datatables-responsive/js/responsive.bootstrap4.min.js" type="text/javascript"></script>
+<script src="~/Content/plugins/datatables-buttons/js/dataTables.buttons.min.js" type="text/javascript"></script>
+<script src="~/Content/plugins/datatables-buttons/js/buttons.bootstrap4.min.js" type="text/javascript"></script>
+<script src="~/Content/plugins/jszip/jszip.min.js" type="text/javascript"></script>
+<script src="~/Content/plugins/pdfmake/pdfmake.min.js" type="text/javascript"></script>
+<script src="~/Content/plugins/pdfmake/vfs_fonts.js" type="text/javascript"></script>
+<script src="~/Content/plugins/datatables-buttons/js/buttons.html5.min.js" type="text/javascript"></script>
+<script src="~/Content/plugins/datatables-buttons/js/buttons.print.min.js" type="text/javascript"></script>
+<script src="~/Content/plugins/datatables-buttons/js/buttons.colVis.min.js" type="text/javascript"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('[data-toggle="popover"]').popover({
+            trigger: 'hover',
+            placement: 'top',
+            html: true
+        });
+
+        $.noConflict();
+        var table = $('#Examlist').DataTable({
+            "responsive": true, "lengthChange": false, "autoWidth": false,
+            "buttons": [],
+            "responsive": true,
+            "lengthChange": false,
+            "autoWidth": false
+        }).buttons().container().appendTo('#Examlist_wrapper .col-md-6:eq(0)');
+
+        $('#custom-tabs-four-tab').on('click', '.nav-link', function (e) {
+            e.preventDefault();
+            var tabContentUrl = $(this).attr('href');
+            loadTabContent(tabContentUrl);
+            $('[custom-tabs-four-tab"]').tooltip();
+        });
+    });
+</script>

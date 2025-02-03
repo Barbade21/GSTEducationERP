@@ -1,0 +1,447 @@
+﻿@model GSTEducationERPLibrary.Student.Student
+
+@*<p>
+        @Html.ActionLink("StudentAssignScheduleAsyncAP", "Student")
+    </p>*@
+
+<html>
+
+<head>
+    <link href="~/Content/plugins/bootstrap-switch/css/bootstrap3/bootstrap-switch.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="~/Content/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+    <link rel="stylesheet" href="~/Content/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
+    <link rel="stylesheet" href="~/Content/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
+    <link href="~/Content/plugins/fontawesome-free/css/all.min.css" rel="stylesheet" />
+    @*<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">*@
+    <link rel="stylesheet" href="~/Content/plugins/toastr/toastr.min.css" />
+    <script src="~/Content/plugins/jquery/jquery.min.js" type="text/javascript"></script>
+
+    <style>
+
+        .dataTables_wrapper .btn-secondary {
+            color: #235;
+            background-color: transparent !important;
+            border-color: transparent;
+            font-size: x-large;
+            margin: 0px !important;
+            /* border: 2px solid black;*/
+        }
+
+        h2 {
+            padding-top: 10px;
+            margin-bottom: 10px;
+            font-family: Verdana;
+            font-weight: bold;
+            font-size: medium;
+            color: #33CCCC;
+        }
+
+        .card-primary.card-outline-tabs > .card-header a.active {
+            border-top: 3px solid #33CCCC;
+        }
+
+        a {
+            color: #33CCCC;
+        }
+
+        .card.card-outline-tabs .card-header a:hover {
+            color: #33CCCC;
+        }
+
+        .card-primary.card-outline-tabs > .card-header a.active, .card-primary.card-outline-tabs > .card-header a.active:hover {
+            border-top: 3px solid #33CCCC;
+        }
+
+        .card-body {
+            font-family: Calibri !important;
+            padding-bottom: 0px !important;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        th {
+            background-color: #33CCCC;
+            color: #000;
+            text-align: center !important;
+        }
+
+        td {
+            text-align: center;
+            color: black !important;
+            border: 2px black;
+        }
+
+        .table td {
+            padding: 0px 0px 0px 0px !important;
+            font-size: 14px !important;
+        }
+
+        .table th {
+            padding: 5px 5px 4px 10px !important;
+            font-size: 14px !important;
+        }
+
+        table.dataTable > thead .sorting:after, table.dataTable > thead .sorting:before {
+            font-size: xx-small !important;
+        }
+
+        div.dataTables_wrapper div.dataTables_filter {
+            margin-top: -10px !important;
+        }
+
+        div.dt-buttons {
+            margin-top: -20px !important;
+        }
+
+        .btn-group > .btn:not(:last-child):not(.dropdown-toggle), .btn-group > .btn-group:not(:last-child) > .btn {
+            padding-left: 5px !important;
+            padding-right: 5px !important;
+        }
+
+        div.dataTables_wrapper div.dataTables_filter label {
+            font-size: small !important;
+        }
+
+        div.dataTables_wrapper div.dataTables_filter input {
+            height: 20px !important;
+        }
+
+        div.dataTables_wrapper div.dataTables_info {
+            padding: 0px !important;
+            font-size: small !important;
+        }
+
+        div.dataTables_wrapper div.dataTables_paginate ul.pagination {
+            margin-top: 0px !important;
+        }
+
+        div.dataTables_wrapper div.dataTables_paginate {
+            font-size: small !important;
+        }
+
+
+        /* Style table headers */
+        #myTable th {
+            background-color: #3b5999;
+            color: white;
+        }
+
+        /* Style buttons */
+        .dataTables_wrapper .dt-buttons button {
+            background-color: #3b5999;
+            border: none;
+            color: white;
+        }
+
+        /* Style modal header */
+        .modal-header h2 {
+            color: #3b5999;
+        }
+    </style>
+
+    <style>
+        .form-group-inline {
+            display: flex;
+            align-items: center;
+        }
+
+            .form-group-inline label {
+                margin-right: 10px;
+                margin-bottom: 0;
+            }
+
+        .custom-dropdown {
+            padding: 0.375rem 1.75rem 0.375rem 0.75rem;
+        }
+
+        .heading-color {
+            color: #3b5999; /* Change heading color to #3b5999 */
+        }
+
+        .StudentSchedule {
+            background-color: #3b5999;
+            color: white
+        }
+    </style>
+    <style>
+        .modal-header {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+            .modal-header .close {
+                position: absolute;
+                right: 1rem;
+                top: 50%;
+                transform: translateY(-50%);
+            }
+    </style>
+</head>
+
+<body>
+
+    <div class="row g-6 justify-content-center">
+
+        <div class="card-body" id="Assigntable">
+            <table id="myTable" class="table table-bordered dataTable no-footer dtr-inline">
+                <thead>
+                    <tr>
+                        <th>@Html.DisplayNameFor(model => model.SerialNo)</th>
+                        <th hidden>@Html.HiddenFor(model => model.AssignScheduleId)</th>
+                        <th hidden>@Html.HiddenFor(model => model.TopicId)</th>
+
+                        <th>@Html.DisplayNameFor(model => model.SectionName)</th>
+                        <th>@Html.DisplayNameFor(model => model.TopicName)</th>
+                        <th>@Html.DisplayNameFor(model => model.LabName)</th>
+                        <th>@Html.DisplayNameFor(model => model.NoOfSessions)</th>
+                        <th>@Html.DisplayNameFor(model => model.Duration)</th>
+                        <th>@Html.DisplayNameFor(model => model.StartDate)</th>
+                        <th>@Html.DisplayNameFor(model => model.EndDate)</th>
+                        <th>@Html.DisplayNameFor(model => model.Status)</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.lstStudentAssignSchedule)
+                    {
+
+                        <tr class="status-filtered-row" data-status="@item.Status">
+                            <td>@Html.DisplayFor(modelItem => item.SerialNo)</td>
+                            <td hidden>@Html.HiddenFor(modelItem => item.AssignScheduleId)</td>
+                            <td hidden>@Html.HiddenFor(modelItem => item.TopicId)</td>
+                            <td>@Html.DisplayFor(modelItem => item.SectionName)</td>
+                            <td>@Html.DisplayFor(modelItem => item.TopicName)</td>
+                            <td>@Html.DisplayFor(modelItem => item.LabName)</td>
+                            <td>@Html.DisplayFor(modelItem => item.NoOfSessions)</td>
+                            @*<td>@Html.DisplayFor(modelItem => item.Duration)</td>*@
+                            <td>
+                                @{
+                                    var durationParts = item.Duration.Split(' ');
+                                    var daysPart = durationParts.Length > 0 ? durationParts[0] + " " + durationParts[1] : item.Duration;
+                                }
+                                @daysPart
+                            </td>
+                            <td>@Html.DisplayFor(modelItem => item.StartDate)</td>
+                            <td>@Html.DisplayFor(modelItem => item.EndDate)</td>
+                            @*<td>@Html.DisplayFor(modelItem => item.Status)</td>*@
+                            <td>
+                                @if (item.Status == "Completed")
+                                {
+                                    <span class="badge bg-success">@Html.DisplayFor(modelItem => item.Status)</span>
+                                }
+                                @if (item.Status == "Ongoing")
+                                {
+                                    <span class="badge bg-primary">@Html.DisplayFor(modelItem => item.Status)</span>
+                                }
+                                @if (item.Status == "Assigned")
+                                {
+                                    <span class="badge bg-danger">@Html.DisplayFor(modelItem => item.Status)</span>
+                                }
+                            </td>
+
+
+                            <td>
+
+                                <a href="#" class="Edit" data-id="@item.TopicId" data-url="@Url.Action("StudentAttendanceAsyncAP", "Student", new { id = item.TopicId })" data-toggle="modal" data-target="#detailsModal" data-placement="top" title="View Attendance" data-trigger="click">
+                                    <img src="~/Content/StudentTemplate/icon/assign.gif" width="40" height="40">
+                                </a>
+
+                                @if (item.Status == "Completed")
+                                {
+                                    <a href="#" class="Edits" data-id="@item.AssignScheduleId" data-url="@Url.Action("DetailsStudentViewAssignmentsAsync", "Student", new { id = item.AssignScheduleId })" data-toggle="modal" data-target="#detailsModals" data-placement="top" title="View Assignment" data-trigger="click">
+                                        <img src="~/Content/StudentTemplate/icon/tasking.gif" width="40" height="40">
+                                    </a>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+    <script src="~/Content/plugins/datatables/jquery.dataTables.js"></script>
+    <script src="~/Content/plugins/datatables/jquery.dataTables.min.js"></script>
+    <script src="~/Content/Admin/js/Icon.js"></script>
+    <script src="~/Content/plugins/bootstrap/js/bootstrap.bundle.min.js" type="text/javascript"></script>
+    <script src="~/Content/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js" type="text/javascript"></script>
+    <script src="~/Content/plugins/datatables-responsive/js/dataTables.responsive.min.js" type="text/javascript"></script>
+    <script src="~/Content/plugins/datatables-responsive/js/responsive.bootstrap4.min.js" type="text/javascript"></script>
+    <script src="~/Content/plugins/datatables-buttons/js/dataTables.buttons.min.js" type="text/javascript"></script>
+    <script src="~/Content/plugins/datatables-buttons/js/buttons.bootstrap4.min.js" type="text/javascript"></script>
+    <script src="~/Content/plugins/jszip/jszip.min.js" type="text/javascript"></script>
+    <script src="~/Content/plugins/pdfmake/pdfmake.min.js" type="text/javascript"></script>
+    <script src="~/Content/plugins/pdfmake/vfs_fonts.js" type="text/javascript"></script>
+    <script src="~/Content/plugins/datatables-buttons/js/buttons.html5.min.js" type="text/javascript"></script>
+    <script src="~/Content/plugins/datatables-buttons/js/buttons.print.min.js" type="text/javascript"></script>
+    <script src="~/Content/plugins/datatables-buttons/js/buttons.colVis.min.js" type="text/javascript"></script>
+
+     
+    <!-- Modal for Attendance -->
+    <div class="modal fade" id="detailsModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document" style="margin:0 auto; display:flex; justify-content:center;">
+            <div class="modal-content" style="width:30vw; height:25vw">
+                <div class="modal-header" style="text-align:left;">
+                    <div class="card-header" style="width:10vw;">
+                        <h2 style="color: #3b5999;"><b>Attendance</b></h2>
+                    </div>
+                    <button type="button" class="close text-danger" data-dismiss="modal">&times;</button>
+                </div>
+                <div class="modal-body1"></div>
+
+            </div>
+        </div>
+    </div>
+
+    @*Modal for Assignments*@
+    <div class="modal fade" id="detailsModals" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel1" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel1" style="color: #3b5999;">Assignment</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body"></div>
+                <div class="modal-footer"></div>
+            </div>
+        </div>
+    </div>
+
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('.Edit').click(function () {
+                var TopicId = $(this).data('id');
+                var url = $(this).data('url');
+
+                if (url) {
+                    $.ajax({
+                        url: url,
+                        type: 'GET',
+                        data: { TopicId: TopicId },
+                        success: function (data) {
+                            $('#detailsModal .modal-body1').html(data);
+                            $('#detailsModal').modal('show');
+                        },
+                        error: function (jqXHR, textStatus, errorThrown) {
+                            console.error("AJAX error: ", {
+                                jqXHR: jqXHR,
+                                textStatus: textStatus,
+                                errorThrown: errorThrown
+                            });
+                        }
+                    });
+                } else {
+                    console.error("URL is not defined");
+                }
+            });
+
+            $('.Edits').click(function () {
+                var AssignScheduleId = $(this).data('id');
+                var url = $(this).data('url');
+
+                if (url) {
+                    $.ajax({
+                        url: url,
+                        type: 'GET',
+                        data: { AssignScheduleId: AssignScheduleId },
+                        success: function (data) {
+                            $('#detailsModals .modal-body').html(data);
+                            $('#detailsModals').modal('show');
+                        },
+                        error: function (jqXHR, textStatus, errorThrown) {
+                            console.error("AJAX error: ", {
+                                jqXHR: jqXHR,
+                                textStatus: textStatus,
+                                errorThrown: errorThrown
+                            });
+                        }
+                    });
+                } else {
+                    console.error("URL is not defined");
+                }
+            });
+        });
+    </script>
+
+    <script>
+        $(document).ready(function () {
+            var table = $('#Assigntable table').DataTable({
+                "responsive": true, "lengthChange": false, "autoWidth": false,"statesave":true,
+                "buttons": [
+                    {
+                        extend: 'copy',
+                        text: '<img src="/Content/Admin/icon/copy.png" title="Copy" alt="Copy" height="20" width="20" />',
+                        titleAttr: 'Copy'
+                    },
+                    {
+                        extend: 'csv',
+                        text: '<img src="/Content/Admin/icon/csv.jpg" title="CSV" alt="CSV" height="25" width="25" />',
+                        titleAttr: 'CSV'
+                    },
+                    {
+                        extend: 'excel',
+                        text: '<img src="/Content/Admin/icon/xls-file.png" title="xls" alt="xls" height="20" width="20" />',
+                        titleAttr: 'Excel'
+                    },
+                    {
+                         extend: 'pdfHtml5',
+                         text: '<img src="/Content/Admin/icon/pdf-file.png" title="pdf" alt="pdf" height="20" width="20" />',
+                         orientation: 'landscape',
+                        title: function() {
+                            return 'Topic List'; // Initial title, will be customized in the customize function
+                        },
+                        titleAttr: 'PDF',
+                        customize: function(doc) {
+                            // Get the current date
+                            var now = new Date();
+                            var formattedDate = now.getFullYear() + '-' + ('0' + (now.getMonth() + 1)).slice(-2) + '-' + ('0' + now.getDate()).slice(-2);
+
+                            // Adjust the margins of the title if necessary
+                            doc.content[1].margin = [0, 0, 0, 20]; // top, right, bottom, left
+
+                            // Create new content for the header
+                            var batchName = '@Html.Raw(ViewBag.BatchNameBS)';
+                            var headerContent = {
+                                columns: [
+                                   /* { text: 'Syllabus List', alignment: 'left' },*/
+                                    { text: 'Date: ' + formattedDate, alignment: 'right' }
+                                ]
+                            };
+                            var subHeaderContent = {
+                                columns: [
+                                    { text: '', alignment: 'left' }, // Empty left column
+                                    { text: 'Batch Name: ' + batchName, alignment: 'right' }
+                                ]
+                            };
+
+                            // Add the new header content before the table
+                            doc.content.splice(0, 0, headerContent);
+                            doc.content.splice(1, 0, subHeaderContent);
+                        }
+                    },
+                    {
+                        extend: 'print',
+                        text: '<img src="/Content/Admin/icon/printer.png" title="printer" alt="printer" height="20" width="20" />',
+                        titleAttr: 'Print'
+                    },
+                    {
+                        extend: 'colvis',
+                        text: '<img src="/Content/Admin/icon/column.jpg" title="column" alt="column" height="20" width="20" />',
+                        titleAttr: 'Columns'
+                    }
+                ],
+            }).buttons().container().appendTo('#Assigntable .col-md-6:eq(0)');
+
+        });
+    </script>
+
+</body>
+</html>
+

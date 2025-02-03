@@ -1,0 +1,198 @@
+﻿@model GSTEducationERPLibrary.Counsellor.Counsellor
+
+
+<table id="example1" class="table table-bordered">
+    <thead>
+        <tr>
+            <th>
+                Sr.No
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CandidateCode)
+            </th>
+            <th hidden>
+                Enq Id
+            </th>
+            <th hidden>
+                Enq Status Id
+            </th>
+            <th>
+                Full Name
+            </th>
+            <th>
+                Contact Number
+            </th>
+            <th>
+                Enquiry Date
+            </th>
+            <th>
+                Status
+            </th>
+            <th>
+                Action
+            </th>
+        </tr>
+    </thead>
+
+    <tbody id="example1">
+        @if (Model.lstReferenceAsyncSS != null && Model.lstReferenceAsyncSS.Any())
+        {
+            foreach (var item in Model.lstReferenceAsyncSS)
+            {
+                <tr class="status-filtered-row" data-status="@item.Status">
+                    <td>
+                        @Html.DisplayFor(modelItem => item.SerialNo)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.CandidateCode)
+                    </td>
+                    <td hidden>
+                        @Html.DisplayFor(modelItem => item.EnquiryId)
+                    </td>
+                    <td hidden>
+                        @Html.DisplayFor(modelItem => item.EnqStatusId)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.FullName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.ContactNumber)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.EnquiryDate)
+                    </td>
+                    <td align="center">
+                        @if (item.Status == "Enquire")
+                        {
+                            <span class="badge bg-gradient-blue">@Html.DisplayFor(modelItem => item.Status)</span>
+                        }
+                        @if (item.Status == "Enquiry Form Pending")
+                        {
+                            <span class="badge bg-gradient-orange">@Html.DisplayFor(modelItem => item.Status)</span>
+                        }
+                        @if (item.Status == "Hold")
+                        {
+                            <span class="badge bg-gradient-warning">@Html.DisplayFor(modelItem => item.Status)</span>
+                        }
+                        @if (item.Status == "Prospective")
+                        {
+                            <span class="badge bg-gradient-olive">@Html.DisplayFor(modelItem => item.Status)</span>
+                        }
+                    </td>
+
+                    <td @*class="alignmentforActionLinks"*@ align="center">
+                        <a href="@Url.Action("UpdateEnquirySks", "Counsellor", new { CandidateCode = item.CandidateCode, enqStatusId = item.EnqStatusId })" class="View" data-id="@item.CandidateCode" title="Edit">
+                            <video src="~/Content/Admin/icon/Edit Details.mp4" width="25" height="25" />
+                        </a>
+                        <a href="#" class="Detailes icon" data-id="@item.CandidateCode" data-url="@Url.Action("DetailsPlacemnetEnqurirySks", "Counsellor", new { CandidateCode = item.CandidateCode })" data-toggle="modal" data-target="#detailsModal" title="Details">
+                            <video width="25" height="25" playsinline loop>
+                                <source src="~/Content/Admin/icon/view.mp4" type="video/mp4">
+                            </video>
+                        </a>
+                        <a href="#" class="addfollowup icon" data-id="@item.CandidateCode" data-url="@Url.Action("EnquiryFollowUpVU", "Counsellor", new { id = item.CandidateCode })" data-toggle="modal" data-target="#DetailsModal"
+                           title="Add FollowUp">
+                            <video width="25" height="25" playsinline loop muted>
+                                <source src="~/Content/Admin/icon/add.mp4" type="video/mp4">
+
+                            </video>
+                        </a>
+                        @if (item.EnqStatusId != 78)
+                        {
+                            <a href="@Url.Action("IntExtAdmissionFormAM", "Counsellor", new { CandidateCode = item.CandidateCode })" class="video-link" title="Admission">
+                                <!-- Embed the video element -->
+                                <video width="20" height="20" playsinline loop>
+                                    <source src="~/Content/Admin/icon/id.mp4" type="video/mp4">
+                                </video>
+                            </a>
+                        }
+
+                    </td>
+                </tr>
+            }
+        }
+
+    </tbody>
+</table>
+
+<div id="partialModal1" class="modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document" style="margin: 0 auto; display: flex; justify-content: center; align-items: center;">
+        <div class="modal-content" style="height:41vw; width:43vw;">
+            <div class="modal-header" style="text-align: left;">
+                <div style="width: 60vw;">
+                    <h2><b>Details</b></h2>
+                </div>
+                <button class="close text-danger" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body1">
+                <div class="modal-footer">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="~/Content/Admin/js/Icon.js"></script>
+<div class="modal fade" id="DetailsModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-body">
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+<script src="~/Content/Admin/js/Icon.js"></script>
+<script type="text/javascript">
+    jQuery.noConflict();;
+    jQuery(document).ready(function ($) {
+        $(".Detailes").click(function () {
+            var $buttonClicked = $(this);
+            var id = $buttonClicked.data('id');
+            var url = $buttonClicked.data('url');
+            $.ajax({
+                type: "GET",
+                url: url,
+                data: { CandidateCode: id },
+                contentType: "application/json; charset=utf-8",
+                dataType: "html",
+                success: function (response) {
+                    $("#partialModal1 .modal-body1").html(response);
+                    $("#partialModal1").modal('show');
+                },
+                error: function (xhr, status, error) {
+                    alert("Error: " + error);
+                }
+            });
+        });          
+    });
+</script>
+
+<script type="text/javascript">
+    $('.addfollowup').click(function () {
+        var candidateCode = $(this).data('id');
+        var url = $(this).data('url');
+
+        console.log("CandidateCode:", candidateCode);
+        console.log("URL:", url);
+
+        // Check if URL and candidate code are defined
+        if (url && candidateCode) {
+            $.ajax({
+                url: url,
+                type: 'GET',
+                data: { CandidateCode: candidateCode },
+                success: function (data) {
+                    $('#DetailsModal .modal-body').html(data);
+                    $('#DetailsModal').modal('show');
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    console.error("AJAX Error:", textStatus, errorThrown);
+                }
+            });
+        } else {
+            console.error("URL or candidate code is not defined");
+        }
+    });
+</script>

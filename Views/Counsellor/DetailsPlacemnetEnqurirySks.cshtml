@@ -1,0 +1,151 @@
+﻿@model GSTEducationERPLibrary.Counsellor.Counsellor
+
+@{
+    ViewBag.Title = "DetailsPlacemnetEnqurirySks";
+}
+<br />
+
+<style>
+    span {
+        padding-top: 0;
+        margin-bottom: 0;
+        font-family: Verdana;
+        font-weight: unset;
+        font-size: small;
+        color: #33CCCC;
+    }
+</style> 
+
+<form id="quickForm">
+    <div class="card-body">
+        <div class="card card-primary">
+            <div class="form-group row" style="padding:4px;">
+                <div class="col-md-4">
+                    <h6><b>Full Name:</b></h6>
+                    <div class="col-md-10">
+                        <p style=" "><span style="color: #0c00ff;">@Model.FullName</span></p>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <h6><b>Gender:</b></h6>
+                    <div class="col-md-10">
+                        <p style=" "><span style="color: #0c00ff;">@Model.Gender</span></p>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <h6><b>EmailId:</b></h6>
+                    <div class="col-md-10">
+                        <p style=" "><span style="color: #0c00ff;">@Model.EmailId</span></p>
+                    </div>
+                </div>
+               
+            </div>
+
+
+            <div class="form-group row" style="padding:4px;">
+
+                <div class="col-md-4">
+                    <h6><b>Contact:</b></h6>
+                    <div class="col-md-10">
+                        <p style=" "><span style="color: #0c00ff;">@Model.ContactNumber</span></p>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <h6><b>Enquiry Date:</b></h6>
+                    <div class="col-md-10">
+                        <p style=" "><span style="color: #0c00ff;">@Model.EnquiryDate.ToShortDateString()</span></p>
+                    </div>
+                </div>
+
+
+                <div class="col-md-4">
+                    <h6><b>Present Address:</b></h6>
+                    <div class="col-md-10">
+                        <p style=" "><span style="color: #0c00ff;">@Model.PresentAddress</span></p>
+                    </div>
+                </div>
+               
+            </div>
+
+
+            <div class="form-group row" style="padding:4px;">
+
+                <div class="col-md-4">
+                    <h6><b>Present Pincode:</b></h6>
+                    <div class="col-md-10">
+                        <p style=" "><span style="color: #0c00ff;">@Model.PresentPincode</span></p>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <h6><b>PresentCity:</b></h6>
+                    <div class="col-md-10">
+                        <p style=" "><span style="color: #0c00ff;">@Model.PresentCity</span></p>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <h6><b>PermanentAddress:</b></h6>
+                    <div class="col-md-10">
+                        <p style=" "><span style="color: #0c00ff;">@Model.PermanentAddress</span></p>
+                    </div>
+                </div>               
+            </div>
+
+            <div class="form-group row" style="padding:4px;">
+
+                <div class="col-md-4">
+                    <h6><b>PermanentPincode:</b></h6>
+                    <div class="col-md-10">
+                        <p style=" "><span style="color: #0c00ff;">@Model.PermanentPincode</span></p>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <h6><b>PermanentCity:</b></h6>
+                    <div class="col-md-10">
+                        <p style=" "><span style="color: #0c00ff;">@Model.PermanantCity</span></p>
+                    </div>
+                </div>
+
+
+                <div class="col-md-4">
+                    <h6><b>Experience:</b></h6>
+                    <div class="col-md-10">
+                        <p style=" "><span style="color: #0c00ff;">@Model.Experience</span></p>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="form-group row" style="padding:4px;">
+                <div class="col-md-4">
+                    <h6><b>Previous Company Name:</b></h6>
+                    <div class="col-md-10">
+                        <p style=" "><span style="color: #0c00ff;">@Model.CompanyName</span></p>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <h6><b>Source From:</b></h6>
+                    <div class="col-md-10">
+                        <p style=" "><span style="color: #0c00ff;">@Model.SourceName</span></p>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <h6><b>Added By:</b></h6>
+                    <div class="col-md-10">
+                        <p style=" "><span style="color: #0c00ff;">@Model.EnquiryAddedStaff</span></p>
+                    </div>
+                </div>
+            </div>
+           
+        </div>
+    </div>
+</form>
+
+

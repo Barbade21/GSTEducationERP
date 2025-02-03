@@ -1,0 +1,451 @@
+@model GSTEducationERPLibrary.Coordinator.Coordinator
+
+@{
+    Layout = "~/Views/Shared/_LayoutERP.cshtml";
+}
+
+<html>
+<head>
+    <script src="~/Content/plugins/jquery/jquery.min.js"></script>
+    <style>
+        h2 {
+            padding-top: 10px;
+            margin-bottom: 10px;
+            font-family: Verdana;
+            font-weight: bold;
+            font-size: medium;
+            color: #33CCCC;
+        }
+
+        .dataTables_wrapper .btn-secondary {
+            color: #235;
+            background-color: transparent !important;
+            border-color: transparent;
+            font-size: x-large;
+            margin: 0px !important;
+        }
+
+        .card-primary.card-outline-tabs > .card-header a.active {
+            border-top: 3px solid #33CCCC;
+        }
+
+        a {
+            color: #33CCCC;
+        }
+
+        .card.card-outline-tabs .card-header a:hover {
+            color: #33CCCC;
+        }
+
+        .card-primary.card-outline-tabs > .card-header a.active, .card-primary.card-outline-tabs > .card-header a.active:hover {
+            border-top: 3px solid #33CCCC;
+        }
+
+        .card-body {
+            font-family: Calibri !important;
+            padding-bottom: 0px !important;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        th {
+            background-color: #33CCCC;
+            color: #000;
+            text-align: center !important;
+        }
+
+        td {
+            text-align: center;
+            color: black !important;
+        }
+
+        .table td {
+            padding: 0px 0px 0px 0px !important;
+            font-size: 14px !important;
+        }
+
+        .table th {
+            padding: 5px 5px 4px 10px !important;
+            font-size: 14px !important;
+        }
+
+        table.dataTable > thead .sorting:after, table.dataTable > thead .sorting:before {
+            font-size: xx-small !important;
+        }
+
+        div.dataTables_wrapper div.dataTables_filter {
+            margin-top: -40px !important;
+        }
+
+        div.dt-buttons {
+            margin-top: -40px !important;
+        }
+
+        .btn-group > .btn:not(:last-child):not(.dropdown-toggle), .btn-group > .btn-group:not(:last-child) > .btn {
+            padding-left: 5px !important;
+            padding-right: 5px !important;
+        }
+
+        div.dataTables_wrapper div.dataTables_filter label {
+            font-size: small !important;
+        }
+
+        div.dataTables_wrapper div.dataTables_filter input {
+            height: 20px !important;
+        }
+
+        div.dataTables_wrapper div.dataTables_info {
+            padding: 0px !important;
+            font-size: small !important;
+        }
+
+        div.dataTables_wrapper div.dataTables_paginate ul.pagination {
+            margin-top: -20px !important;
+        }
+
+        div.dataTables_wrapper div.dataTables_paginate {
+            font-size: small !important;
+        }
+
+        a {
+            color: #33CCCC;
+        }
+
+        .page-item.active .page-link {
+            background-color: #33CCCC;
+            border-color: #33CCCC;
+            color: #fff;
+        }
+
+        .table.dataTable.dtr-inline.collapsed > tbody > tr > td.dtr-control:before, table.dataTable.dtr-inline.collapsed > tbody > tr > th.dtr-control:before {
+            background-color: #33CCCC;
+        }
+
+        .dropdown-item.active, .dropdown-item:active {
+            background-color: #33CCCC;
+        }
+
+        .sidebar-dark-primary .nav-sidebar > .nav-item > .nav-link.active, .sidebar-light-primary .nav-sidebar > .nav-item > .nav-link.active {
+            background-color: #33CCCC;
+        }
+
+        h3, h5 {
+            color: #33CCCC;
+        }
+
+        .d-none {
+            display: none;
+        }
+    </style>
+</head>
+<body style="margin: 0; padding: 0;">
+    <br />
+    <div class="card" style="padding: 10px;">
+        <div class="row">
+            <div class="col-md-4">
+                <h2>Fees Collection</h2>
+            </div>
+        </div>
+        <hr />
+        <div class="card mt-4">
+            <div class="card-body">
+                <!-- Tab Navigation -->
+                <div class="container" style="margin-left:-10px;">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="card card-primary card-outline card-outline-tabs">
+                                <div class="card-header p-0 border-bottom-0">
+                                    <ul class="nav nav-tabs" id="custom-tabs-four-tab" role="tablist">
+                                        <li class="nav-item">
+                                            <a class="nav-link active" data-toggle="pill" href="#internal" id="internalstudents" role="tab" aria-controls="custom-tabs-four-home" aria-selected="true">Internal Students</a>
+                                        </li>
+                                       
+                                    </ul>
+                                </div>
+                                <div class="card-body">
+                                    <div class="tab-content" id="custom-tabs-four-tabContent">
+                                        <div class="tab-pane fade show active" id="internal" role="tabpanel" aria-labelledby="internalstudents">
+                                            <!-- Content for internal students will be loaded here -->
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Filters and Date Selection -->
+                <div class="row mt-3">
+                    <div class="col-md-2" id="Course">
+                        @Html.LabelFor(model => model.CourseCode, "Course Name", htmlAttributes: new { @class = "control-label" })
+                        @Html.DropDownListFor(model => model.CourseCode, new SelectList(ViewBag.Course, "Value", "Text"), "---Select Course---", new { @class = "form-control", required = "required", id = "CourseCode" })
+                        @Html.ValidationMessageFor(model => model.CourseCode, "", new { @class = "text-danger" })
+                    </div>
+
+                    <div class="col-md-2" id="Batch">
+                        @Html.LabelFor(model => model.BatchName, "Batch Name", htmlAttributes: new { @class = "control-label" })
+                        @Html.DropDownListFor(model => model.BatchName, new SelectList(Enumerable.Empty<SelectListItem>()), "---Select Batch---", new { @class = "form-control", id = "BatchName", required = "required" })
+                        @Html.ValidationMessageFor(model => model.BatchName, "", new { @class = "text-danger" })
+                    </div>
+                    
+                </div>
+
+                <!-- Student List -->
+                <div id="StudentList" class="mt-4">
+                    <!-- Table content will be loaded here -->
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Include JS files -->
+    <script src="~/Content/plugins/datatables/jquery.dataTables.min.js"></script>
+    <script src="~/Content/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
+    <script src="~/Content/plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
+    <script src="~/Content/plugins/datatables-responsive/js/responsive.bootstrap4.min.js"></script>
+    <script src="~/Content/plugins/datatables-buttons/js/dataTables.buttons.min.js"></script>
+    <script src="~/Content/plugins/datatables-buttons/js/buttons.bootstrap4.min.js"></script>
+    <script src="~/Content/plugins/jszip/jszip.min.js"></script>
+    <script src="~/Content/plugins/pdfmake/pdfmake.min.js"></script>
+    <script src="~/Content/plugins/pdfmake/vfs_fonts.js"></script>
+    <script src="~/Content/plugins/datatables-buttons/js/buttons.html5.min.js"></script>
+    <script src="~/Content/plugins/datatables-buttons/js/buttons.print.min.js"></script>
+    <script src="~/Content/plugins/datatables-buttons/js/buttons.colVis.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+
+ <script type="text/javascript">
+jQuery.noConflict();
+ jQuery(document).ready(function ($) {
+
+
+             if (sessionStorage.getItem('visitedRecietOfCollectedFees') === 'true') {
+                  // Remove the sessionStorage item to prevent reopening the tab on subsequent page loads
+                  sessionStorage.removeItem('visitedRecietOfCollectedFees');
+             }
+
+                // Load initial tab content
+            loadTabContent('@Url.Action("ListInternalStudentasyncSH", "Coordinator")');
+
+
+
+
+    // Function to filter student list based on filters
+    function filterStudentslst(tabId, Course, Batch, startDate, endDate, dateFilterType) {
+        var url = '@Url.Action("FilterFeeCollection", "Coordinator")' +
+            '?Course=' + encodeURIComponent(Course) +
+            '&Batch=' + encodeURIComponent(Batch) +
+            '&startDate=' + encodeURIComponent(startDate) +
+            '&endDate=' + encodeURIComponent(endDate) +
+            '&dateFilterType=' + encodeURIComponent(dateFilterType) +
+            '&tabId=' + encodeURIComponent(tabId);
+
+        $.ajax({
+            url: url,
+            type: 'GET',
+            success: function (response) {
+                $('#StudentList').html(response);
+                initializeDataTable();
+            },
+            error: function (xhr, status, error) {
+                console.error('AJAX Error:', status, error);
+            }
+        });
+    }
+
+    // Function to load tab content dynamically
+    function loadTabContent(url) {
+        $.ajax({
+            url: url,
+            type: 'GET',
+            success: function (response) {
+                $('#StudentList').html(response);
+                initializeDataTable();
+            },
+            error: function (xhr, status, error) {
+                console.error('Error loading tab content:', status, error);
+            }
+        });
+    }
+
+    // Initialize DataTables with buttons
+    function initializeDataTable() {
+        $('#StudentList table').DataTable({
+            "responsive": true,
+            "lengthChange": false,
+            "autoWidth": false,
+            "stateSave": true,
+            "dom": 'Bfrtip',
+            "buttons": [
+                { extend: 'copy', text: '<img src="/Content/Admin/icon/copy.png" title="Copy" alt="Copy" height="20" width="20" />', titleAttr: 'Copy' },
+                { extend: 'csv', text: '<img src="/Content/Admin/icon/csv.jpg" title="CSV" alt="CSV" height="20" width="20" />', titleAttr: 'CSV' },
+                { extend: 'excel', text: '<img src="/Content/Admin/icon/xls-file.png" title="xls" alt="xls" height="20" width="20" />', titleAttr: 'Excel' },
+                { extend: 'pdf', text: '<img src="/Content/Admin/icon/pdf-file.png" title="pdf" alt="pdf" height="20" width="20" />', titleAttr: 'PDF' },
+                { extend: 'print', text: '<img src="/Content/Admin/icon/printer.png" title="printer" alt="printer" height="20" width="20" />', titleAttr: 'Print' },
+                { extend: 'colvis', text: '<img src="/Content/Admin/icon/column.jpg" title="column" alt="column" height="20" width="20" />', titleAttr: 'Columns' }
+            ]
+        });
+    }
+
+    // Initialize filter event handlers
+    function initializeFilterEventHandlers() {
+        var Course = $('#CourseCode option:selected').text();
+        var Batch = $('#BatchName option:selected').text();
+        var startDate = $('#StartDate').val();
+        var endDate = $('#endDate').val();
+        var dateFilterType = $('#DateFilterType').val();
+
+        $('#CourseCode').off('change').on('change', function () {
+            Course = $('#CourseCode option:selected').text();
+            filterStudentslst(getActiveTabId(), Course, Batch, startDate, endDate, dateFilterType);
+
+            var selectedCourse = $(this).val();
+            if (selectedCourse) {
+                var url = '@Url.Action("ListALLBatchSNAsync", "Coordinator")';
+                console.log("AJAX URL: " + url);  // Output the URL to the console for debugging
+                $.ajax({
+                    url: url,
+                    type: 'GET',
+                    data: { CourseCode: selectedCourse },
+                    success: function (data) {
+                        console.log("Data received: ", data);  // Log the data for debugging
+                        var batchDropdown = $("#BatchName");
+                        batchDropdown.empty();
+                        batchDropdown.append($('<option/>', {
+                            value: '',
+                            text: '---Select Batch---'
+                        }));
+                        $.each(data, function (i, batch) {
+                            batchDropdown.append($('<option/>', {
+                                value: batch.Value,
+                                text: batch.Text
+                            }));
+                        });
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('AJAX Error:', status, error);  // Log the error for debugging
+                    }
+                });
+            } else {
+                $("#BatchName").empty().append($('<option/>', {
+                    value: '',
+                    text: '---Select Batch---'
+                }));
+            }
+        });
+
+        $('#BatchName').off('change').on('change', function () {
+            if (!Course) {
+                $('#BatchName').val(''); // Clear the batch selection if no course is selected
+                toastr.warning('Please select a course before choosing a batch.', 'Warning');
+            } else {
+                Batch = $('#BatchName option:selected').text();
+                filterStudentslst(getActiveTabId(), Course, Batch, startDate, endDate, dateFilterType);
+            }
+        });
+
+       
+
+       
+
+        // Set default values on tab load
+        $(document).ready(function () {
+            var todayString = getTodayString();
+            var tabId = getActiveTabId();
+
+            if (tabId === 'internal') {
+                var endDate = new Date();
+                endDate.setMonth(endDate.getMonth() + 1); // End date is 1 month from today
+                var endDateString = endDate.toISOString().split('T')[0]; // YYYY-MM-DD
+
+                var startDate = new Date(endDate);
+                startDate.setMonth(startDate.getMonth() - 6); // Start date is 6 months before end date
+                var startDateString = startDate.toISOString().split('T')[0]; // YYYY-MM-DD
+
+                $('#StartDate').val(startDateString);
+                $('#endDate').val(endDateString);
+            } 
+        });
+
+       
+    }
+
+    // Function to get the active tab ID
+    function getActiveTabId() {
+        return $('#custom-tabs-four-tab a.active').attr('href').substring(1);
+    }
+
+    // Function to get today's date as a string in YYYY-MM-DD format
+    function getTodayString() {
+        var today = new Date();
+        return today.toISOString().split('T')[0];
+    }
+
+    // Tab click event to load respective content
+    $('#custom-tabs-four-tab a').on('click', function (e) {
+        e.preventDefault();
+        let tabId = $(this).attr('href').substring(1);
+        let url = '';
+
+        if (tabId === 'internal') {
+            url = '@Url.Action("ListInternalStudentasyncSH", "Coordinator")';
+            $('#Course, #Batch, #DateType').removeClass('d-none');
+        } 
+
+        if (url) {
+            loadTabContent(url);
+            $(this).tab('show');
+        } else {
+            console.error('Invalid tabId:', tabId);
+        }
+    });
+
+    // Initial filter setup
+    var initialCourse = $('#CourseCode option:selected').text();
+    var initialBatch = $('#BatchName option:selected').text();
+
+    var initialTabID = getActiveTabId();
+
+    if (initialTabID || initialCourse || initialBatch || initialStartDate || initialEndDate || initialDateFilterType) {
+        filterStudentslst(initialTabID, initialCourse, initialBatch, initialStartDate, initialEndDate, initialDateFilterType);
+    }
+
+    // Initialize event handlers
+     initializeFilterEventHandlers();
+
+
+     $(document).ready(function () {
+
+         // Function to activate a specific tab by its ID
+         function activateTab(tabId) {
+             $('#custom-tabs-four-tab a[href="#' + tabId + '"]').tab('show'); // Open the tab
+         }
+
+         // Check if there's a 'tab' parameter in the URL
+         var urlParams = new URLSearchParams(window.location.search);
+         var tabParam = urlParams.get('tab');
+
+         if (tabParam) {
+             // If a tab parameter exists, open the corresponding tab
+             activateTab(tabParam);
+
+             // Optionally trigger the tab click handler to load content
+             $('#custom-tabs-four-tab a[href="#' + tabParam + '"]').trigger('click');
+         }
+     });
+
+ });
+ </script>
+
+
+
+  
+       
+    
+
+
+
+</body>
+</html>

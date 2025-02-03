@@ -1,0 +1,294 @@
+﻿@model GSTEducationERPLibrary.Accountant.Accountant
+
+@{
+    ViewBag.Title = "BankAccountStatementAsyncAN";
+    Layout = "~/Views/Shared/_LayoutERP.cshtml";
+}
+
+<head>
+    <script src="~/Scripts/jquery-3.7.1.js"></script>
+    <style>
+        .custom-table {
+            border-collapse: separate; /* Allows for separate borders and rounded corners */
+            border-spacing: 0 5px; /* Add space between rows */
+            width: 100%; /* Optional: Ensure full width */
+            border: none; /* Remove default table border */
+        }
+
+            .custom-table th, .custom-table td {
+                border: none; /* Remove cell borders */
+                padding: 10px; /* Add padding for cell content */
+                background: transparent; /* Ensure no default background */
+                text-align: center; /* Center text horizontally */
+            }
+
+            .custom-table tbody tr {
+                background: transparent; /* Make row background transparent */
+                border-radius: 10px; /* Round corners for entire row */
+                overflow: hidden; /* Clip content to rounded corners */
+            }
+
+                .custom-table tbody tr.credit {
+                    background-color: #EEEEFF; /* Faint green for Credit rows */
+                    color: darkgreen;
+                }
+
+                .custom-table tbody tr.debit {
+                    background-color: #ffe4e1; /* Faint red for Debit rows */
+                    color: darkred;
+                }
+
+                    .custom-table tbody tr.credit td:first-child,
+                    .custom-table tbody tr.debit td:first-child {
+                        border-top-left-radius: 10px; /* Round top-left corner */
+                        border-bottom-left-radius: 10px; /* Round bottom-left corner */
+                    }
+
+                    .custom-table tbody tr.credit td:last-child,
+                    .custom-table tbody tr.debit td:last-child {
+                        border-top-right-radius: 10px; /* Round top-right corner */
+                        border-bottom-right-radius: 10px; /* Round bottom-right corner */
+                    }
+
+        h2 {
+            padding-top: 10px;
+            margin-bottom: 10px;
+            font-family: Verdana;
+            font-weight: bold;
+            font-size: medium;
+            color: #33CCCC;
+        }
+    </style>
+    <style>
+        .card {
+            padding: 10px;
+        }
+
+        td {
+            text-align: center;
+            padding: 8px;
+        }
+
+            td p {
+                margin: 0;
+            }
+
+        strong {
+            font-weight: bold;
+        }
+
+        @@keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .custom-table tbody tr {
+            opacity: 0; /* Start with rows hidden */
+            animation: fadeInUp 0.5s ease-out forwards; /* Apply the fade-in animation */
+            animation-delay: calc(var(--stagger-delay) * 0.1s); /* Use the custom property for staggered delays */
+        }
+    </style>
+
+</head>
+<body>
+    <div style="margin:20px"></div>
+    <div class="card">
+        <div class="col-md-6 text-left mt-1" style="padding-left:20px; padding-bottom:10px;">
+            <h2>Bank Account Statement</h2>
+        </div>
+
+
+
+        <div class="card" style="width:95%; margin: 0 auto;">
+            <table class="bg-gradient-blue">
+                <tr>
+                    <td><p><strong>Bank Name:</strong> @Model.BankName</p></td>
+                    <td><p><strong>Account Number:</strong> @Model.BankAccountNumber</p></td>
+                @*</tr>
+                <tr>*@
+                    <td><p><strong>Account Holder:</strong> @Model.AccountHolderName</p></td>
+                    <td><p><strong>Closing Balance:</strong> @String.Format("{0:N2} ₹", Model.BankAmount)</p></td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="card-body">
+            <div class="col-6">
+                <div class="input-group">
+                    <div class="col-md-12 row">
+                        <div class="form-group row">
+                            <label for="startDate" class="col-md-4.5 col-form-label">Start Date</label>
+                            <div class="col-md-7.5">
+                                <input type="date" class="form-control" id="startDateFilter" name="startDate">
+                            </div>
+                        </div>
+                        <div class="form-group row" style="margin-left:2vw; ">
+                            <label for="endDate" class="col-md-4 col-form-label">End Date</label>
+                            <div class="col-md-8">
+                                <input type="date" class="form-control" id="endDateFilter" name="endDate">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <table id="example1" class="table table-bordered table-striped custom-table">
+                <thead>
+                    <tr>
+                        <th>Transaction Date</th>
+                        <th hidden>Transaction Date</th>
+                        @*<th>Name</th>*@
+                        <th>Transaction Id</th>
+                        <th>Description</th>
+                        <th>Status</th>
+                        <th>Payment Type</th>
+                        <th>Amount</th>
+                        <th>Balance</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (int i = 0; i < Model.lstBankTransactions.Count; i++)
+                    {
+                        var item = Model.lstBankTransactions[i];
+                        <tr class="@(item.TransactionType == "Credit" ? "credit" : "debit")"
+                            style="--stagger-delay:@i">
+                            <td>@Html.DisplayFor(modelItem => item.Date.ToString("dd/MM/yyyy"))</td>
+                            <td hidden>@Html.DisplayFor(modelItem => item.Date)</td>
+                            <td>@Html.DisplayFor(modelItem => item.TransactionId)</td>
+                            <td>@Html.DisplayFor(modelItem => item.ReceiverBankAccountHolderName) / @Html.DisplayFor(modelItem => item.Description)</td>
+                            <td>@Html.DisplayFor(modelItem => item.Status)</td>
+                            <td>@Html.DisplayFor(modelItem => item.PaymentType)</td>
+                            <td>@String.Format("₹ {0:N2}", item.Amount)</td>
+                            <td>@String.Format("₹ {0:N2}", item.Balance)</td>
+                        </tr>
+                    }
+                </tbody>
+
+            </table>
+        </div>
+    </div>
+
+    <script>
+        jQuery.noConflict();
+
+        jQuery(document).ready(function ($) {
+            refreshFilter();
+
+            function initializeFilterEventHandlers() {
+                var status = $('#statusFilter').val();
+                var startDate = $('#startDateFilter').val();
+                var endDate = $('#endDateFilter').val();
+
+                $('#statusFilter').off('change').on('change', function () {
+                    var startDate = $('#startDateFilter').val();
+                    var endDate = $('#endDateFilter').val();
+                    status = $(this).val();
+                    if (endDate) {
+                        endDate += " 23:59:59";
+                    }
+                    filterPurchases(status, startDate, endDate);
+                });
+
+                $('#startDateFilter').off('change').on('change', function () {
+                    startDate = $(this).val();
+                    filterPurchases(status, startDate, endDate);
+                });
+
+                $('#endDateFilter').off('change').on('change', function () {
+                    var startDate = $('#startDateFilter').val();
+                    var endDate = $(this).val();
+
+                    filterPurchases(status, startDate, endDate);
+                });
+
+
+
+            }
+
+
+            $('#startDateFilter').off('change').on('change', function () {
+                startDate = $(this).val();
+                filterPurchases(startDate, endDate);
+            });
+
+            $('#endDateFilter').off('change').on('change', function () {
+                var startDate = $('#startDateFilter').val();
+                var endDate = $(this).val();
+
+                filterPurchases(startDate, endDate);
+            });
+
+
+            function filterPurchases(startDate, endDate) {
+                var url = '@Url.Action("FilterForAccountlist", "Accountant")' +
+                '&startDate=' + encodeURIComponent(startDate) +
+                '&endDate=' + encodeURIComponent(endDate);
+
+                $.ajax({
+                url: url,
+                type: 'GET',
+                success: function (data) {
+                $('#CashList').html(data);
+                initializeDataTable();
+                },
+                    error: function () {
+                    alert('Error loading filtered content.');
+                 }
+            });
+            }
+
+            // Initialize filter event handlers
+
+            initializeFilterEventHandlers();
+
+
+
+            // Refresh filter with default dates and status
+            function refreshFilter() {
+
+                var today = new Date();
+                // Calculate one year before the current date
+                var before = new Date();
+                before.setMonth(today.getMonth());
+                before.setDate(1); // Set the date to the first day of the next month
+
+                // Format dates as YYYY-MM-DD strings
+                var startDate = formatDate(before);
+                var formattedEndDate = formatDate(today);
+
+                // Set the values of start date and end date inputs
+                $('#startDateFilter').val(startDate);
+                $('#endDateFilter').val(formattedEndDate);
+
+
+                $('#startDateFilter').attr('max', formattedEndDate);
+                $('#endDateFilter').attr('max', formattedEndDate);  // used to validate end date as a till today not tommarow
+                // Other JavaScript code goes here...
+
+                // Function to format date as YYYY-MM-DD
+                function formatDate(date) {
+                    var month = String(date.getMonth() + 1).padStart(2, '0');
+                    var day = String(date.getDate()).padStart(2, '0');
+                    var year = date.getFullYear();
+
+                    return year + '-' + month + '-' + day;
+                }
+                $('[data-toggle="tooltip"]').tooltip();
+
+                // Initial load of purchases with default dates and status
+                var startDate = $('#startDateFilter').val();
+                var endDate = $('#endDateFilter').val();
+
+                filterPurchases( startDate, endDate);
+            }
+        });
+
+    </script>
+</body>

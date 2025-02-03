@@ -1,0 +1,1722 @@
+@model GSTEducationERPLibrary.Counsellor.Counsellor
+
+@{
+    ViewBag.Title = "IntExtAdmissionFormAM";
+    Layout = "~/Views/Shared/_LayoutERP.cshtml";
+}
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="~/Content/plugins/jquery/jquery.min.js"></script>
+    <script src="~/Content/plugins/bootstrap/js/bootstrap.min.js"></script>
+
+    <link href="~/Content/plugins/bs-stepper/css/bs-stepper.min.css" rel="stylesheet" />
+    <link href="~/Content/plugins/bs-stepper/css/bs-stepper.css" rel="stylesheet" />
+    <script src="~/Content/plugins/bs-stepper/js/bs-stepper.min.js"></script>
+    <script src="~/Content/plugins/bs-stepper/js/bs-stepper.js"></script>
+    <link href="~/Content/plugins/icheck-bootstrap/icheck-bootstrap.min.css" rel="stylesheet" />
+
+    <link href="~/Content/plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css" rel="stylesheet" />
+    <link href="~/Content/plugins/sweetalert2/sweetalert2.min.css" rel="stylesheet" />
+    <script src="~/Content/plugins/sweetalert2/sweetalert2.all.min.js"></script>
+
+    <link href="~/Content/plugins/toastr/toastr.min.css" rel="stylesheet" />
+    <script src="~/Content/plugins/toastr/toastr.min.js"></script>
+
+    <style>
+
+        .select2-container .select2-selection--single {
+            height: 38px !important;
+            width: 200px !important;
+        }
+
+        .select2 select2-container select2-container--default select2-container--below select2-container--focus {
+            width: 450px !important;
+        }
+
+        #Comment {
+            height: 100%;
+            width: 100% !important;
+        }
+
+        #VendorName {
+            width: 280px;
+        }
+
+        .required-field::after {
+            content: "*";
+            color: red;
+            margin-left: 5px;
+        }
+
+        /* Blurred background effect */
+        .blurred-background {
+            filter: blur(8px); /* Adjust the blur intensity */
+            transition: filter 0.3s ease; /* Smooth transition for blur effect */
+        }
+        /* Customize the Select2 dropdown */
+        .select2-container--default .select2-selection--multiple .select2-selection__choice {
+            background-color: purple; /* Background color of selected items */
+            color: white; /* Text color of selected items */
+        }
+
+            /* Optional: Change the hover color of selected items */
+            .select2-container--default .select2-selection--multiple .select2-selection__choice:hover {
+                background-color: darkviolet; /* Darker shade on hover */
+                color: white; /* Ensure text remains white on hover */
+            }
+        .btn-custom-color {
+            background-color: #0080ff;
+        }
+    </style>
+
+</head>
+
+
+<body>
+    @using (Html.BeginForm("IntExtAdmissionFormAM", "Counsellor", FormMethod.Post, new { enctype = "multipart/form-data", id = "AdmissionForm" }))
+    {
+        @Html.AntiForgeryToken()
+
+        <div class="card card-default">
+            <div class="card-header">
+                <h3 class="card-title">Admission Form</h3>
+            </div>
+            <div class="card-body p-0">
+                <div class="bs-stepper">
+                    <div class="bs-stepper-header" role="tablist">
+                        <!-- your steps here -->
+                        <div class="step" data-target="#PersonalInfo-part">
+                            <button type="button" class="step-trigger" role="tab" aria-controls="PersonalInfo-part" id="PersonalInfo-part-trigger">
+                                <span class="bs-stepper-circle">1</span>
+                                <span class="bs-stepper-label">Personal Information</span>
+                            </button>
+                        </div>
+
+                        <div class="line"></div>
+                        <div class="step" data-target="#AddressInfo-part">
+                            <button type="button" class="step-trigger" role="tab" aria-controls="AddressInfo-part" id="AddressInfo-part-trigger">
+                                <span class="bs-stepper-circle">2</span>
+                                <span class="bs-stepper-label">Address information</span>
+                            </button>
+                        </div>
+                        <div class="line"></div>
+                        <div class="step" data-target="#EducationInfo-part">
+                            <button type="button" class="step-trigger" role="tab" aria-controls="EducationInfo-part" id="EducationInfo-part-trigger">
+                                <span class="bs-stepper-circle">3</span>
+                                <span class="bs-stepper-label">Education</span>
+                            </button>
+                        </div>
+                        <div class="line"></div>
+                        <div class="step" data-target="#ExperienceInfo-part">
+                            <button type="button" class="step-trigger" role="tab" aria-controls="ExperienceInfo-part" id="ExperienceInfo-part-trigger">
+                                <span class="bs-stepper-circle">4</span>
+                                <span class="bs-stepper-label">Experience</span>
+                            </button>
+                        </div>
+                        <div class="line"></div>
+                        <div class="step" data-target="#PaymentInfo-part">
+                            <button type="button" class="step-trigger" role="tab" aria-controls="PaymentInfo-part" id="PaymentInfo-part-trigger">
+                                <span class="bs-stepper-circle">5</span>
+                                <span class="bs-stepper-label">Payment</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="bs-stepper-content">
+
+                        <div id="PersonalInfo-part" class="content" role="tabpanel" aria-labelledby="PersonalInfo-part-trigger">
+
+                            <div class="row justify-content-center ">
+
+                            </div>
+                            <br />
+                            <div id="PersonalInfoView">
+
+                                <div class="form-group row">
+                                    <label class="col-sm-2 col-form-label" for="FullName">Full Name:@Html.ValidationMessageFor(model => model.FullName, "*", new { @class = "text-danger" })</label>
+                                    <div class="col-sm-4">
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text"><i class="fas fa-user"></i></span>
+                                            </div>
+                                            @Html.HiddenFor(model => model.EnquiryFor, new { htmlAttributes = new { @class = "form-control", @id = "EnquiryFor", @required = "required", } })
+                                            @Html.HiddenFor(model => model.CandidateCode, new { htmlAttributes = new { @class = "form-control", @id = "CandidateCode", @required = "required", } })
+                                            @Html.EditorFor(model => model.FullName, new { htmlAttributes = new { @class = "form-control", @id = "FullName", @placeholder = "Enter Name", @required = "required", @pattern = "^[a-zA-Z\\s]+$", @title = "Only alphabets and spaces are allowed", @maxlength = "50", onkeydown = "return (event.key === 'Backspace' ||  /^[a-zA-Z\\s]$/.test(event.key))" } })
+                                        </div>
+                                        @Html.ValidationMessageFor(model => model.FullName, "", new { @class = "text-danger" })
+                                    </div>
+
+
+                                    <label class="col-sm-2 col-form-label" for="gender">Gender: @Html.ValidationMessageFor(model => model.Gender, "*", new { @class = "text-danger" })</label>
+                                    <div class="col-sm-4">
+                                        <div class="form-group">
+                                            <div class="form-group clearfix">
+                                                <div class="radio icheck-primary d-inline">
+                                                    <input type="radio" id="Male" name="gender" value="Male">
+                                                    <label for="Male" style="display: inline;">Male</label>
+                                                </div>
+                                                <div class="radio icheck-primary d-inline">
+                                                    <input type="radio" id="Female" name="gender" value="Female">
+                                                    <label for="Female" style="display: inline;">Female</label>
+                                                </div>
+                                                <div class="radio icheck-primary d-inline">
+                                                    <input type="radio" id="Other" name="gender" value="Other">
+                                                    <label for="Other" style="display: inline;">Other</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-group row">
+
+                                    <label class="col-sm-2 col-form-label" for="EmailId">Email Id:@Html.ValidationMessageFor(model => model.EmailId, "*", new { @class = "text-danger" })</label>
+
+                                    <div class="col-sm-4">
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text"><i class="fas fa-envelope"></i></span>
+                                            </div>
+                                            @Html.EditorFor(model => model.EmailId, new { htmlAttributes = new { @class = "form-control", @id = "EmailId", @required = "required", @maxlength = "50", @type = "email", @placeholder = "example@gmail.com" } })
+                                        </div>
+                                        @Html.ValidationMessageFor(model => model.EmailId, "", new { @class = "text-danger" })
+                                        <span style="color:lightslategrey; padding-right:10px; display:block;"> This Email-Id will be used for student login.</span>
+
+                                    </div>
+
+                                    <label class="col-sm-2 col-form-label" for="StudMobileNo">Mobile No: @Html.ValidationMessageFor(model => model.StudMobileNo, "*", new { @class = "text-danger" })</label>
+
+                                    <div class="col-sm-4">
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text"><i class="fas fa-phone"></i></span>
+                                            </div>
+                                            @Html.EditorFor(model => model.StudMobileNo, new { htmlAttributes = new { @class = "form-control", @placeholder = "Contact Number", @id = "StudMobileNo", @maxlength = "10", @required = "required", @pattern = "\\d{10}", @title = "Enter a 10-digit mobile number", onkeydown = "return (event.key === 'Backspace' || /^[0-9]$/.test(event.key) || event.key === 'Tab')" } })
+                                        </div>
+                                        @Html.ValidationMessageFor(model => model.StudMobileNo, " ", new { @class = "text-danger" })
+                                    </div>
+
+                                </div>
+
+                                <div class="form-group row">
+                                    <label class="col-sm-2 col-form-label" for="AlternateNumber">Alternate Number:</label>
+                                    <div class="col-sm-4">
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text"><i class="fas fa-phone-alt"></i></span>
+                                            </div>
+                                            @Html.EditorFor(model => model.AlternateNumber, new { htmlAttributes = new { @class = "form-control", @id = "AlternateNumber", @placeholder = "Alternate Number", @pattern = "\\d{10}", @maxlength = "10", onkeydown = "return (event.key === 'Backspace' || /^[0-9]$/.test(event.key) || event.key === 'Tab'))" } })
+                                        </div>
+                                        @Html.ValidationMessageFor(model => model.AlternateNumber, "", new { @class = "text-danger", })
+                                    </div>
+
+
+                                    <label class="col-sm-2 col-form-label" for="DateOfBirth">Birth Date:@Html.ValidationMessageFor(model => model.DateOfBirth, "*", new { @class = "text-danger" }) </label>
+                                    <div class="col-sm-4">
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text"><i class="fas fa-calendar-alt"></i></span>
+                                            </div>
+                                            @Html.EditorFor(model => model.DateOfBirth, new { htmlAttributes = new { @class = "form-control", @id = "DateOfBirth", @required = "required", @type = "date" } })
+                                        </div>
+                                        @Html.ValidationMessageFor(model => model.DateOfBirth, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+
+                                <div class="form-group row">
+                                    <label class="col-sm-2 col-form-label" for="BloodGroup">
+                                        Blood Group:
+                                        @Html.ValidationMessageFor(model => model.BloodGroup, "*", new { @class = "text-danger" })
+                                    </label>
+
+                                    <div class="col-sm-4">
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text"><i class="fas fa-tint"></i></span>
+                                            </div>
+                                            <select id="BloodGroup" name="BloodGroup" class="form-control">
+                                                <option value="" disabled selected>Select your option</option>
+                                                <option value="A+">A+</option>
+                                                <option value="A-">A-</option>
+                                                <option value="B+">B+</option>
+                                                <option value="B-">B-</option>
+                                                <option value="AB+">AB+</option>
+                                                <option value="AB-">AB-</option>
+                                                <option value="O+">O+</option>
+                                                <option value="O-">O-</option>
+                                                <option value="O-">NA</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-group row">
+                                    <label class="col-sm-2 col-form-label" for="FatherName">Father Name:@Html.ValidationMessageFor(model => model.FatherName, "*", new { @class = "text-danger" }) </label>
+
+                                    <div class="col-sm-4">
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text"><i class="fas fa-user-tie"></i></span>
+                                            </div>
+
+                                             @Html.EditorFor(model => model.FatherName, new
+                                            {
+                                            htmlAttributes = new
+                                            {
+                                            @class = "form-control",
+                                            @id = "FatherName",
+                                            @placeholder = "Father Name",
+                                            @maxlength = "50",
+                                            @required = "required",
+                                            @pattern = "^[a-zA-Z\\s]+$", 
+                                            @title = "Please enter a valid Father name (letters and spaces only)",
+                                            onkeydown = "return (event.key === 'Backspace' || /^[a-zA-Z\\s]+$/.test(event.key) || event.key === 'Tab')"
+                                            }
+                                            })
+                                        </div>
+                                        @Html.ValidationMessageFor(model => model.FatherName, "", new { @class = "text-danger" })
+                                    </div>
+
+
+
+                                    <label class="col-sm-2 col-form-label" for="FatherContactNo">Father Contact:@Html.ValidationMessageFor(model => model.FatherContactNo, "*", new { @class = "text-danger" }) </label>
+
+                                    <div class="col-sm-4">
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text"><i class="fas fa-phone"></i></span>
+                                            </div>
+                                            @Html.EditorFor(model => model.FatherContactNo, new { htmlAttributes = new { @class = "form-control", @required = "required", @placeholder = "Father Number", @pattern = "\\d{10}", @maxlength = "10", onkeydown = "return (event.key === 'Backspace' || /^[0-9]$/.test(event.key) || event.key === 'Tab')" } })
+                                        </div>
+                                        @Html.ValidationMessageFor(model => model.FatherContactNo, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+
+                                <div class="form-group row">
+                                    <label class="col-sm-2 col-form-label" for="MotherName">Mother Name:@Html.ValidationMessageFor(model => model.MotherName, "*", new { @class = "text-danger" }) </label>
+
+                                    <div class="col-sm-4">
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text"><i class="fas fa-user-tie"></i></span>
+                                            </div>
+                                            @Html.EditorFor(model => model.MotherName, new { htmlAttributes = new { @class = "form-control", @id = "MotherName", @maxlength = "50", @placeholder = "Mother Name", @required = "required", @pattern = "^[a-zA-Z\\s]+$", @title = "Please enter Mother  name", onkeydown = "return (event.key === 'Backspace' ||  /^[a-zA-Z\\s]$/.test(event.key) || event.key === 'Tab')" } })
+                                        </div>
+                                        @Html.ValidationMessageFor(model => model.MotherName, "", new { @class = "text-danger" })
+                                    </div>
+
+                                    <label class="col-sm-2 col-form-label" for="MotherContactNo">Mother Contact:</label>
+                                    <div class="col-sm-4">
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text"><i class="fas fa-phone"></i></span>
+                                            </div>
+                                              @Html.EditorFor(model => model.MotherContactNo, new
+                                            {
+                                            htmlAttributes = new
+                                            {
+                                            @class = "form-control",
+                                            @placeholder = "Mother Number",
+                                            @pattern = "^[0-9]{10}$", // Only 10 digits allowed
+                                            @required = "required",
+                                            @maxlength = "10", // Limits input to 10 characters
+                                            @title = "Please enter a 10-digit contact number",
+                                            onkeydown = "return (event.key === 'Backspace' || /^[0-9]$/.test(event.key) || event.key === 'Tab')"
+                                            }
+                                            })
+                                        </div>
+                                        @Html.ValidationMessageFor(model => model.MotherContactNo, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+
+                                <br />
+                                <br />
+
+                                <div class="form-group" style="text-align: center;">
+                                    <button class="btn btn-primary btn-sm" type="button" id="SavePersonalAndNext" style="margin-right:30px;">SAVE & NEXT</button>
+                                    <a href="#" class="btn btn-danger btn-sm" onclick="goBack()">CANCEL</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="AddressInfo-part" class="content" role="tabpanel" aria-labelledby="AddressInfo-part-trigger">
+                            <div class="container">
+                                <div class="form-group row">
+
+                                    <div class="col-md-6">
+                                        <label for="PresentAddress" class="col-form-label">Present Address:@Html.ValidationMessageFor(model => model.PresentAddress, "*", new { @class = "text-danger" })</label>
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text"><i class="fas fa-map-marker-alt"></i></span>
+                                            </div>
+                                            @Html.TextAreaFor(model => model.PresentAddress, new { @class = "form-control", @placeholder = "Present Address...", @id = "PresentAddress", style = "height:120px;" })
+                                        </div>
+                                        @Html.ValidationMessageFor(model => model.PresentAddress, "", new { @class = "text-danger" })
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <label for="PermanentAddress" class="col-form-label">Permanent Address:@Html.ValidationMessageFor(model => model.PermanentAddress, "*", new { @class = "text-danger" })</label>
+
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text"><i class="fas fa-home"></i></span>
+                                            </div>
+                                            @Html.TextAreaFor(model => model.PermanentAddress, new { @class = "form-control", @id = "PermanentAddress", @placeholder = "Permanant Address...", style = "height:120px;" })
+                                        </div>
+                                        @Html.ValidationMessageFor(model => model.PermanentAddress, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+
+                                <div class="form-group row">
+                                    <div class="col-md-6">
+                                        <label class="col-form-label" for="presentpincode">Present Pincode:@Html.ValidationMessageFor(model => model.PresentPincode, "*", new { @class = "text-danger" })</label>
+
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text"><i class="fa fa-map-marker"></i></span>
+                                            </div>
+                                            @Html.EditorFor(model => model.PresentPincode, new { htmlAttributes = new { @class = "form-control", @required = "required", @placeholder = "Present Pincode", @maxlength = "06", @pattern = "\\d{6}", onkeydown = "return (event.key === 'Backspace' || /^[0-9]$/.test(event.key))" } })
+                                        </div>
+                                        @Html.ValidationMessageFor(model => model.PresentPincode, "", new { @class = "text-danger" })
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <label class="col-form-label" for="permanantpincode">Permanent Pincode:@Html.ValidationMessageFor(model => model.PermanantPincode, "*", new { @class = "text-danger" })</label>
+
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text"><i class="fas fa-landmark"></i></span>
+                                            </div>
+                                            @Html.EditorFor(model => model.PermanantPincode, new { htmlAttributes = new { @class = "form-control", @id = "permanantpincode", @placeholder = "Permanant Pincode", @maxlength = "06", @required = "required", @type = "Pincode", @pattern = "\\d{6}", onkeydown = "return (event.key === 'Backspace' || /^[0-9]$/.test(event.key))" } })
+
+                                            @Html.ValidationMessageFor(model => model.PermanantPincode, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-group row">
+                                    <div class="col-md-6">
+                                        <label for="country" class="col-form-label">Present Country:@Html.ValidationMessageFor(model => model.CountryId, "*", new { @class = "text-danger" })</label>
+
+                                        @Html.ValidationMessageFor(model => model.CountryId, "", new { @class = "text-danger" })
+                                        @Html.DropDownListFor(model => model.CountryId, new SelectList(ViewBag.Country, "Value", "Text"), "Select", new { @class = "form-control", @required = "required", id = "country" })
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label for="state" class="col-form-label">Present State:@Html.ValidationMessageFor(model => model.StateId, "*", new { @class = "text-danger" })</label>
+
+                                        @Html.ValidationMessageFor(model => model.StateId, "", new { @class = "text-danger" })
+                                        <select class="form-control" id="state" name="state" style="width:100%">
+                                            <option value="">---Select State---</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label for="city" class="col-form-label">Present City:</label>
+                                        <select class="form-control" id="city" name="PresentCityId" style="width:100%">
+                                            <option value="">---Select City---</option>
+                                        </select>
+                                        <span id="cityError" style="color:red;"></span>
+                                    </div>
+                                </div>
+
+                                <div class="form-group row">
+                                    <div class="col-md-6">
+                                        <label for="additionalCountryDropdown" class="col-form-label">Permanent Country:</label>
+                                        @Html.ValidationMessageFor(model => model.CountryId, "*", new { @class = "text-danger" })
+                                        @Html.DropDownList("AdditionalCountry", (IEnumerable<SelectListItem>)ViewBag.AdditionalCountry, "Select Country", new { @class = "form-control", id = "additionalCountryDropdown" })
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label for="additionalStateDropdown" class="col-form-label">Permanent State:</label>
+                                        @Html.ValidationMessageFor(model => model.State, "*", new { @class = "text-danger" })
+                                        <select id="additionalStateDropdown" class="form-control" style="width:100%">
+                                            <option value="">---Select State---</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label for="additionalCityDropdown" class="col-form-label">Permanent City:</label>
+                                        <select class="form-control" id="additionalCityDropdown" name="PermanantCityid" style="width:100%">
+                                            <option value="">---Select City---</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                            <div class="form-group" style="text-align: center;">
+                                <button class="btn btn-primary btn-sm" type="button" id="SaveAddAndNext" style="margin-right:30px;">SAVE & NEXT</button>
+                                <button class="btn btn-primary btn-sm previous" type="button">Previous</button>
+
+                            </div>
+
+                        </div>
+                        <div id="EducationInfo-part" class="content" role="tabpanel" aria-labelledby="EducationInfo-part-trigger">
+                            <div class="container">
+                                <div class="row" id="Course-form">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="EnrollCourseName">Select Course:@Html.ValidationMessageFor(model => model.EnrollCourseName, "*", new { @class = "text-danger" })</label>
+                                            <div class="input-group">
+                                                <div class="input-group-prepend">
+                                                    <button type="button" class="btn dropdown-toggle btn-custom-color" data-toggle="dropdown" id="btnFetchDependentCourses">
+                                                        Action
+                                                    </button>
+                                                    <ul class="dropdown-menu">
+                                                        <li class="dropdown-item"><a href="#" id="interestedCoursesBtn">Intrested Courses</a></li>
+                                                        <li class="dropdown-item"><a href="#" id="otherCoursesBtn">Other Courses</a></li>
+                                                    </ul>
+                                                </div>
+
+                                                <select id="EnrollCourseName" name="CourseCode" class="form-control">
+                                                    <option value="" disabled selected>Select course name</option>
+                                                    @foreach (System.Data.DataRow Data in ViewBag.Course.Tables[0].Rows)
+                                                    {
+                                                        <option value="@Data["CourseCode"]">@Data["CourseName"]</option>
+                                                    }
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+
+                                        <div class="form-group">
+                                            <label for="BatchName">Select Batch:@Html.ValidationMessageFor(model => model.BatchName, "*", new { @class = "text-danger" })</label>
+
+                                            <div class="input-group">
+                                                <select id="BatchName" name="BatchCode" class="form-control">
+                                                    <option value="" disabled selected>Select Batch Name</option>
+                                                    <option>NA</option>
+                                                </select>
+                                                <div class="input-group-append">
+                                                    <span class="input-group-text"><i class="fas fa-graduation-cap"></i></span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="container mt-4">
+
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <label class="mr-2" for="Graduation">Graduation:@Html.ValidationMessageFor(model => model.Graduation, "*", new { @class = "text-danger", @id = "GraduationId" })</label>
+
+                                            <div class="input-group mb-3">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text"><i class="fas fa-school"></i></span>
+                                                </div>
+                                                @Html.DropDownList("GraduationId", (IEnumerable<SelectListItem>)ViewBag.GraduationList, "---SELECT---", new { @class = "form-control", @id = "GraduationId" })
+                                                @Html.ValidationMessageFor(model => model.Graduation, "", new { @class = "text-danger" })
+                                            </div>
+                                        </div>
+                                          <div class="col-md-6">
+     <label class="mr-2" for="PostGraduation">
+         Post Graduation:
+         @Html.ValidationMessageFor(model => model.PG, "", new { @class = "text-danger" })
+     </label>
+
+     <div class="input-group mb-3">
+         <div class="input-group-prepend">
+             <span class="input-group-text"><i class="fas fa-school"></i></span>
+         </div>
+         <select class="form-control" id="PostgraduationId" name="PostGraduation"></select>
+         @Html.ValidationMessageFor(model => model.PostGraduation, "", new { @class = "text-danger" })
+     </div>
+ </div>
+                                    
+                                        <div class="col-md-6">
+      <div class="form-group">
+          <label for="SSCYear" class="mr-2">SSC: <span class="text-danger">*</span></label>
+          <input type="date" id="SSCYear" name="SSCYear" class="form-control" required>
+          <label for="SSCCertificate" class="mr-2">SSC Certificate:</label>
+          <input type="file" id="SSCFile" name="UploadSSCYearFile" accept=".jpg,.png,.pdf" class="form-control-file" required>
+      </div>
+  </div>
+
+  <div class="col-md-6">
+      <div class="form-group">
+          <label for="HSCYear" class="mr-2">HSC: <span class="text-danger">*</span></label>
+          <input type="date" id="HSCYear" name="HSCYear" class="form-control" required>
+          <label for="HSCCertificate" class="mr-2">HSC Certificate:</label>
+          <input type="file" id="HSCFile" name="UploadHSCYearFile" accept=".jpg,.png,.pdf" class="form-control-file" required>
+      </div>
+  </div>
+
+  <div class="col-md-6">
+      <div class="form-group">
+          <label for="GraduationYear" class="mr-2">Graduation Year: <span class="text-danger">*</span></label>
+          <input type="date" id="GraduationYear" name="GraduationYear" class="form-control" required>
+          <label for="GraduationCertificate" class="mr-2">Graduation Certificate: </label>
+          <input type="file" id="GraduationFile" name="UploadGraduationFile" accept=".jpg,.png,.pdf" class="form-control-file mt-2" required>
+      </div>
+  </div>
+
+  <div class="col-md-6">
+      <div class="form-group">
+          <label for="PGYear" class="mr-2">Post-Graduation Year: </label>
+          <input type="date" id="PGYear" name="PGYear" class="form-control" required>
+          <label for="PGCertificate" class="mr-2">Post-Graduation Certificate: </label>
+          <input type="file" id="PGFile" name="UploadPGFile" accept=".jpg,.png,.pdf" class="form-control-file mt-2" required>
+      </div>
+  </div>
+
+
+                                    </div>
+                                    <div class="row mt-4">
+                                        <div class="col-md-12 text-center">
+                                            <button type="button" class="btn btn-primary btn-sm" id="addButton">Add</button>
+                                        </div>
+                                    </div>
+                                    <div class="row mt-4">
+										<div class="col-md-12">
+											<table class="table table-bordered">
+												<thead>
+													<tr>
+														<th scope="col">No.</th>
+														<th scope="col">Selected Education</th>
+														<th scope="col">Year</th>
+														<th scope="col">File Name</th>
+														<th scope="col">Action</th> <!-- New column for remove button -->
+													</tr>
+												</thead>
+												<tbody id="educationTableBody">
+												</tbody>
+											</table>
+										</div>
+									</div>
+                                </div>
+                                <script>
+    // Add event listener to the "Add" button
+    document.getElementById('addButton').addEventListener('click', function () {
+        let educationDetails = [
+            { name: 'SSC', year: document.getElementById('SSCYear').value, file: document.getElementById('SSCFile').files[0] || null },
+            { name: 'HSC', year: document.getElementById('HSCYear').value, file: document.getElementById('HSCFile').files[0] || null },
+            { name: 'Graduation', year: document.getElementById('GraduationYear').value, file: document.getElementById('GraduationFile').files[0] || null },
+            { name: 'Post-Graduation', year: document.getElementById('PGYear').value, file: document.getElementById('PGFile').files[0] || null }
+        ];
+
+        let tableBody = document.getElementById('educationTableBody');
+
+        educationDetails.forEach((detail, index) => {
+            if (detail.year) {
+                // Check if a row already exists for this education level
+                let existingRow = tableBody.querySelector(`[data-education="${detail.name}"]`);
+
+                if (existingRow) {
+                    // Replace the data in the existing row
+                    existingRow.cells[2].innerHTML = detail.year;
+                    existingRow.cells[3].innerHTML = detail.file ? detail.file.name : "null";
+                } else {
+                    // If no existing row, create a new row
+                    let newRow = tableBody.insertRow();
+                    newRow.setAttribute('data-education', detail.name); // Set a unique attribute to identify the row
+
+                    let cell1 = newRow.insertCell(0);
+                    let cell2 = newRow.insertCell(1);
+                    let cell3 = newRow.insertCell(2);
+                    let cell4 = newRow.insertCell(3);
+                    let cell5 = newRow.insertCell(4); // New cell for the Remove button
+
+                    // Get current row index for the number column
+                    let rowIndex = tableBody.rows.length;
+
+                    cell1.innerHTML = rowIndex;
+                    cell2.innerHTML = detail.name;
+                    cell3.innerHTML = detail.year;
+                    cell4.innerHTML = detail.file ? detail.file.name : "null";
+
+                    // Add a Remove button in the Action column
+                    let removeButton = document.createElement('button');
+                    removeButton.className = 'btn btn-danger btn-sm';
+                    removeButton.innerHTML = 'Remove';
+                    <video controls="controls">
+                        <source src="~/Content/Admin/icon/remove.mp4" type="video/mp4" />
+                    </video>
+                    removeButton.onclick = function () {
+                        tableBody.deleteRow(newRow.rowIndex - 1); // Remove the row
+                        updateRowNumbers(); // Reassign row numbers after removal
+                    };
+                    cell5.appendChild(removeButton);
+                }
+            }
+        });
+
+        // Update row numbers
+        updateRowNumbers();
+    });
+
+    // Function to update the row numbers after a row is removed or added
+    function updateRowNumbers() {
+        let rows = document.getElementById('educationTableBody').rows;
+        for (let i = 0; i < rows.length; i++) {
+            rows[i].cells[0].innerHTML = i + 1; // Update the "No." column
+        }
+    }
+</script>
+                            </div>
+                            <br />
+                            <div class="form-group" style="text-align: center;">
+                                <button class="btn btn-primary btn-sm" type="button" id="SaveEduAndNext" style="margin-right:30px;">SAVE & NEXT</button>
+                                <button class="btn btn-primary btn-sm previous" type="button">Previous</button>
+                            </div>
+
+                        </div>
+                        <div id="ExperienceInfo-part" class="content" role="tabpanel" aria-labelledby="ExperienceInfo-part-trigger">
+                            <div class="form-group">
+                                <div>
+                                    Do you have any experience:
+                                    <input type="radio" name="IsExperience" value="Yes" onclick="enableFields()"> Yes
+                                    <input type="radio" name="IsExperience" value="No" onclick="disableFields()"> No
+                                    <br><br>
+
+                                    <div class="form-group row">
+                                        <label class="col-sm-2 col-form-label" for="Industry">Industry :</label>
+                                        <div class="col-sm-4">
+                                            <select class="form-control select2" id="Industry" name="IndustryId" required>
+                                                <option value="" disabled selected title="Select Industry">---Select Industry---</option>
+                                                @foreach (System.Data.DataRow Data in ViewBag.Industry.Tables[0].Rows)
+                                                {
+                                                    <option value="@Data["InduastryId"]">@Data["InduastryName"]</option>
+                                                }
+                                            </select>
+                                        </div>
+                                        <label class="col-sm-2 col-form-label" for="CompanyName" style="padding-top: 7px;">Company Name:</label>
+                                        <div class="col-sm-4">
+                                            <div class="input-group">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text"><i class="fas fa-building"></i></span>
+                                                </div>
+                                                <input type="text" id="CompanyName" name="CompanyName" class="form-control" style="padding-left: 30px;" maxlength="50">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label class="col-sm-2 col-form-label" for="Department">Department :</label>
+                                        <div class="col-sm-4">
+                                            <select class="form-control select2" id="Department" name="Department" required>
+                                                <option value="" disabled selected title="Select Department">---Select Department---</option>
+                                                @foreach (System.Data.DataRow Data in ViewBag.Department.Tables[0].Rows)
+                                                {
+                                                    <option value="@Data["DepartmentId"]">@Data["DepartmentName"]</option>
+                                                }
+                                            </select>
+                                        </div>
+
+                                        <label class="col-sm-2 col-form-label" for="Designation">Designation :</label>
+                                        <div class="col-sm-4">
+                                            <select class="form-control select2" id="Designation" name="Designation" required>
+                                                <option value="" disabled selected title="Select Designation">---Select Designation---</option>
+                                                @foreach (System.Data.DataRow Data in ViewBag.Designation.Tables[0].Rows)
+                                                {
+                                                    <option value="@Data["DesignationId"]">@Data["DesignationName"]</option>
+                                                }
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group row">
+                                        <label class="col-sm-2 col-form-label" for="Period" style="padding-top: 7px;">Experience:</label>
+                                        <div class="col-sm-4">
+                                            <div class="input-group">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text"><i class="fas fa-calendar-alt"></i></span>
+                                                </div>
+                                                <input type="text" id="field3" for="Period" name="Experience" class="form-control" style="padding-left: 30px;" maxlength="7">
+                                            </div>
+                                        </div>
+                                        <label class="col-sm-2 col-form-label" for="CTC" style="padding-top: 7px;">CTC:</label>
+                                        <div class="col-sm-4">
+                                            <div class="input-group">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text"><i class="fas fa-dollar-sign"></i></span>
+                                                </div>
+                                                <input type="text" for="CTC" id="CTC" name="CTC" class="form-control" style="padding-left: 30px;" maxlength="7">
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group row">
+                                        <label class="col-sm-2 col-form-label" for="SalarySlip" style="padding-top: 7px;">Salary Slip:</label>
+                                        <div class="col-sm-4">
+                                            <div class="input-group">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text"><i class="fas fa-file-invoice-dollar"></i></span>
+                                                </div>
+                                                <div class="custom-file">
+                                                    <input type="file" id="SalarySlip" name="UploadSalarySlip" accept=".jpg,.png,.pdf" class="custom-file-input">
+                                                    <label class="custom-file-label" for="SalarySlip">Choose file</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <label class="col-sm-2 col-form-label" for="ExperienceLetter" style="padding-top: 7px;">Experience Letter:</label>
+                                        <div class="col-sm-4">
+                                            <div class="input-group">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text"><i class="fas fa-file"></i></span>
+                                                </div>
+                                                <div class="custom-file">
+                                                    <input type="file" id="ExperienceLetter" name="UploadExperienceLetter" accept=".jpg,.png,.pdf" class="custom-file-input">
+                                                    <label class="custom-file-label" for="ExperienceLetter">Choose file</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <div class="col-md-6">
+                                            <label for="ExpCountryId" class="col-form-label">Country:</label>
+                                            @Html.ValidationMessageFor(model => model.ExpCountryId)
+                                            @Html.DropDownList("ExpCountryId", (IEnumerable<SelectListItem>)ViewBag.AdditionalCountry, "Select Country", new { @class = "form-control", id = "ExpCountryId" })
+                                        </div>
+                                        <div class="col-md-3">
+                                            <label for="ExpStateId" class="col-form-label">State:</label>
+                                            @Html.ValidationMessageFor(model => model.ExpStateId)
+                                            <select id="ExpState" class="form-control" name="ExpStateId" style="width:100%">
+                                                <option value="">---Select State---</option>
+                                                <!-- other options here -->
+                                            </select>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <label for="ExpCityId" class="col-form-label"> City:</label>
+                                            <select class="form-control" id="ExpCity" name="ExpCityId" style="width:100%">
+                                                <option value="">---Select City---</option>
+                                                <!-- other options here -->
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row mt-4">
+                                    <div class="col-md-12 text-center">
+                                        <button type="button" class="btn btn-primary" id="addExperienceBtn">Add Experience</button>
+                                    </div>
+                                </div>
+
+
+                                <!-- Add Table for Multiple Experiences -->
+                                <div class="form-group">
+                                    <h3>Previous Experiences</h3>
+                                    <table class="table table-bordered" id="experienceTable">
+                                        <thead>
+                                            <tr>
+                                                <th>Industry</th>
+                                                <th>Company Name</th>
+                                                <th>Department</th>
+                                                <th>Designation</th>
+                                                <th>Period</th>
+                                                <th>CTC</th>
+                                                <th>Salary Slip</th>
+                                                <th>Experience Letter</th>
+                                                <th>City</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <!-- Rows will be added here dynamically -->
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                            </div>
+                            <br />
+                            <div class="form-group" style="text-align: center;">
+                                <button class="btn btn-primary btn-sm" type="button" id="SaveExpAndNext" style="margin-right:30px;">SAVE & NEXT</button>
+                                <button class="btn btn-primary btn-sm previous" type="button">Previous</button>
+                            </div>
+
+                        </div>
+                        <div id="PaymentInfo-part" class="content" role="tabpanel" aria-labelledby="PaymentInfo-part-trigger">
+                            <div class="form-group" id="Payment-form">
+                                <div class="form-group form-inline">
+                                    <div class="control-label mr-2">
+                                        <label for="AadharCard">AADHAAR CARD:@Html.ValidationMessageFor(model => model.AadharCard, "*", new { @class = "text-danger" })</label>
+
+                                        <input type="file" id="AadharCard" name="UploadAadharCard" accept=".jpg,.png,.pdf" class="form-control-file" style="padding-left:10px;">
+                                    </div>
+                                    <div class="control-label ml-4 mr-2">
+                                        <label for="PanCard">PAN CARD :@Html.ValidationMessageFor(model => model.PanCard, "*", new { @class = "text-danger" })</label>
+
+                                        <input type="file" id="PanCard" name="UploadPanCard" accept=".jpg,.png,.pdf" class="form-control-file" style="padding-left:10px;">
+                                    </div>
+                                    <div class="control-label ml-4 mr-2">
+                                        <label for="Photo">PHOTO:@Html.ValidationMessageFor(model => model.Photo, "*", new { @class = "text-danger" })</label>
+
+                                        <input type="file" id="Photo" name="UploadPhoto" accept=".jpg,.png" class="form-control-file" style="padding-left:10px;">
+                                    </div>
+                                </div>
+
+                                <div class="form-group row" id="Course-data">
+
+                                    <label class="col-sm-2 col-form-label" for="CourseFee">Course Fee :@Html.ValidationMessageFor(model => model.CourseFee, "*", new { @class = "text-danger" })</label>
+
+                                    <div class="col-sm-4">
+                                        <input type="text" id="CourseFee" name="CourseFee" class="form-control" required>
+                                        <span class="text-danger">@Html.ValidationMessageFor(model => model.CourseFee, "", new { @class = "text-danger" })</span>
+                                    </div>
+
+
+                                    <label class="col-sm-2 col-form-label" for="NoofInstallment">No of Installments:@Html.ValidationMessageFor(model => model.NoofInstallment, "*", new { @class = "text-danger" })</label>
+
+                                    <div class="col-sm-4">
+                                        <input type="text" id="NoofInstallment" name="NoofInstallment" class="form-control" required>
+                                        <span class="text-danger">@Html.ValidationMessageFor(model => model.NoofInstallment, "", new { @class = "text-danger", @pattern = "\\d{10}", @maxlength = "1" })</span>
+                                    </div>
+
+
+                                </div>
+                                <div class="form-group row" id="divPaymentdropdown">
+                                    <label class="col-sm-2 col-form-label" for="PaymentMode">Payment Mode :@Html.ValidationMessageFor(model => model.PaymentMode, "*", new { @class = "text-danger" })</label>
+
+                                    <div class="col-sm-4">
+                                        <select id="PaymentMode" name="PaymentMode" class="form-control">
+                                            <option value="">---Select Mode---</option>
+                                            <option value="Cash">Cash</option>
+                                            <option value="Online">Bank</option>
+                                        </select>
+                                    </div>
+                                    <label class="col-sm-2 col-form-label" for="RegistrationFee">Registration Fee :@Html.ValidationMessageFor(model => model.RegistrationFee, "*", new { @class = "text-danger" })</label>
+
+                                    <div class="col-sm-4">
+                                        <input type="text" id="RegistrationFee" name="RegistrationFee" class="form-control" required>
+                                        <span class="text-danger">@Html.ValidationMessageFor(model => model.RegistrationFee, "", new { @class = "text-danger", @pattern = "\\d{10}", onkeydown = "return (event.key === 'Backspace' || /^[0-9]$/.test(event.key))" })</span>
+                                    </div>
+                                </div>
+                                <div class="form-group row" id="Discount-Data">
+                                    <label class="col-sm-2 col-form-label" for="PayableFee">Discounted Fee :@Html.ValidationMessageFor(model => model.PayableFee, "*", new { @class = "text-danger" })</label>
+
+                                    <div class="col-sm-4">
+                                        <input type="text" id="PayableFee" name="PayableFee" class="form-control" value="0" required>
+                                        <span class="text-danger">@Html.ValidationMessageFor(model => model.PayableFee, "", new { @class = "text-danger", @pattern = "\\d{10}" })</span>
+                                    </div>
+
+                                    <label class="col-sm-2 col-form-label" for="Discount">
+                                        Discount:
+                                        @Html.ValidationMessageFor(model => model.Discount, "", new { @class = "text-danger", @pattern = "\\d{3}" })
+                                    </label>
+
+                                    <div class="col-sm-4">
+                                        <input type="text" id="Discount" name="Discount" class="form-control" placeholder="%">
+                                        <span class="text-danger"></span>
+
+                                        <!-- Add the checkbox here -->
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="ApplyDiscount" name="DiscountStatusId">
+                                            <label class="form-check-label" for="DiscountStatusId">
+                                                Apply Discount
+                                            </label>
+                                        </div>
+                                        <script>
+                                            document.getElementById('ApplyDiscount').addEventListener('change', function () {
+                                                var discountStatusId = this.checked ? '6' : null;
+
+                                                // Assuming you want to pass this value to a form or use it in some way:
+                                                console.log(discountStatusId);
+
+                                                // If you want to set the value of a hidden input field or similar:
+                                                document.getElementsByName('DiscountStatusId')[0].value = discountStatusId;
+                                            });
+                                        </script>
+
+                                    </div>
+
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-2 col-form-label" for="TransactionId">Transaction Id:</label>
+                                    <div class="col-sm-4">
+                                        <input type="text" id="TransactionId" name="TransactionId" class="form-control" required maxlength="20">
+                                        <span class="text-danger">@Html.ValidationMessageFor(model => model.TransactionId, "", new { @class = "text-danger" })</span>
+                                    </div>
+
+                                    <label class="col-sm-2 col-form-label" for="BankName">Bank:@Html.ValidationMessageFor(model => model.BankName, "", new { @class = "text-danger" })</label>
+                                    <div class="col-sm-4">
+                                        <div class="input-group-prepend" id="divBankdropdown">
+                                            <span class="input-group-text"><i class="fas fa-bank" id="bankforError"></i></span>
+                                            @Html.DropDownListFor(model => model.BankName, new SelectList(ViewBag.BankName, "Value", "Text"), "---Select Bank---",
+                                            new { @class = "form-control", id = "Bank", Style = "width:320px;" })
+                                        </div>
+                                    </div>
+
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-2 col-form-label" for="Comment">Comment :</label>
+                                    <div class="col-sm-4">
+
+                                        @Html.TextAreaFor(model => model.Comment, new { @class = "form-control", @id = "Comment", @placeholder = " Add Comment here....", style = "height:120px;" })
+
+                                        <span class="text-danger">@Html.ValidationMessageFor(model => model.Comment, "", new { @class = "text-danger" })</span>
+                                    </div>
+
+                                </div>
+
+                            </div>
+                            <br />
+                            <div class="form-group" style="text-align: center;">
+                                <button class="btn btn-success btn-sm" type="button" id="SavePaymentAndSubmit" style="margin-right:30px;">Submit</button>
+                                <button class="btn btn-primary btn-sm previous" type="button" style="margin-right:30px;">Previous</button>
+                                <a href="@Url.Action("AdmissionDetails")" class="btn btn-danger btn-sm" style="margin-right:30px;">CANCEL</a>
+                            </div>
+
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+
+
+
+    }
+
+
+    <script>
+    function SubmitForm() {
+        var experienceData = [];
+        $('#experienceTable tbody tr').each(function () {
+            var row = $(this);
+            var experience = {
+                industry: row.find('td:eq(0)').text(),
+                industryId: row.find('td:eq(0)').data('id'),
+                companyName: row.find('td:eq(1)').text(),
+                department: row.find('td:eq(2)').text(),
+                departmentId: row.find('td:eq(2)').data('id'),
+                designation: row.find('td:eq(3)').text(),
+                designationId: row.find('td:eq(3)').data('id'),
+                period: row.find('td:eq(4)').text(),
+                ctc: row.find('td:eq(5)').text(),
+                salarySlip: row.find('td:eq(6)').text(),
+                experienceLetter: row.find('td:eq(7)').text(),
+                city: row.find('td:eq(8)').text(),
+                cityId: row.find('td:eq(8)').data('id'),
+            };
+            experienceData.push(experience);
+        });
+
+        var formData = new FormData($('#AdmissionForm')[0]);
+        formData.append('experienceData', JSON.stringify(experienceData));
+
+        $.ajax({
+            url: 'IntExtAdmissionFormAM',
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function (response) {
+
+                toastr.success('Form submitted successfully!');
+				 window.location.href = '@Url.Action("AdmissionDetails", "Counsellor")';
+            },
+            error: function (xhr, status, error) {
+
+                toastr.error('Error submitting form: ' + error);
+				// window.location.href = '@Url.Action("AdmissionDetails", "Counsellor")';
+            }
+        });
+    }
+
+    $('#SavePaymentAndSubmit').click(function () {
+        debugger;
+        if (ValidatePaymentDetails()) {
+            SubmitForm();
+        }
+
+    });
+	
+	  function ValidatePaymentDetails() {
+            var isValid = true;
+
+            var aadharCard = $('#AadharCard').val();
+            var panCard = $('#PanCard').val();
+            var photo = $('#Photo').val();
+            var courseFee = $('#CourseFee').val().trim();
+            var registrationFee = $('#RegistrationFee').val().trim();
+            var paymentMode = $('#PaymentMode').val();
+            var discount = $('#Discount').val().trim();
+            var payableFee = $('#PayableFee').val().trim();
+            var noofInstallment = $('#NoofInstallment').val().trim();
+            var transactionId = $('#TransactionId').val().trim();
+            var checkDate = $('#CheckDate').val();
+            var comment = $('#Comment').val().trim();
+            var bankName = $('#Bank').val();
+            var noOfInstallmentField = $('#NoofInstallment');
+          var CourseFeeField = $('#CourseFee');
+          debugger;
+            if (!aadharCard) {
+                toastr.error('Validation Error', "AADHAAR Card is required", 'error');
+                isValid = false;
+            }
+            if (!panCard) {
+                toastr.error('Validation Error', "PAN Card is required", 'error');
+                isValid = false;
+            }
+            if (!photo) {
+                toastr.error('Validation Error', "Photo is required", 'error');
+                isValid = false;
+            }
+            if (CourseFeeField.is(':visible')) {
+                if (!courseFee) {
+                    toastr.error('Validation Error', "Course Fee is required", 'error');
+                    isValid = false;
+                }
+            }
+            if (!registrationFee) {
+                toastr.error('Validation Error', "Registration Fee is required", 'error');
+                isValid = false;
+            }
+            if (!paymentMode) {
+                toastr.error('Validation Error', "Payment Mode is required", 'error');
+                isValid = false;
+            }
+
+            if (noOfInstallmentField.is(':visible')) {
+
+                if (!noofInstallment) {
+                    toastr.error('Validation Error', "Number of Installments is required", 'error');
+                    isValid = false;
+                }
+            }
+            if (!comment) {
+                toastr.error('Validation Error', "Comment is required", 'error');
+                isValid = false;
+            }
+            if ($('#divBankdropdown').is('visible')) {
+                if (!bankName) {
+                    toastr.error('Validation Error', "Bank Name is required", 'error');
+                    isValid = false;
+                }
+            }
+
+            if (isValid) {
+                toastr.success('Success', "Payment Information Added!", 'success');
+            }
+            return isValid;
+        }
+
+
+    $(document).ready(function () {
+        var stepper = new Stepper($('.bs-stepper')[0]);
+		
+		$(document).on('change', '#GraduationId', function () {
+
+     var id = $(this).val();
+     console.log("Selected GraduationId: ", id);
+
+
+     if (id && id != "") {
+         populatePostGraduation(id);
+     } 
+ });
+
+        function gotonext() {
+            stepper.next();
+        }
+        function gotoprevious() {
+            stepper.previous();
+        }
+
+        $('.previous').click(function () {
+            gotoprevious();
+        });
+        // Stepper navigation buttons
+        $('#SavePersonalAndNext, #SaveAddAndNext, #SaveEduAndNext, #SaveExpAndNext').click(function () {
+            debugger;
+            if (this.id === 'SavePersonalAndNext') {
+                if (ValidatePersonalInfo()) {
+                    gotonext();
+                }
+            } else if (this.id === 'SaveAddAndNext') {
+                if (ValidateResidentialInfo()) {
+                    gotonext();
+                }
+
+            } else if (this.id === 'SaveEduAndNext') {
+                if (ValidateEducationalInfo()) {
+                    gotonext();
+                }
+
+            } else if (this.id === 'SaveExpAndNext') {
+
+                console.log('SaveExpAndNext clicked');
+                gotonext();
+            }
+        });
+
+        $('#btnFetchDependentCourses').text('Intrested Courses');
+        $('#FullName').css('font-weight', 'bold');
+        $('#StudMobileNo').prop('disabled', true);
+        
+
+        var existingGender = '@Model.Gender';
+        if (existingGender) {
+            $('input[name="gender"]').prop('disabled', true);
+            $('input[name="gender"][value="' + existingGender + '"]').prop('checked', true);
+        }
+
+        var enquiryFor = $('#EnquiryFor').val();
+        if (enquiryFor === 'Placement') {
+            $('#Course-form, #Course-data, #Discount-Data').hide();
+        }
+
+        $('#country').val('@ViewBag.PreCountryId');
+        $('#additionalCountryDropdown').val('@ViewBag.PrmCountryId');
+
+        // Populate functions
+        populateStates('#state', '@ViewBag.PreCountryId', '@ViewBag.PreStateId');
+        populateCities('#city', '@ViewBag.PreStateId', '@ViewBag.PreCityId');
+        populateStates('#additionalStateDropdown', '@ViewBag.PrmCountryId', '@ViewBag.PrmStateId');
+        populateCities('#additionalCityDropdown', '@ViewBag.PrmStateId', '@ViewBag.PrmCityId');
+       // populatePostGraduation();
+
+
+
+        // Populates states for a given country
+        function populateStates(stateElementId, countryId, selectedStateId) {
+            $(stateElementId).empty();
+            $.post("/Counsellor/GetStateNameSk", { CountryId: countryId }, function (data) {
+                var options = "<option value=''>---Select State---</option>";
+                $.each(data, function (i, state) {
+                    options += "<option value='" + state.Value + "'>" + state.Text + "</option>";
+                });
+                $(stateElementId).html(options);
+                if (selectedStateId) {
+                    $(stateElementId).val(selectedStateId);
+                }
+            });
+        }
+
+        // Populates cities for a given state
+        function populateCities(cityElementId, stateId, selectedCityId) {
+            $(cityElementId).empty();
+            $.get("/Counsellor/GetCityNameSk", { StateId: stateId }, function (data) {
+                var options = "<option value=''>---Select City---</option>";
+                $.each(data, function (i, city) {
+                    options += "<option value='" + city.Value + "'>" + city.Text + "</option>";
+                });
+                $(cityElementId).html(options);
+                if (selectedCityId) {
+                    $(cityElementId).val(selectedCityId);
+                }
+            });
+        }
+        
+
+        function ValidatePersonalInfo() {
+         
+            var fullName = $('#FullName').val().trim();
+            var email = $('#EmailId').val().trim();
+            var studMobileNo = $('#StudMobileNo').val().trim();
+            var dateOfBirth = $('#DateOfBirth').val().trim();
+            var fatherName = $('#FatherName').val().trim();
+            var fatherContactNo = $('#FatherContactNo').val().trim();
+            var bloodGroup = $('#BloodGroup').val();
+            var motherName = $('#MotherName').val().trim();
+            var motherContactNo = $('#MotherContactNo').val().trim();
+
+            if (fullName === "" || !isValidName(fullName)) {
+                toastr.error("Invalid Full Name");
+                return false;
+            }
+            if (!isValidEmail(email)) {
+                toastr.error("Invalid Email");
+                return false;
+            }
+            if (studMobileNo === "" || !isValidMobileNo(studMobileNo)) {
+                toastr.error("Invalid Mobile No");
+                return false;
+            }
+            if (dateOfBirth === "") {
+                toastr.error("Invalid Date Of Birth");
+                return false;
+            }
+            if (fatherName === "" || !isValidName(fatherName)) {
+                toastr.error("Fill Father Name");
+                return false;
+            }
+            if (fatherContactNo === "" || !isValidMobileNo(fatherContactNo)) {
+                toastr.error("Invalid Father Contact No");
+                return false;
+            }
+            if (!bloodGroup) {
+                toastr.error("Please select a Blood Group");
+                return false;
+            }
+            if (motherName === "" || !isValidName(motherName)) {
+                toastr.error("Fill Mother Name");
+                return false;
+            }
+
+            function isValidEmail(email) {
+                var emailRegex = /^[a-zA-Z0-9._%+-]+@@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+                return emailRegex.test(email);
+            }
+
+            function isValidName(name) {
+                var nameRegex = /^[a-zA-Z\s]+$/;
+                return nameRegex.test(name);
+            }
+
+            function isValidMobileNo(mobileNo) {
+                var mobileNoRegex = /^\d{10}$/;
+                return mobileNoRegex.test(mobileNo);
+            }
+
+            toastr.success("Personal Details Added!");
+            return true;
+        }
+
+        function ValidateResidentialInfo() {
+            var isValid = true;
+
+            var PermanentAddress = $('#PermanentAddress').val();
+            var PresentAddress = $('#PresentAddress').val();
+            var PresentPincode = $('#presentpincode').val();
+            var PermanentPincode = $('#permanantpincode').val();
+            var CountryId = $('#country').val();
+            var StateId = $('#state').val();
+            var PresentCityId = $('#city').val();
+            var AdditionalCountryId = $('#additionalCountryDropdown').val();
+            var AdditionalStateId = $('#additionalStateDropdown').val();
+            var PermanantCityid = $('#additionalCityDropdown').val();
+
+            if (!PermanentAddress) {
+                toastr.error("Permanent Address is required");
+                isValid = false;
+            }
+            if (!PresentAddress) {
+                toastr.error("Present Address is required");
+                isValid = false;
+            }
+
+            if (!PermanentPincode) {
+                toastr.error("Permanent Pincode is required");
+                isValid = false;
+            }
+            if (!CountryId) {
+                toastr.error("Present Country is required");
+                isValid = false;
+            }
+            if (!StateId) {
+                toastr.error("Present State is required");
+                isValid = false;
+            }
+            if (!PresentCityId) {
+                toastr.error("Present City is required");
+                isValid = false;
+            }
+            if (!AdditionalCountryId) {
+                toastr.error("Permanent Country is required");
+                isValid = false;
+            }
+            if (!AdditionalStateId) {
+                toastr.error("Permanent State is required");
+                isValid = false;
+            }
+            if (!PermanantCityid) {
+                toastr.error("Permanent City is required");
+                isValid = false;
+            }
+
+            if (isValid) {
+                toastr.success("Address Added!");
+            }
+            return isValid;
+        }
+
+        function ValidateEducationalInfo() {
+            var isValid = true;
+
+            var sscYear = $('#SSCYear').val();
+            //var sscFile = $('#SSCFile').val();
+            var hscYear = $('#HSCYear').val();
+           // var hscFile = $('#HSCFile').val();
+            var graduationYear = $('#GraduationYear').val();
+            //var graduationFile = $('#GraduationFile').val();
+            var pgYear = $('#PGYear').val();
+            //var pgFile = $('#PGFile').val();
+
+            if (!sscYear) {
+                toastr.error("SSC Year is required");
+                isValid = false;
+            }
+            //if (!sscFile) {
+               // toastr.error("SSC File is required");
+               // isValid = false;
+            //}
+            if (!hscYear) {
+                toastr.error("HSC Year is required");
+                isValid = false;
+            }
+            //if (!hscFile) {
+              //  toastr.error("HSC File is required");
+               // isValid = false;
+            //}
+            if (!graduationYear) {
+                toastr.error("Graduation Year is required");
+                isValid = false;
+            }
+            //if (!graduationFile) {
+              //  toastr.error("Graduation File is required");
+               // isValid = false;
+            //}
+
+            if (isValid) {
+                toastr.success("Education Added!");
+            }
+            return isValid;
+        }
+
+      
+        $('#SSCYear').change(function () {
+            var sscDate = new Date($(this).val());
+            if (sscDate) {
+
+                $('#HSCYear').prop('disabled', false);
+
+                var minHscDate = new Date(sscDate);
+                minHscDate.setFullYear(minHscDate.getFullYear() + 2);
+
+                $('#HSCYear').attr('min', minHscDate.toISOString().split('T')[0]);
+
+                if ($('#HSCYear').val() && new Date($('#HSCYear').val()) < minHscDate) {
+                    toastr.error('HSC date should be at least 2 years after SSC date.');
+                    $('#HSCYear').val('');
+                }
+            }
+        });
+
+        $('#HSCYear').change(function () {
+            var sscDate = new Date($('#SSCYear').val());
+            var hscDate = new Date($(this).val());
+
+            if (hscDate && sscDate) {
+                var minHscDate = new Date(sscDate);
+                minHscDate.setFullYear(minHscDate.getFullYear() + 2);
+
+                if (hscDate < minHscDate) {
+                    toastr.error('HSC date should be at least 2 years after SSC date.');
+                    $(this).val('');
+                } else {
+                    $('#GraduationYear').prop('disabled', false);
+
+                    var minGradDate = new Date(hscDate);
+                    minGradDate.setFullYear(minGradDate.getFullYear() + 3);
+
+                    $('#GraduationYear').attr('min', minGradDate.toISOString().split('T')[0]);
+
+                    if ($('#GraduationYear').val() && new Date($('#GraduationYear').val()) < minGradDate) {
+                        toastr.error('Graduation date should be at least 3 years after HSC date.');
+                        $('#GraduationYear').val('');
+                    }
+                }
+            }
+        });
+
+        $('#GraduationYear').change(function () {
+            var hscDate = new Date($('#HSCYear').val());
+            var gradDate = new Date($(this).val());
+
+            if (gradDate && hscDate) {
+
+                var minGradDate = new Date(hscDate);
+                minGradDate.setFullYear(minGradDate.getFullYear() + 3);
+
+                if (gradDate < minGradDate) {
+                    toastr.error('Graduation date should be at least 3 years after HSC date.');
+                    $(this).val('');
+                } else {
+
+                    $('#PGYear').prop('disabled', false);
+
+                    var minPostGradDate = new Date(gradDate);
+                    minPostGradDate.setFullYear(minPostGradDate.getFullYear() + 2);
+
+                    $('#PGYear').attr('min', minPostGradDate.toISOString().split('T')[0]);
+
+                    if ($('#PGYear').val() && new Date($('#PGYear').val()) < minPostGradDate) {
+                        toastr.error('Post-Graduation date should be at least 2 years after Graduation date.');
+                        $('#PGYear').val('');
+                    }
+                }
+            }
+        });
+
+
+            var interestedCourses = [
+                @foreach (System.Data.DataRow row in ViewBag.Course.Tables[0].Rows)
+                {
+                    @: { CourseCode: "@row["CourseCode"]", CourseName: "@row["CourseName"]" },
+                }
+            ];
+
+            var otherCourses = [
+                @foreach (System.Data.DataRow row in ViewBag.OtherCourses.Tables[0].Rows)
+                {
+                    @: { CourseCode: "@row["CourseCode"]", CourseName: "@row["CourseName"]" },
+                }
+            ];
+
+            function populateCourses(courses) {
+                var selectBox = $('#EnrollCourseName');
+                selectBox.empty(); 
+                selectBox.append('<option value="" disabled selected>Select course name</option>'); 
+
+                $.each(courses, function (key, course) {
+                    selectBox.append('<option value="' + course.CourseCode + '">' + course.CourseName + '</option>');
+                });
+        }
+
+            function updateButtonText(text) {
+                $('#btnFetchDependentCourses').text(text);
+            }
+        
+            $('#interestedCoursesBtn').click(function () {
+                updateButtonText('Intrested Courses');
+                populateCourses(interestedCourses); 
+            });
+
+            $('#otherCoursesBtn').click(function () {
+                updateButtonText('Other Courses');
+                populateCourses(otherCourses); 
+            });
+
+
+            $('.custom-file-input').on('change', function () {
+                let inputFile = $(this);
+                let fileName = inputFile[0].files[0].name;
+                let label = inputFile.next('.custom-file-label');
+                label.text(fileName);
+            });
+
+            $('#PaymentMode').on('change', function () {
+                var paymentMode = $(this).val();
+                var $transactionIdField = $('#TransactionId');
+                var $checkDateField = $('#CheckDate');
+                var $bankNameField = $('#Bank');  
+
+                if (paymentMode === 'Cash') {
+                    $transactionIdField.prop('disabled', true);
+                    $bankNameField.prop('disabled', true); 
+                } else if (paymentMode === 'Online') {
+                    $transactionIdField.prop('disabled', false);
+                    $bankNameField.prop('disabled', false);
+                }
+            });
+
+
+            $('#CourseFee, #Discount').on('input', function () {
+                calculateDiscountedFee();
+            });
+
+            function calculateDiscountedFee() {
+                var courseFee = parseFloat($('#CourseFee').val()) || 0;
+                var discount = parseFloat($('#Discount').val()) || 0;
+                var discountedFee = courseFee - (courseFee * (discount / 100));
+                $('#PayableFee').val(discountedFee.toFixed(2));
+            }
+
+            $('#PaymentMode').trigger('change');
+
+            var enquiryFor = $('#EnquiryFor').val();
+
+            if (enquiryFor === 'Placement') {
+
+                $('#Course-form').hide();
+   
+                $('#Course-data').hide();
+
+                $('#Discount-Data').hide();
+            }
+
+    });
+    </script>
+    <script>
+        $(document).ready(function () {
+
+            var today = new Date();
+            var eighteenYearsAgo = new Date(today.getFullYear() - 18, today.getMonth(), today.getDate());
+
+            var maxDate = eighteenYearsAgo.toISOString().split('T')[0];
+        
+            $('#DateOfBirth').attr('max', maxDate);
+
+        });
+    </script>
+
+    <script>
+        $(document).ready(function () {
+            $('#ExpCountryId').change(function () {
+                var id = $(this).val();
+                $("#ExpState").empty();
+                $.post("/Counsellor/GetStateNameSk", { CountryId: id }, function (data) {
+                    var v = "<option value=''>---Select State---</option>";
+                    $.each(data, function (i, v1) {
+                        v += "<option value='" + v1.Value + "'>" + v1.Text + "</option>";
+                    });
+                    $("#ExpState").html(v);
+                });
+            });
+
+            $('#ExpState').change(function () {
+                var id = $(this).val();
+                $("#ExpCity").empty();
+                $.get("/Counsellor/GetCityNameSk", { StateId: id }, function (data) {
+                    var v = "<option value=''>---Select City---</option>";
+                    $.each(data, function (i, v1) {
+                        v += "<option value='" + v1.Value + "'>" + v1.Text + "</option>";
+                    });
+                    $("#ExpCity").html(v);
+                });
+            });
+        });
+    </script>
+
+    <script>
+
+        $(document).ready(function () {
+            $('#EnrollCourseName').change(function () {
+                var id = $(this).val();
+                var courseFee;
+
+                $("#BatchName").empty();
+                $.get("/Counsellor/GetTentativeBatches", { courseCode: id }, function (data) {
+                    courseFee = data.CourseFee;
+                    var options = "<option>---Select---</option>";
+
+                    if (data.BatchList && data.BatchList.length > 0) {
+                        $.each(data.BatchList, function (i, batch) {
+                            options += "<option value='" + batch.Value + "'>" + batch.Text + "</option>";
+                        });
+                    } else {
+                        options = "<option>---NA---</option>";
+                    }
+
+                    $("#BatchName").html(options);
+                    $('#CourseFee').val(courseFee);
+                }).fail(function () {
+                    toastr.error('Failed to load batches. Please try again.');
+                });
+            });
+        });
+    </script>
+
+    <script>
+        $(document).ready(function () {
+
+            //function enableFields() {
+              //  $("#Industry, #CompanyName, #Department, #Designation, #field3, #CTC, #SalarySlip, #ExperienceLetter, #ExpCountryId, #ExpState, #ExpCity").prop('disabled', false);
+           // }
+
+            //function disableFields() {
+               // $("#Industry, #CompanyName, #Department, #Designation, #field3, #CTC, #SalarySlip, #ExperienceLetter, #ExpCountryId, #ExpState, #ExpCity").prop('disabled', true);
+           // }
+
+            function addExperience() {
+                var industrySelect = $("#Industry");
+                var industry = industrySelect.find("option:selected").text();
+                var industryId = industrySelect.val();
+
+                var companyName = $("#CompanyName").val();
+
+                var departmentSelect = $("#Department");
+                var department = departmentSelect.find("option:selected").text();
+                var departmentId = departmentSelect.val();
+
+                var citySelect = $("#ExpCity");
+                var city = citySelect.find("option:selected").text();
+                var cityId = citySelect.val();
+
+                var designationSelect = $("#Designation");
+                var designation = designationSelect.find("option:selected").text();
+                var designationId = designationSelect.val();
+
+                var period = $("#field3").val();
+                var ctc = $("#CTC").val();
+                var salarySlip = $("#SalarySlip").val();
+                var experienceLetter = $("#ExperienceLetter").val();
+
+                if (!industryId || !companyName || !departmentId || !designationId || !period || !ctc || !salarySlip || !experienceLetter || !cityId) {
+                    toastr.warning("Please fill out all fields before adding experience.");
+                    return;
+                }
+
+                var table = $("#experienceTable tbody");
+                var newRow = $("<tr></tr>");
+
+                newRow.append($("<td></td>").text(industry).attr("data-id", industryId));
+                newRow.append($("<td></td>").text(companyName));
+                newRow.append($("<td></td>").text(department).attr("data-id", departmentId));
+                newRow.append($("<td></td>").text(designation).attr("data-id", designationId));
+                newRow.append($("<td></td>").text(period));
+                newRow.append($("<td></td>").text(ctc));
+                newRow.append($("<td></td>").text(salarySlip));
+                newRow.append($("<td></td>").text(experienceLetter));
+                newRow.append($("<td></td>").text(city).attr("data-id", cityId));
+                newRow.append($("<td></td>").html('<button type="button" class="btn btn-danger remove-experience">Remove</button>'));
+
+                table.append(newRow);
+
+                $("#Industry, #CompanyName, #Department, #Designation, #field3, #CTC, #SalarySlip, #ExperienceLetter, #ExpCity").val("");
+            }
+
+            function removeExperience(button) {
+                $(button).closest("tr").remove();
+            }
+
+            $("#addExperienceBtn").click(addExperience);
+
+            $(document).on('click', '.remove-experience', function () {
+                removeExperience(this);
+            });
+        });
+    </script>
+	<script>
+	 function enableFields() {
+            $("#Industry, #CompanyName, #Department, #Designation, #field3, #CTC, #SalarySlip, #ExperienceLetter, #ExpCountryId, #ExpState, #ExpCity, #addExperienceBtn").prop('disabled', false);
+        }
+
+        function disableFields() {
+            $("#Industry, #CompanyName, #Department, #Designation, #field3, #CTC, #SalarySlip, #ExperienceLetter, #ExpCountryId, #ExpState, #ExpCity").prop('disabled', true);
+        }
+	 function populatePostGraduation(id) {
+
+             //var id = $("#GraduationId").val();
+             if (id != null && id != 0) {
+                 $("#PostgraduationId").empty();
+                 $.post("/Counsellor/GetPostGraduationSK", { GraduationId: id }, function (data) {
+                     var v = "<option value=''>---Select PostGraduation---</option>";
+                     $.each(data, function (i, v1) {
+                         v += "<option value='" + v1.Value + "'>" + v1.Text + "</option>";
+                     });
+                     $("#PostgraduationId").html(v);
+                     $('#PostgraduationId').val('@ViewBag.poPostGraduationId');
+                 });
+             }
+        }
+		 $(document).ready(function () {
+		  $('#rdbtnNoExp').prop('checked', true);
+            disableFields();
+	 populatePostGraduation();
+	 });
+	</script>
+	 <script>
+     // Assign the URL generated by Razor to a JavaScript variable
+     var admissionDetailsUrl = '@Url.Action("AdmissionDetails", "Counsellor")';
+
+    
+
+     function goBack() {
+         debugger;
+         Swal.fire({
+             title: 'Are you sure?',
+             icon: 'warning',
+             showCancelButton: true,
+             confirmButtonColor: '#d33',
+             cancelButtonColor: '#3085d6',
+             confirmButtonText: 'Yes, cancel it!'
+         }).then((result) => {
+             if (result.isConfirmed) {
+                 window.location.href = admissionDetailsUrl;
+             }
+         });
+     }
+
+ </script>
+</body>
+</html>

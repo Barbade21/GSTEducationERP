@@ -1,0 +1,1711 @@
+﻿@model GSTEducationERPLibrary.Accountant.Accountant
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="~/Content/plugins/jquery/jquery.min.js"></script>
+    <script src="~/Content/plugins/bootstrap/js/bootstrap.min.js"></script>
+
+    <link href="~/Content/plugins/bs-stepper/css/bs-stepper.min.css" rel="stylesheet" />
+    <link href="~/Content/plugins/bs-stepper/css/bs-stepper.css" rel="stylesheet" />
+    <script src="~/Content/plugins/bs-stepper/js/bs-stepper.min.js"></script>
+    <script src="~/Content/plugins/bs-stepper/js/bs-stepper.js"></script>
+
+    <link href="~/Content/plugins/select2/css/select2.min.css" rel="stylesheet" />
+    <link href="~/Content/plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css" rel="stylesheet" />
+    <script src="~/Content/plugins/select2/js/select2.full.min.js"></script>
+
+    <link href="~/Content/plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css" rel="stylesheet" />
+    <link href="~/Content/plugins/sweetalert2/sweetalert2.min.css" rel="stylesheet" />
+    <script src="~/Content/plugins/sweetalert2/sweetalert2.all.min.js"></script>
+
+    <link href="~/Content/plugins/toastr/toastr.min.css" rel="stylesheet" />
+    <script src="~/Content/plugins/toastr/toastr.min.js"></script>
+
+    <script src="~/Content/Admin/js/Icon.js"></script>
+
+
+
+    <style>
+
+        /* Style for the entire input group for the vendor */
+        .vendor-input-group {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px; /* Adjust space below the vendor input */
+        }
+
+        /* Style the input group icon */
+        .input-group-text {
+            background-color: #f8f9fa;
+            border: 1px solid #ced4da;
+            border-radius: 0.25rem 0 0 0.25rem;
+        }
+
+        /* Custom select2 dropdown styling */
+        .select2-container .select2-selection--single {
+            height: calc(2.25rem + 2px); /* Match the input field height */
+            line-height: 1.5;
+            padding: 0.375rem 0.75rem;
+            border: 1px solid #ced4da;
+            border-radius: 0 0.25rem 0.25rem 0;
+        }
+
+        /* Add the required field asterisk color */
+        .required-field:after {
+            content: "*";
+            color: red;
+            margin-left: 5px;
+        }
+
+        /* Remove the default Select2 arrow */
+        .select2-container--default .select2-selection--single .select2-selection__arrow {
+            display: none;
+        }
+
+        /* Make sure the help text is properly aligned */
+        #vendorHelpBlock {
+            font-size: 0.875rem;
+            color: #6c757d;
+        }
+        #VendorName {
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+        /* Validation message styling */
+        .text-danger {
+            margin-top: 5px;
+            font-size: 0.875rem;
+        }
+
+        /* Customize the Select2 dropdown */
+        .select2-container--default .select2-selection--multiple .select2-selection__choice {
+            background-color: #33CCCC; /* Background color of selected items */
+            color: white; /* Text color of selected items */
+        }
+
+        /* Optional: Change the hover color of selected items */
+        .select2-container--default .select2-selection--multiple .select2-selection__choice:hover {
+            background-color: #33CCCC; /* Darker shade on hover */
+            color: white; /* Ensure text remains white on hover */
+        }
+
+
+        #Description {
+            height: 100%;
+            width: 100% !important;
+        }
+
+        #Comment {
+            height: 100%;
+            width: 100% !important;
+        }
+      
+        
+
+        
+
+          .required-field::after {
+                content: " *";
+                color: red;
+            }
+
+            .bs-stepper {
+                background-color: #f9f9f9;
+                padding: 20px;
+                border-radius: 5px;
+                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            }
+
+        .bs-stepper-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            height: 2vw;
+        }
+
+    .bs-stepper-circle {
+        background-color: #007bff;
+        color: white;
+        border-radius: 50%;
+        width: 30px;
+        height: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+    }
+       
+        .step {
+            flex: 1;
+            text-align: center;
+        }
+
+    .step-trigger {
+        background: none;
+        border: none;
+        cursor: pointer;
+    }
+
+    .step-trigger:hover {
+        text-decoration: underline;
+    }
+
+   
+
+    .bs-stepper-content.active {
+        display: block;
+    }
+
+        #PerviousPayableAmountlbl{
+            color:green;
+        }
+        /* Responsive styles */
+        @@media (max-width: 768px) {
+            .bs-stepper-header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .bs-stepper-circle {
+            margin-bottom: 10px;
+        }
+    }
+    </style>
+
+</head>
+
+<body>
+    <form id="AddExpenseform" action="/Accountant/AddExpensesAsyncMB" method="post" enctype="multipart/form-data">
+        <input type="hidden" id="Context" value="matchVoucherMB" /> <!-- Set to "voucherModule" or "matchVoucher" -->
+
+        <div class="bs-stepper">
+            <div class="bs-stepper-header" role="tablist">
+                <!-- Step 1 -->
+                <div class="step" data-target="#AddExpense-part">
+                    <button type="button" class="step-trigger" role="tab" aria-controls="AddExpense-part" id="AddExpense-part-trigger">
+                        <span class="bs-stepper-circle">1</span>
+                        <span class="bs-stepper-label">Add Expense</span>
+                    </button>
+                </div>
+                <div class="line"></div>
+                <!-- Step 2 -->
+                <div class="step" data-target="#ExpPayment-part">
+                    <button type="button" class="step-trigger" role="tab" aria-controls="ExpPayment-part" id="ExpPayment-partpayment-parttrigger">
+                        <span class="bs-stepper-circle">2</span>
+                        <span class="bs-stepper-label">Payment Information</span>
+                    </button>
+                </div>
+            </div>
+            <div class="bs-stepper-content">
+                <!-- Expense Stepper 1 -->
+                <div id="AddExpense-part" class="content" role="tabpanel" aria-labelledby="AddExpense-part-trigger">
+                    <div class="container-fluid">
+                        <!-- Expense Category -->
+                        <div class="row justify-content-center">
+                            <div class="col-lg-8 col-md-10 col-sm-12">
+                                @Html.LabelFor(model => model.ExpID, "Expense Category", new { @class = "required-field" })
+                                <div class="form-group">
+                                    @Html.DropDownListFor(model => model.ExpID, new SelectList(ViewBag.CourseList, "Value", "Text"), "Select Category", new { @id = "ExpenseCategory", @class = "form-control", @required = "required" })
+                                    @Html.ValidationMessageFor(model => model.ExpID, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="ExpenseView">
+                            <div class="row">
+                                <!-- Expense Type -->
+                                <div class="col-lg-6 col-md-6 col-sm-12">
+                                    @Html.LabelFor(model => model.ExpenseType, "Expense Type", new { @class = "required-field" })
+                                    <div class="form-group">
+                                        @Html.EditorFor(model => model.ExpenseType, new { htmlAttributes = new { @id = "ExpenseType", @class = "form-control", @readonly = "readonly" } })
+                                        @Html.ValidationMessageFor(model => model.ExpenseType, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+
+                                <!-- Bill Number -->
+                                <div id="BillNumDiv" class="col-lg-6 col-md-6 col-sm-12">
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.BillNumber, "Bill No.")
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text">#</span>
+                                            </div>
+                                            @Html.EditorFor(model => model.BillNumber, new { htmlAttributes = new { @class = "form-control", @maxlength = "20" } })
+                                        </div>
+                                        @Html.ValidationMessageFor(model => model.BillNumber, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Regular Expense Controller -->
+                            <div id="RegExtandMonthDiv" class="row">
+                                <!-- Regular Expense Type -->
+                                <div class="col-lg-6 col-md-6 col-sm-12">
+                                    @Html.LabelFor(model => model.RegularExpenseType, "Expenses", new { @class = "required-field" })
+                                    <div class="form-group">
+                                        @Html.DropDownListFor(model => model.RegularExpenseType, new SelectList(ViewBag.RegularExpTypelst, "Value", "Text"), "Select Expense Type", new { @id = "RegularExpenseTypelst", @class = "form-control" })
+                                        @Html.ValidationMessageFor(model => model.RegularExpenseType, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+
+                                <!-- Monthly Salaries -->
+                                <div id="MonthSalDiv" class="col-lg-6 col-md-6 col-sm-12">
+                                    @Html.LabelFor(model => model.SalarayId, "Monthly Salaries", new { @class = "required-field" })
+                                    <div class="form-group">
+                                        @Html.DropDownListFor(model => model.SalarayId, new SelectList(ViewBag.MnthCredSalary, "Value", "Text"), "Select Expense Type", new { @id = "SalarayId", @class = "form-control" })
+                                        @Html.ValidationMessageFor(model => model.SalarayId, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Vendor Name -->
+                            <div id="VendorDiv" class="row">
+                                <!-- Vendor Name -->
+                                <div class="col-md-12">
+                                    <label for="VendorName" class="required-field">Vendor Name:</label>
+                                    <div class="input-group" style="display: flex; align-items: center;">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text" style="height: 38px; display: flex; align-items: center;">
+                                                <i class="fa fa-user-tie"></i> <!-- Vendor icon -->
+                                            </span>
+                                        </div>
+                                        <select id="VendorName" class="form-control select2" required style="height: 38px;">
+                                            <option value="">Select Vendor Name</option>
+                                            @foreach (var item in ViewBag.Vendoerlist)
+                                            {
+                                                <option value="@item.Value">@item.Text</option>
+                                            }
+                                        </select>
+
+                                        <div class="col-md-1">
+                                            <a href="javascript:void(0);" class="icon ml-2" id="btnaddvendor">
+                                                <video width="40" playsinline loop>
+                                                    <source src="~/Content/Admin/icon/add.mp4" type="video/mp4">
+                                                </video>
+                                            </a>
+                                        </div>
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                            <div id="RefundDiv" class="row">
+
+                                <!-- Refund Student Name -->
+                                <div id="RefundStudentName" class="col-md-6">
+                                    @Html.LabelFor(model => model.StudentName, "Student Name :", new { @class = "required-field" })
+                                    <div class="col-md-12">
+                                        @Html.DropDownListFor(model => model.StaffCode_CandidateCode, new SelectList(ViewBag.RefundCandidatelst, "Value", "Text"), "Select", new { @id = "RefundCandidatelst", @class = "form-control select2" })
+                                        @Html.ValidationMessageFor(model => model.StudentName, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+
+                                <!-- Refund Paid Amount -->
+                                <div id="RefundPaidAmount" class="col-md-6">
+                                    @Html.LabelFor(model => model.PaidFee, "Paid Fee")
+                                    <div class="col-md-12">
+                                        @Html.EditorFor(model => model.PaidFee, new { htmlAttributes = new { @id = "CandidatePaidFee", @class = "form-control", @readonly = "readonly" } })
+                                        @Html.ValidationMessageFor(model => model.PaidFee, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div id="Reference" class="row">
+                                <!-- Reference By Name -->
+                                <div id="ReferenceByName" class="col-md-6 col-sm-12">
+                                    @Html.LabelFor(model => model.ReferenceByName, "Reference By Name :", new { @class = "required-field" })
+                                    <div class="col-md-12">
+                                        @Html.DropDownListFor(model => model.ReferenceByName, new SelectList(ViewBag.ReferenceByStudentlst, "Value", "Text"), "Select", new { @id = "ReferenceByStudentlst", @class = "form-control select2" })
+                                        @Html.ValidationMessageFor(model => model.ReferenceByName, "", new { @class = "text-danger" })
+                                    </div>
+                                    <div class="col-md-12 mt-3">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="IsFeeDeducted" name="IsFeeDeducted" />
+                                            <label class="form-check-label" for="IsFeeDeducted">Is Fee Deducted from Fee</label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Reference To Name -->
+                                <div id="ReferenceToName" class="col-md-6 col-sm-12">
+                                    @Html.LabelFor(model => model.ReferenceToName, "Reference To Name :", new { @class = "required-field" })
+                                    <div class="col-md-12">
+                                        <select class="form-control select2" id="ReferenceToStudents" name="ReferenceToStudents">
+                                            <option value="">--Select--</option>
+                                            <!-- Dynamically populated via AJAX -->
+                                        </select>
+                                        @Html.ValidationMessageFor(model => model.ReferenceToName, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+                            </div>
+
+
+
+                            <div class="row">
+                                <!-- Employees for Advance -->
+                                <div id="EmployeesForAdvance" class="col-md-10">
+                                    @Html.LabelFor(model => model.StaffName, "Employee Name :", new { @class = "required-field" })
+                                    <div class="col-md-12">
+                                        <select id="Employees" class="form-control select2" style="width: 100%;">
+                                            <option></option>
+                                            @foreach (var item in ViewBag.AdvSalaryStafflst)
+                                            {
+                                                <option value="@item.Value">@item.Text</option>
+                                            }
+                                        </select>
+                                        @Html.ValidationMessageFor(model => model.StaffName, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+
+
+                            </div>
+
+                            <div class="row">
+                                <!-- Employees for Advance -->
+                                <div id="EmployeesForOther" class="col-md-10">
+                                    @Html.LabelFor(model => model.StaffName, "Employee Name :", new { @class = "" })
+                                    <div class="col-md-12">
+                                        <select id="Employeess" class="form-control select2" style="width: 100%;">
+                                            <option></option>
+
+                                            @foreach (var item in ViewBag.lstStaff)
+                                            {
+                                                <option value="@item.Value">@item.Text</option>
+                                            }
+                                        </select>
+                                        @Html.ValidationMessageFor(model => model.StaffName, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+
+
+                            </div>
+                            <div id="PerviousAmntlbl" class="form-group row">
+                                <label class="col-md-4">Pervious Pay Amount:</label>
+                                <div class="col-md-8">
+                                    <span>&#8377;</span>
+                                    <span id="PerviousPayableAmountlbl">0.00</span>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <!-- Transaction Amount -->
+                                <div class="col-md-6">
+                                    @Html.LabelFor(model => model.Amount, "Amount to pay:", new { @class = "required-field" })
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text">
+                                                <i class="fas fa-rupee-sign"></i>
+                                            </span>
+                                        </div>
+                                        @Html.EditorFor(model => model.Amount, new { htmlAttributes = new { @PlaceHolder = "Please Enter Amount Here..", @id = "TransactionAmounts", @class = "form-control" } })
+                                        @Html.ValidationMessageFor(model => model.Amount, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+
+                                <!-- Payment Date -->
+                                <div class="col-md-6">
+                                    @Html.LabelFor(model => model.Date, "Payment Date:", new { @class = "required-field" })
+                                    <div class="col-md-12">
+                                        @Html.EditorFor(model => model.Date, new { htmlAttributes = new { @id = "PaymentDate", @class = "form-control" } })
+                                        @Html.ValidationMessageFor(model => model.Date, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+                            </div>
+
+
+
+                            <div class="row">
+                                <!-- Description -->
+                                <div class="col-md-12">
+                                    @Html.LabelFor(model => model.Comment, "Description:", new { @id = "lblComment", @class = "required-field" })
+                                    <div class="col-md-12" style="position: relative;">
+                                        @Html.TextAreaFor(model => model.Comment, new { htmlAttributes = new { @PlaceHolder = "Please Enter Description Here..", @id = "Comment", @class = "form-control" } })
+                                        <!-- Suggestions Box -->
+                                        <div id="suggestions" style="display:none; border:1px solid #ccc; background-color:#fff; padding:5px; position:absolute; z-index:1000; width:100%;"></div>
+                                        @Html.ValidationMessageFor(model => model.Comment, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Save and Cancel Buttons -->
+                            <div class="form-group text-center">
+                                <button class="btn btn-primary" id="SaveExpAndNext" style="margin-right: 30px; width: 25%;">SAVE & NEXT</button>
+                                <a href="@Url.Action("ExpenseDashboardAsyncMB")" class="btn btn-danger" style="width: 25%;">CANCEL</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Here our Expense view Stepper one End-->
+            <!---  Here our payment Stepper view will be started -->
+            <div id="ExpPayment-part" class="content" role="tabpanel" aria-labelledby="payment-part-trigger">
+                <div class="form-group">
+                    <div class=card-body>
+                        <div class="form-group row">
+                            <label for="TransactionCode" class="col-md-4">Expense No. :</label>
+                            <div class="col-md-7">
+                                @Html.EditorFor(model => model.TransactionCode, new { htmlAttributes = new { @class = "form-control", @readonly = "true" } })
+                                @Html.ValidationMessageFor(model => model.TransactionCode, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <label for="VendorName" class="col-md-4">Credit To:</label>
+                            <div class="col-md-7">
+                                @Html.EditorFor(model => model.VendorName, "Vendor Name :", new { htmlAttributes = new { @id = "AmntPaidTo", @class = "form-control", @readonly = "true" } })
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <label for="TransactionAmount" class="col-md-4">Amount to pay:</label>
+                            <div class="input-group col-md-7">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"><i class="fas fa-rupee-sign"></i></span>
+                                </div>
+                                @Html.EditorFor(model => model.Amount, new { htmlAttributes = new { @id = "PaidAmount", @class = "form-control", @readonly = "true" } })
+                                @Html.ValidationMessageFor(model => model.Amount, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <label for="VoucherCode" class="col-md-4 required-field">Vouchers:</label>
+                            <div class="col-md-7">
+                                <select id="VoucherCode" class="form-control select2" multiple="multiple" data-placeholder="Select a voucher" style="width: 100%;">
+                                    <option value="">-select voucher-</option>
+                                    @if (ViewBag.VoucherCode != null)
+                                    {
+                                        foreach (var voucher in ViewBag.VoucherCode)
+                                        {
+                                            <option value="@voucher.Value">@voucher.Text</option>
+                                        }
+                                    }
+                                </select>
+                            </div>
+
+                            <div class="col-md-1">
+                                <a href="#" id="addvoucherButton" class="icon" data-url="@Url.Action("AddVoucherAsyncSGS", "Accountant")" title="Add Voucher">
+                                    <video id="addvoucherButton" width="40" height="40" playsinline loop muted>
+                                        <source src="~/Content/Admin/icon/add.mp4" type="video/mp4" />
+                                    </video>
+                                </a>
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <label class="col-md-4">Total Amount:</label>
+                            <div class="col-md-8">
+                                <span>&#8377;</span>
+                                <span id="totalAmountLabel">0.00</span>
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <label for="TransactionAmount" class="col-md-4 required-field">Match Amount:</label>
+                            <div class="input-group col-md-7">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"><i class="fas fa-rupee-sign"></i></span>
+                                </div>
+                                @Html.EditorFor(model => model.TransactionAmount, new { htmlAttributes = new { @id = "Amounts", @PlaceHolder = "Please Enter Amount Here..", @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.TransactionAmount, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <label for="comment" class="col-md-4 required-field">Description:</label>
+                            <div class="col-md-7">
+                                @Html.TextAreaFor(model => model.Description, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.Description, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                    </div>
+                    <br />
+                    <div class="form-group" style="text-align: center;">
+
+                        <button class="btn btn-success" id="SubmitAmounts" style="margin-right:30px; width:25%;">Submit</button>
+                        <a href="@Url.Action("ExpenseDashboardAsyncMB")" class="btn btn-danger" style=" width:25%;">Cancel</a>
+                    </div>
+
+                </div>
+                <!---  Here our payment Stepper view will be End -->
+
+            </div>
+
+        </div>
+
+
+
+
+    </form>
+
+    <script>
+        $(document).ready(function () {
+            // Hide the checkbox initially
+            $('#IsFeeDeducted').closest('.form-check').hide();
+
+            // Event listener for ReferenceByName dropdown
+            $('#ReferenceByStudentlst').on('change', function () {
+                var candidateCode = $(this).val();
+
+                if (!candidateCode) {
+                    // If no candidate is selected, hide the checkbox
+                    $('#IsFeeDeducted').closest('.form-check').hide();
+                    return;
+                }
+
+                $.ajax({
+                    url: "/Accountant/GetTotalPaidFeeOfCandidateAsyncMB",
+                    type: 'GET',
+                    data: { CandidateCode: candidateCode },
+                    success: function (response) {
+                        if (response.success) {
+                            var paidAmount = response.CandidatePaidFee;
+                            var courseFee = response.CourseFee;
+
+                            if (paidAmount === courseFee) {
+                                // Hide the checkbox if the paid amount matches the course fee
+                                $('#IsFeeDeducted').closest('.form-check').hide();
+                                $('#IsFeeDeducted').prop('checked', false); // Ensure it's unchecked
+                            } else {
+                                // Show the checkbox otherwise
+                                $('#IsFeeDeducted').closest('.form-check').show();
+                            }
+                        } else {
+                            console.error("Error in response: ", response.message);
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.error("AJAX request failed: ", status, error);
+                    }
+                });
+            });
+        });
+    </script>
+    <script>
+        $(document).ready(function () {
+            // Get today's month and year in MM/YYYY format
+            let today = new Date();
+            let currentMonth = String(today.getMonth() + 1).padStart(2, '0'); // Months are 0-based
+            let currentYear = today.getFullYear();
+            let currentMonthYear = `${currentMonth}/${currentYear}`;
+
+            let suggestions = {
+                "1": [`Monthly rent for office premises.`, `Rent payment covering ${currentMonthYear}.`],
+                "2": [
+                    `Electricity bill payment for ${currentMonthYear}.`,
+                    `Power charges for office.`,
+                    `Light bill clearance for ${currentMonthYear}.`
+                ],
+                "3": [
+                    `Salary payment for staff.`,
+                    `Salary payment covering month of ${currentMonthYear}.`
+                ],
+                "8": [
+                    `Payment to water supplier for ${currentMonthYear}.`,
+                    `Monthly water charges.`,
+                    `Water bill settlement for ${currentMonthYear}.`
+                ]
+            };
+
+
+            $("#Comment").on("input", function () {
+                let selectedType = $("#RegularExpenseTypelst").val();
+                if (!selectedType) return;
+
+                let suggestionList = suggestions[selectedType] || ["Please provide specific details."];
+                let suggestionHTML = suggestionList
+                    .map(item => `<div class="suggestion-item" style="cursor:pointer; padding:5px; border-bottom: 1px solid #ddd;">${item}</div>`)
+                    .join("");
+
+                $("#suggestions").html(suggestionHTML).show();
+
+                $(".suggestion-item").off("click").on("click", function () {
+                    $("#Comment").val($(this).text());
+                    $("#suggestions").hide();
+                });
+            });
+
+            $(document).click(function (e) {
+                if (!$(e.target).closest("#Comment, #suggestions").length) {
+                    $("#suggestions").hide();
+                }
+            });
+        });
+    </script>
+
+
+    <script>
+        $(document).ready(function () {
+
+            $('#ReferenceToStudents').on('change', function () {
+
+                var CandidateCode = $(this).val();
+
+                $.ajax({
+                    url: "/Accountant/GetTotalPaidFeeOfCandidateAsyncMB",
+                    type: 'GET',
+                    data: { CandidateCode: CandidateCode },
+                    success: function (response) {
+                        if (response.success) {
+
+                            var paidAmount = response.CandidatePaidFee;
+                            var courseFee = response.CourseFee;
+
+                            if (paidAmount < (courseFee / 2)) {
+                                // If the warning and checkbox aren't already present, add them
+                                if (!$('#paymentWarningContainer').length) {
+                                    var warningHtml = `
+                                        <div id="paymentWarningContainer" class="d-flex align-items-center">
+                                            <p class="text-danger mb-0">PaidAmount is less than 50% of the course fee.</p>
+                                            <label class="ml-2 mb-0">
+                                                <input type="checkbox" id="ignorePaymentWarning" /> Ignore this warning
+                                            </label>
+                                        </div>`;
+
+                                    $(warningHtml).insertAfter('#ReferenceToStudents');
+
+                                    // Disable the save button
+                                    $('#SaveExpAndNext').prop('disabled', true);
+
+                                    // Enable or disable save button based on checkbox state
+                                    $('#ignorePaymentWarning').on('change', function () {
+                                        $('#SaveExpAndNext').prop('disabled', !$(this).is(':checked'));
+                                    });
+                                }
+                            }
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.error("AJAX request failed: ", status, error);
+                    }
+                });
+            });
+
+
+
+            $('#ExpenseCategory').on('change', function (e) {
+
+                var ExpCategory = $(this).val();
+                $.ajax({
+                    url: "/Accountant/GetExpenceTypeAsynMB",
+                    type: 'GET',
+                    data: {
+                        ExpCategoryId: ExpCategory
+                    },
+                    success: function (response) {
+
+                        if (response.success) {
+                            $('#ExpenseType').val(response.expenseType);
+                        } else {
+
+
+                            console.error("Error: Unable to fetch expense type.");
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.error("AJAX request failed: ", status, error);
+                    }
+                });
+            });
+
+
+            $("#RegularExpenseTypelst").change(function () {
+
+                selectedType = $(this).val();
+                if (selectedType === "3") {
+                    $("#VendorDiv").hide();
+                    $("#BillNumDiv").hide();
+                    $("#MonthSalDiv").show();
+                    document.getElementById('BillNumber').value = '';
+                    $("#lstVendor").val(null).trigger('change');
+                    $("#TransactionAmounts").prop("readonly", true);
+                    $("#Amounts").prop("readonly", true);
+                    document.getElementById('TransactionAmounts').value = '';
+                    document.getElementById('VendorName').value = '';
+                }
+                else {
+                    $("#VendorDiv").show();
+                    $("#BillNumDiv").show();
+                    $("#MonthSalDiv").hide();
+                    $("#TransactionAmounts").prop("readonly", false);
+                    $("#Amounts").prop("readonly", false);
+                    document.getElementById('TransactionAmounts').value = '';
+                    document.getElementById('SalarayId').value = '';
+                    document.getElementById('VendorName').value = '';
+                }
+            });
+
+            $('#RegularExpenseTypelst').on('change', function (e) {
+
+                selectedType = $(this).val();
+                $.ajax({
+                    url: "/Accountant/GetLastExpenseEntryAsyncMB",
+                    type: 'GET',
+                    data: {
+                        selectedType: selectedType
+                    },
+                    success: function (response) {
+
+                        if (response.success) {
+
+                            $('#VendorName').val(response.VendorCode);
+                            $('#PerviousPayableAmountlbl').text(Number(response.Amount).toFixed(2));
+                        } else {
+
+
+                            console.error("Error: Unable to fetch expense type.");
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.error("AJAX request failed: ", status, error);
+                    }
+                });
+            });
+
+
+
+            // Here we can show the refund student paid fees
+            $('#RefundCandidatelst').on('change', function (e) {
+                var CandidateCode = $(this).val();
+
+                $.ajax({
+                    url: "/Accountant/GetTotalPaidFeeOfCandidateAsyncMB",
+                    type: 'GET',
+                    data: {
+                        CandidateCode: CandidateCode
+                    },
+                    success: function (response) {
+                        if (response.success) {
+                            $('#CandidatePaidFee').val(response.CandidatePaidFee);
+
+                        } else {
+                            console.error("Error: Unable to fetch expense type.");
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.error("AJAX request failed: ", status, error);
+                    }
+                });
+            });
+
+
+            /// Here we can show the reference To list
+            $('#ReferenceByStudentlst').on('change', function (e) {
+
+                var CandidateCode = $(this).val();
+
+                $.ajax({
+                    url: "/Accountant/GettheReferenceToCandidateAsyncMB",
+                    type: 'GET',
+                    data: {
+                        CandidateCode: CandidateCode
+                    },
+                    success: function (response) {
+                        if (response.success) {
+
+                            var selectElement = $('#ReferenceToStudents');
+                            selectElement.empty(); // Clear existing options
+                            selectElement.append('<option value="">--Select -------</option>'); // Add default option
+
+                            $.each(response.candidates, function (index, item) {
+                                selectElement.append('<option value="' + item.Value + '">' + item.Text + '</option>');
+                            });
+                            $('#TransactionAmounts').val(response.ReferenceAmount);
+                            // Clear the warning message and checkbox if they exist
+                            $('#paymentWarningContainer').remove();
+                            $('#ignorePaymentWarning').off('change'); // Unbind event to prevent conflicts
+
+                        } else {
+                            console.error("Failed to fetch candidates.");
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.error("AJAX request failed: ", status, error);
+                    }
+                });
+            });
+
+        });
+    </script>
+
+    <!--toastr-->
+    <script>
+        var lastMessage = '';
+        var lastType = '';
+
+        function displayToast(message, type) {
+            // Clear existing toasts before showing the next one
+            toastr.clear();
+
+            // Display the new toast
+            toastr[type](message);
+
+            // Store the last message and type for future reference (if needed)
+            lastMessage = message;
+            lastType = type;
+        }
+
+        // Toastr configuration options
+        toastr.options = {
+            closeButton: true,            // Show close button on the toast
+            progressBar: true,            // Show progress bar
+            positionClass: 'toast-top-right',  // Position of the toast
+            showMethod: 'slideDown',      // Animation for showing the toast
+            hideMethod: 'slideUp',        // Animation for hiding the toast
+            timeOut: 4000,                // Duration before the toast disappears (in milliseconds)
+            onHidden: function () {
+                // Called after the toast is hidden, this ensures the next toast will not overlap
+                toastr.clear();
+            }
+        };
+    </script>
+
+
+
+
+    <!-- Call the event using script-->
+    <script>
+        $(document).ready(function () {
+
+
+
+            var stepper = new Stepper($('.bs-stepper')[0])
+            //stepper.to(1)
+            $("#ExpenseView").hide();
+
+
+            $("#SaveExpAndNext").off('click').on('click', function (e) {
+
+                e.preventDefault(); // Prevent default form submission
+
+                // Common validation variables
+                var amount = $('#TransactionAmounts').val().trim();
+                var requiredFields = [];
+                var validationMessage = '';
+
+                // Validate Transaction Amount
+                if (!amount || parseFloat(amount) === 0) {
+                    displayToast("The amount field cannot be empty or zero.", 'error');
+                    $('#TransactionAmounts').focus();
+                    return;
+                }
+
+                // Conditional validation based on selectedValue
+                switch (selectedValue) {
+                    case "1":
+                        if (selectedType === "1" || selectedType === "2") {
+                            if (!$("#VendorName").val()) {
+                                displayToast("Please select a vendor", "error");
+                                $("#VendorName").focus();
+                                return;
+                            }
+                            requiredFields.push($("#VendorName"));
+                        } else {
+                            requiredFields.push($("#TransactionAmounts"), $("#RegularExpenseTypelst"));
+                            validationMessage = 'Please ensure that all mandatory fields are completed before proceeding.';
+                        }
+                        break;
+
+                    case "2":
+                        if (parseFloat(amount) > parseFloat($("#CandidatePaidFee").val())) {
+                            displayToast("Refund Amount should not be greater than the paid fee", "error");
+                            return;
+                        }
+                        requiredFields.push($("#RefundCandidatelst"), $("#CandidatePaidFee"), $("#TransactionAmounts"));
+                        validationMessage = 'Please ensure that all mandatory fields are completed before proceeding.';
+                        break;
+
+                    case "3":
+                        requiredFields.push($("#ReferenceByStudentlst"), $("#ReferenceToStudents"), $("#TransactionAmounts"));
+                        validationMessage = 'Please ensure that all mandatory fields are completed before proceeding.';
+                        break;
+
+                    case "4":
+
+                        requiredFields.push($("#Employees"), $("#TransactionAmounts"));
+                        validationMessage = 'Please ensure that all mandatory fields are completed before proceeding.';
+                        break;
+
+                    case "5":
+                        requiredFields.push($("#Comment"), $("#TransactionAmounts"));
+                        validationMessage = 'Please ensure that all mandatory fields are completed before proceeding.';
+                        break;
+                }
+
+                // Ensure all required fields are filled
+                var allFieldsFilled = requiredFields.every(function (field) {
+                    return field.val() !== '';
+                });
+
+                if (!allFieldsFilled) {
+                    displayToast(validationMessage, "error");
+                    return;
+                }
+
+                // Prepare extra data based on selectedValue
+                var additionalData = {};
+                if (selectedValue == "5") {
+                    additionalData.EmployeeCode = $("#Employeess option:selected").text() + " - " + $("#Comment").val();
+                } else if (selectedValue == "4") {
+                    additionalData.EmployeeCode = $("#Employees").val();
+                } else if (selectedValue == "1") {
+                    additionalData.VendorCode = $('#VendorName').val();
+                } else if (selectedValue == "3") {
+                    additionalData.ReferenceToName = $("#ReferenceToStudents").val();
+                }
+
+
+                // Prepare form data
+                var formData = $("#AddExpenseform").serializeArray();
+                $.each(additionalData, function (key, value) {
+                    formData.push({ name: key, value: value });
+                });
+
+                // Confirmation with SweetAlert
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: "Do you want to save this expense?",
+                    icon: 'warning',
+                    position: "center",
+                    showCancelButton: true,
+                    confirmButtonText: 'Yes, save it!',
+                    cancelButtonText: 'No, cancel!',
+                    target: '#NewExpenseModal', // Set target to your modal container
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // Disable the button to prevent multiple clicks
+                        $('#SaveExpAndNext').prop('disabled', true);
+                        // AJAX request to save the expense
+                        $.ajax({
+                            type: 'POST',
+                            url: '@Url.Action("AddExpensesAsyncMBPost", "Accountant")',
+                            data: $.param(formData),
+                            success: function (response) {
+                                if (response.success) {
+                                    Swal.fire({
+                                        position: "center",
+                                        icon: "success",
+                                        title: "Expense successfully saved!",
+                                        showConfirmButton: false,
+                                        timer: 3000
+                                    });
+                                    $('#TransactionCode').val(response.newCode);
+
+                                    // Prompt for payment
+                                    Swal.fire({
+                                        title: 'Do you want to pay for this transaction?',
+                                        icon: 'question',
+                                        showCancelButton: true,
+                                        confirmButtonText: 'Yes, proceed!',
+                                        cancelButtonText: 'No, later',
+                                        position: "center"
+                                    }).then((result) => {
+                                        if (result.isConfirmed) {
+                                            gotonext(); // Navigate to next step
+                                            fetchvoucher();
+                                        } else {
+                                            window.location.href = '@Url.Action("ExpenseDashboardAsyncMB")';
+                                        }
+                                    });
+                                } else if (response.redirect) {
+                                    window.location.href = '@Url.Action("ListOfRegularExpenseAsyncMB", "Accountant")';
+                                } else {
+                                    displayToast("Failed to save the Expense. Message: " + response.message, 'error');
+                                }
+                            },
+                            error: function () {
+                                displayToast("An error occurred while saving data.", 'error');
+                            }
+                        });
+                    }
+                });
+            });
+
+
+
+
+            // This function for go to payment details
+            function gotonext() {
+
+                senddatatopayment();//sending the data to next form
+                stepper.to(2); // Move to the information step (step 2)
+
+            }
+
+
+
+            function senddatatopayment() {
+                var tcode = $("#TransactionCode").val();
+                var padiamt = $("#TransactionAmounts").val();
+                var VendorName = $("#VendorName option:selected").text().trim();
+                var Expense = $("#RegularExpenseTypelst option:selected").text().trim();
+
+                var monthSalary = $("#SalarayId option:selected").text().trim();
+                var RefundStud = $("#RefundCandidatelst option:selected").text().trim();
+                var RefereStud = $("#ReferenceByStudentlst option:selected").text().trim();
+                var AdvanceStaff = $("#Employees option:selected").text().trim();
+                var otherExp = $("#Employeess option:selected").text() + " - " + $("#Comment").val();
+
+                $("#PaidAmount").val(parseFloat(padiamt));
+
+                // Function to check if the text is a placeholder
+                function isValidOption(text) {
+                    return text && text !== 'Select Vendor Name' && text !== 'Select' && text !== 'Select Expense Type';
+                }
+
+                // Check each value in order and set the first valid value
+                var valueToShow =
+                    (isValidOption(VendorName) ? VendorName :
+                        isValidOption(monthSalary) ? monthSalary :
+                        isValidOption(RefundStud) ? RefundStud :
+                            isValidOption(RefereStud) ? RefereStud :
+                                isValidOption(AdvanceStaff) ? AdvanceStaff :
+                                    isValidOption(otherExp) ? otherExp : ""); // Fallback to empty string if all are placeholders or empty
+
+                $("#AmntPaidTo").val(valueToShow);
+            }
+
+
+            function fetchvoucher() {
+
+                var VendorCode = $('#VendorName').val();
+                var staffcode = $('#Employees').val();
+
+                $.ajax({
+                    url: '@Url.Action("ListVoucherAsyncMB", "Accountant")',
+                    type: 'GET',
+                    contentType: 'application/json',
+                    data: { VendorCode: VendorCode, staffcode: staffcode, ExpTypeID:selectedValue },
+                    success: function (response) {
+
+                    if (response.success) {
+                        var $voucherSelect = $('#VoucherCode');
+                        $voucherSelect.empty();
+                        $voucherSelect.append('<option>-select voucher-</option>');
+                        $.each(response.data, function (i, voucher) {
+                            $voucherSelect.append('<option value="' + voucher.Value + '">' + voucher.Text + '</option>');
+                        });
+                        displayToast("Fetched voucher", "success");
+                    } else {
+                        displayToast("An error occurred: " + response.message, "error");
+                    }
+                },
+                error: function (xhr, status, error) {
+                    displayToast("An error occurred while fetching the vouchers: " + error, "error");
+                }
+                });
+                updateTotalAmount();
+            }
+
+            // Function to toggle required field asterisk
+            function toggleRequiredAsterisk(show) {
+                requiredFields.forEach(function (field) {
+                    var label = field.closest('.input-group').find('label');
+                    if (show) {
+                        label.addClass('required-field'); // Add the red asterisk
+                    } else {
+                        label.removeClass('required-field'); // Remove the red asterisk
+                    }
+                });
+            }
+
+
+
+
+            // Here we can start to hide show the controller ------------
+            var selectedValue = '';
+            $("#ExpenseCategory").change(function () {
+
+                 selectedValue = $(this).val();
+                if (selectedValue === "1") {
+                    $("#ExpenseView").show();
+                    $("#VendorDiv").show();
+                    $("#RegExtandMonthDiv").show();
+                    $("#MonthSalDiv").hide();
+                    $("#RefundDiv").hide();
+                    $("#BillNumDiv").show();
+                    $("#RegularExpenseController").show();
+                    $("#Reference").hide();
+                    $("#RefundStudentName").hide();
+                    $("#RefundPaidAmount").hide();
+                    $("#EmployeesForOther").hide();
+                    $("#EmployeesForAdvance").hide();
+
+                    $("#btnAddExpense").show();
+                    $("#PerviousAmntlbl").show();
+                    $("#BalanceAmountDiv").hide();
+                    $('#ReferenceByStudentlst').val('').trigger('change.select2');
+                    $('#RefundCandidatelst').val('').trigger('change.select2');
+                    document.getElementById('ReferenceToStudents').value = '';
+                    $("#lblComment").removeClass("required-field");
+                    $("#TransactionAmounts").prop("readonly", false);
+                    $('#SaveExpAndNext').prop('disabled', false);
+                    document.getElementById('TransactionAmounts').value = '';
+                    document.getElementById('Comment').value = '';
+                } if (selectedValue === "2") {
+                    $("#ExpenseView").show();
+                    $("#VendorDiv").hide();
+                    $("#RegExtandMonthDiv").hide();
+                    $("#RefundDiv").show();
+                    $("#BillNumDiv").hide();
+                    $("#Reference").hide();
+                    $("#RefundStudentName").show();
+                    $("#RefundPaidAmount").show();
+                    $("#EmployeesForOther").hide();
+                    $("#EmployeesForAdvance").hide();
+                    $("#PerviousAmntlbl").hide();
+                    $("#RegularExpenseController").hide();
+                    $("#btnAddExpense").show();
+                    $('#RefundCandidatelst').val('').trigger('change.select2');
+                    $("#BalanceAmountDiv").hide();
+                   // $("#BillNumbers").hide();
+                    $("#lblComment").removeClass("required-field");
+                    $('#SaveExpAndNext').prop('disabled', false);
+                    $("#TransactionAmounts").prop("readonly", false);
+                    document.getElementById('TransactionAmounts').value = '';
+                    document.getElementById('VendorName').value = '';
+                    $('#ReferenceByStudentlst').val('').trigger('change.select2');
+                    document.getElementById('ReferenceToStudents').value = '';
+                    document.getElementById('RegularExpenseTypelst').value = '';
+                    document.getElementById('Comment').value = '';
+                } if (selectedValue === "3") {
+                    $("#ExpenseView").show();
+                    $("#VendorDiv").hide();
+                    $("#RegExtandMonthDiv").hide();
+                    $("#RefundDiv").hide();
+                    $("#BillNumDiv").hide();
+                    $("#Reference").show();
+                    $("#RefundStudentName").hide();
+                    $("#RefundPaidAmount").hide();
+                    $("#PerviousAmntlbl").hide();
+                    $("#EmployeesForOther").hide();
+                    $("#EmployeesForAdvance").hide();
+                    $("#RegularExpenseController").hide();
+                    $("#btnAddExpense").show();
+                    $("#BalanceAmountDiv").hide();
+                    document.getElementById('VendorName').value = '';
+                    $("#TransactionAmounts").prop("readonly", true);
+                    $("#lblComment").removeClass("required-field");
+                    $('#SaveExpAndNext').prop('disabled', false);
+                    document.getElementById('TransactionAmounts').value = '';
+                    $('#ReferenceByStudentlst').val('').trigger('change.select2');
+                    document.getElementById('ReferenceToStudents').value = '';
+                    document.getElementById('RegularExpenseTypelst').value = '';
+                    $('#RefundCandidatelst').val('').trigger('change.select2');
+                    document.getElementById('Comment').value = '';
+                } if (selectedValue === "4") {
+                    $("#ExpenseView").show();
+                    $("#VendorDiv").hide();
+                    $("#RegExtandMonthDiv").hide();
+                    $("#RefundDiv").hide();
+                    $("#BillNumDiv").hide();
+                    $("#Reference").hide();
+                    $("#RefundStudentName").hide();
+                    $("#RefundPaidAmount").hide();
+                    $("#PerviousAmntlbl").hide();
+                    $("#EmployeesForOther").hide();
+                    $("#EmployeesForAdvance").show();
+                    $("#RegularExpenseController").hide();
+                    $("#btnAddExpense").show();
+                    document.getElementById('VendorName').value = '';
+                    $("#TransactionAmounts").prop("readonly", true);
+                    $("#BalanceAmountDiv").show();
+                    $("#lblComment").removeClass("required-field");
+                    document.getElementById('TransactionAmounts').value = '';
+                    document.getElementById('RegularExpenseTypelst').value = '';
+                    $('#ReferenceByStudentlst').val('').trigger('change.select2');
+                    $('#RefundCandidatelst').val('').trigger('change.select2');
+                    document.getElementById('ReferenceToStudents').value = '';
+                    document.getElementById('Comment').value = '';
+                } if (selectedValue === "5") {
+                    $("#ExpenseView").show();
+                    $("#VendorDiv").hide();
+                    $("#RegExtandMonthDiv").hide();
+                    $("#RefundDiv").hide();
+                    $("#BillNumDiv").hide();
+                    document.getElementById('TransactionAmounts').value = '';
+                    $("#Reference").hide();
+                    $("#RefundStudentName").hide();
+                    $("#RefundPaidAmount").hide();
+                    $("#EmployeesForOther").show();
+                    $("#EmployeesForAdvance").hide();
+                    document.getElementById('VendorName').value = '';
+                    document.getElementById('RegularExpenseTypelst').value = '';
+                    $("#EmployeeLabel").removeClass("required-field");
+                    $("#RegularExpenseController").hide();
+                    $("#lblComment").addClass("required-field");
+                    $("#btnAddExpense").show();
+                    $("#BalanceAmountDiv").hide();
+                    $("#PerviousAmntlbl").hide();
+                    $("#TransactionAmounts").prop("readonly", false);
+                    $('#SaveExpAndNext').prop('disabled', false);
+                    $("#Employees").val(null).trigger('change');
+                    $('#ReferenceByStudentlst').val('').trigger('change.select2');
+                    $('#RefundCandidatelst').val('').trigger('change.select2');
+                    document.getElementById('ReferenceToStudents').value = '';
+                    document.getElementById('Comment').value = '';
+
+                }
+
+            });
+
+
+
+
+
+
+
+
+
+
+
+            $('#Amounts').on('input', function () {
+                var enteredValue = $(this).val();
+                var amount = $('#PaidAmount').val();
+                // Allow only numbers and dots
+                var numericValue = enteredValue.replace(/[^0-9.]/g, '');
+
+                // Ensure there's only one dot
+                var parts = numericValue.split('.');
+                if (parts.length > 2) {
+                    numericValue = parts[0] + '.' + parts.slice(1).join('');
+                }
+
+                // Allow the user to enter digits after the decimal
+                if (numericValue.includes('.')) {
+                    var [integerPart, decimalPart] = numericValue.split('.');
+                    if (decimalPart.length > 2) {
+                        // Round the value to 2 decimal places if there are more than 2 digits
+                        numericValue = (parseFloat(integerPart + '.' + decimalPart) || 0).toFixed(2);
+                    }
+                }
+
+                // Remove leading zeros, but ensure at least one '0'
+                if (numericValue.includes('.')) {
+                    var [integerPart, decimalPart] = numericValue.split('.');
+                    integerPart = integerPart.replace(/^0+/, '') || '0'; // Remove leading zeros but ensure at least '0'
+                    numericValue = integerPart + '.' + decimalPart;
+                } else {
+                    numericValue = numericValue.replace(/^0+/, '') || '0'; // Remove leading zeros but ensure at least '0'
+                }
+                if (numericValue.length > 10) {
+                    numericValue = numericValue.substring(0, 10);
+                }
+                if (parseFloat(numericValue) > parseFloat(amount)) {
+                    numericValue = amount;
+                }
+                $(this).val(numericValue);
+            });
+
+
+            $('#TransactionAmounts').on('input', function () {
+                var enteredValue = $(this).val();
+
+                // Allow only numbers and dots
+                var numericValue = enteredValue.replace(/[^0-9.]/g, '');
+
+                // Ensure there's only one dot
+                var parts = numericValue.split('.');
+                if (parts.length > 2) {
+                    numericValue = parts[0] + '.' + parts.slice(1).join('');
+                }
+
+                // Allow the user to enter digits after the decimal
+                if (numericValue.includes('.')) {
+                    var [integerPart, decimalPart] = numericValue.split('.');
+                    if (decimalPart.length > 2) {
+                        // Round the value to 2 decimal places if there are more than 2 digits
+                        numericValue = (parseFloat(integerPart + '.' + decimalPart) || 0).toFixed(2);
+                    }
+                }
+
+                // Remove leading zeros, but ensure at least one '0'
+                if (numericValue.includes('.')) {
+                    var [integerPart, decimalPart] = numericValue.split('.');
+                    integerPart = integerPart.replace(/^0+/, '') || '0'; // Remove leading zeros but ensure at least '0'
+                    numericValue = integerPart + '.' + decimalPart;
+                } else {
+                    numericValue = numericValue.replace(/^0+/, '') || '0'; // Remove leading zeros but ensure at least '0'
+                }
+
+                // Limit length to 10 characters
+                if (numericValue.length > 10) {
+                    numericValue = numericValue.substring(0, 10);
+                }
+
+                // Update the input field with the cleaned value
+                $(this).val(numericValue);
+            });
+
+
+            // Get today's date
+            var today = new Date().toISOString().split('T')[0];
+
+            // Set the max attribute to today's date
+            $('#PaymentDate').attr('max', today);
+
+            // Optional: Disable tomorrow's date
+            var tomorrow = new Date();
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            var tomorrowDate = tomorrow.toISOString().split('T')[0];
+
+
+
+
+
+
+            //Save the Payment Transcation
+             $('#SubmitAmounts').off('click').on('click', function (e) {
+                e.preventDefault(); // Prevent the default form submission
+                var selectedVouchers = $('#VoucherCode').val();
+                 var paidAmount = parseFloat($('#Amounts').val());
+                var TranscationCode = $('#TransactionCode').val();
+                let voucheramount = parseFloat($('#totalAmountLabel').text());
+                 var Description = $('#Description').val();
+
+                // Ensure that paidAmount1 is a valid number and greater than 0
+                 if (voucheramount > 0 && paidAmount > 0 && Description !== "" && paidAmount <= voucheramount) {
+                    // SweetAlert confirmation
+                    Swal.fire({
+                        title: 'Are you sure?',
+                        text: 'Do you want to submit the payment?',
+                        icon: 'question',
+                        showCancelButton: true,
+                        confirmButtonText: 'Yes, submit it!',
+                        cancelButtonText: 'No, cancel!',
+                        backdrop: true,
+                        allowOutsideClick: false,
+                        position: "center"
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            // Ensure the description is properly retrieved
+                            var Description = $('#Description').val();
+                            // Disable the button to prevent multiple clicks
+                            $('#SubmitAmounts').prop('disabled', true);
+
+                            $.ajax({
+                                url: '@Url.Action("UpdateTheVoucherAmountAsyncMB", "Accountant")',
+                                type: 'POST',
+                                data: {
+                                    paidAmount: paidAmount,
+                                    voucherCodes: selectedVouchers,
+                                    TranscationCode: TranscationCode,
+                                    Description: Description
+                                },
+                                traditional: true,
+                                success: function (response) {
+                                    if (response.success) {
+                                        Swal.fire({
+                                            position: "center",
+                                            icon: "success",
+                                            title: "Payment successfully saved!",
+                                            showConfirmButton: false,
+                                            timer: 3000
+                                        }).then(() => {
+                                            window.location.href = response.redirectUrl;
+                                        });
+                                    } else {
+                                        displayToast(response.message || 'Error allocating amount.', "error");
+                                        $('#SubmitAmounts').prop('disabled', false);
+                                    }
+                                },
+                                error: function (xhr, status, error) {
+                                    toastr.error('An error occurred while processing your request.');
+                                    $('#SubmitAmounts').prop('disabled', false);
+                                }
+                            });
+                        }
+                    });
+                } else {
+                    // Handle all validation and display Toastr error messages
+                    let message = "";
+                    if (!voucheramount) message += "Please select a voucher for payment! ";
+                     if (!paidAmount || isNaN(paidAmount)) message += "Please fill in the amount to pay! ";
+                     if (paidAmount > voucheramount) message += "Payment amount cannot be greater than the voucher amount! ";
+                    if (!Description) message += "Please fill in the description! ";
+
+                    if (message !== "") {
+                        displayToast(message.trim(), "error");
+                    }
+                }
+            });
+
+
+
+        });
+
+        jQuery(document).ready(function ($) {
+
+
+
+
+
+            // Call the function on dropdown change
+            $('#VoucherCode').on('change', updateTotalAmount);
+
+
+
+            // ReferenceByStudentlst List apply select2
+            $('#ReferenceByStudentlst').select2({
+                placeholder: "Select Reference By Candidate", // Placeholder for the search box
+                allowClear: true, // Allow the user to clear the selection
+                width: '100%', // Ensures that the Select2 dropdown takes full width of the parent container
+            });
+
+
+
+            // RefundCandidatelst List apply select2
+            $('#RefundCandidatelst').select2({
+                placeholder: "Select Refund  Candidate", // Placeholder for the search box
+                allowClear: true, // Allow the user to clear the selection
+                width: '100%', // Ensures that the Select2 dropdown takes full width of the parent container
+            });
+
+            // vouchers list apply select2
+
+            $('#VoucherCode').select2({
+                placeholder: "Select Vouchers",
+                /*search: true,*/
+                allowClear: true
+            });
+
+            // Reinitialize Select2 with the placeholder
+            $("#Employees").select2({
+                placeholder: "Select Employee",
+                allowClear: true,  // Ensure the "clear" option is enabled
+                   // Ensures that the dropdown takes full width of the parent container
+            });
+
+            $("#Employeess").select2({
+                placeholder: "Select Employee",
+                allowClear: true,  // Ensure the "clear" option is enabled
+                     // Ensures that the dropdown takes full width of the parent container
+            });
+
+
+            $('#SalarayId').change(function () {
+                // Loop through selected options
+                $('#SalarayId option:selected').each(function () {
+                    // Extract the voucher text
+                    var text = $(this).text().trim(); // Trim any extra spaces
+                    // Split the string by dashes (-) and format it
+                    var parts = text.split('-');
+
+                    if (parts.length === 2) {
+                        var formattedText = parts[0].toUpperCase() + ' - ' +
+                            parts[1];  // Amount
+                        // Now extract the amount part (assuming it's always the 3rd part)
+                        var amount = parseFloat(parts[1]);
+                        $('#TransactionAmounts').val(amount);
+
+                    }
+                });
+            });
+
+
+            // when we select and employee for advance salary then that amount will extract and show in Amount controller
+            $("#Employees").change(function () {
+
+                // Loop through selected options
+                $('#Employees option:selected').each(function () {
+                    // Extract the voucher text
+                    var text = $(this).text().trim(); // Trim any extra spaces
+                    // Split the string by dashes (-) and format it
+                    var parts = text.split('-');
+
+                    if (parts.length === 2) {
+                        var formattedText = parts[0].toUpperCase() + ' - ' +
+                            parts[1];  // Amount
+                        // Now extract the amount part (assuming it's always the 3rd part)
+                        var amount = parseFloat(parts[1]);
+                        $('#TransactionAmounts').val(amount);
+
+                    }
+                });
+
+            });
+
+        });
+
+
+        function validateBillNumber() {
+            var billNumber = $('#BillNumber').val().trim();
+            var errorMessage = '';
+
+            // Check the length (between 1 and 20 characters)
+            if (billNumber.length < 1 || billNumber.length > 20) {
+                errorMessage = 'Bill number must be between 1 and 20 characters.';
+            }
+            // Allow alphanumeric characters and special characters: -, /, ., and allow leading zeros
+            else if (!/^[0-9a-zA-Z\-\/\.]+$/.test(billNumber)) {
+                errorMessage = 'Bill number can only contain alphanumeric characters or special characters (-, /, .).';
+            }
+
+            // Display error message if validation fails and clear the input field
+            if (errorMessage !== '') {
+                $('#BillNumberError').text(errorMessage);
+                displayToast(errorMessage, 'error');
+                $('#BillNumber').val('').focus(); // Clear the bill number input field and focus it
+                return false;
+            } else {
+                $('#BillNumberError').text('');
+                return true;
+            }
+        }
+
+        // Attach validation to form submit or on bill number field change
+        $('#BillNumber').on('change', function () {
+            validateBillNumber();
+        });
+
+        function updateTotalAmount() {
+
+            var totalAmount = 0;
+            var inputAmount = parseFloat($('#PaidAmount').val()) || 0;
+
+            $('#VoucherCode option:selected').each(function () {
+                var text = $(this).text().trim();
+
+                var amountMatch = text.match(/^[^-]+-[^-]+-(\d+(\.\d+)?)/);
+                if (amountMatch) {
+                    totalAmount += parseFloat(amountMatch[1]);
+                }
+            });
+
+            $('#totalAmountLabel').text(totalAmount.toFixed(2));
+
+            var amount = parseFloat($('#PaidAmount').val()) || 0; // Parse and ensure amount is a valid number
+
+            if (totalAmount > amount) {
+                $('#Amounts').val(amount.toFixed(2)); // Set #Amounts to the value of amount if totalAmount is greater
+            } else {
+                $('#Amounts').val(totalAmount.toFixed(2)); // Otherwise, keep it as totalAmount
+            }
+
+
+            // Change color based on the total amount comparison
+            if (totalAmount >= inputAmount) {
+                $('#totalAmountLabel').css('color', 'green');
+                //$('#SubmitAmounts').prop('disabled', false); // Enable submit if amounts match or exceed
+                $('#VoucherCode option:not(:selected)').prop('disabled', true);
+            } else {
+                $('#totalAmountLabel').css('color', 'red');
+                // $('#SubmitAmounts').prop('disabled', true); // Disable submit if total amount is less
+                $('#VoucherCode option:not(:selected)').prop('disabled', false);
+            }
+
+            // Ensure that if an amount exists, the submit button is visible (even if disabled)
+            if (inputAmount > 0) {
+                $('#SubmitAmounts').show();
+            }
+        }
+
+        // Call the function on dropdown change
+        $('#VoucherCode').on('change', function () {
+
+            var text = $('#VoucherCode option:selected').text();
+            var firstWordMatch = text.match(/^([^:]+):/);
+            var amountMatch = text.match(/^[^-]+-[^-]+-(\d+(\.\d+)?)/);
+            if (firstWordMatch && firstWordMatch[1] == 'CHEQUE') {
+                if (amountMatch) {
+                    $('#Amounts').val(amountMatch[1]);
+                    $('#Amounts').prop('disabled', true);
+                }
+            }
+            else {
+                if (amountMatch) {
+                    $('#Amounts').prop('disabled', false);
+                }
+            }
+            updateTotalAmount();
+        });
+
+
+
+    </script>
+
+    @*section for modals add voucher and add vendor*@
+
+    <script>
+    $(document).ready(function () {
+        const modalSelector = '#BankModal';
+        const formSelector = '#AddVoucherForm';
+
+        // Open the Add Voucher modal
+        $('#addvoucherButton').off('click').on('click', function () {
+            const amountFor = $('#Amount').val();
+            const context = $('#Context').val();
+
+            $.ajax({
+                url: '@Url.Action("AddVoucherAsyncSGS", "Accountant")',
+                type: 'GET',
+                data: { voucherType: 2, amount: amountFor, context: context },
+                success: function (data) {
+                    $(`${modalSelector} .modal-body`).html(data); // Populate modal body
+                    $(modalSelector).modal('show'); // Show the modal
+                },
+                error: function () {
+                    Swal.fire('Error', 'Failed to load the Add Voucher form.', 'error');
+                }
+            });
+        });
+
+        // Handle form submission
+        $(document).on('submit', formSelector, function (e) {
+            e.preventDefault();
+            const context = $('#Context').val();
+
+            handleVoucherFormSubmission(formSelector, context, modalSelector);
+        });
+
+        // Ensure the modal is cleaned up on close
+        $(modalSelector).on('hidden.bs.modal', function () {
+            $(`${modalSelector} .modal-body`).html(''); // Clear modal content
+        });
+    });
+    </script>
+    <script>
+        $(document).ready(function () {
+            const modalSelector = '#AddVendorModal';
+            const formSelector = '#frmAddVendor';
+
+            // Open the Add Voucher modal
+            $('#btnaddvendor').off('click').on('click', function () {
+                $('#btnaddvendor').prop('disabled', true);
+                $.ajax({
+                    url: '@Url.Action("AddVendorAsyncVP", "Accountant")',
+                    type: 'GET',
+                    success: function (data) {
+                        var $jq = jQuery.noConflict();
+                        $jq(`${modalSelector} .modal-body`).html(data); // Populate modal body
+                        $jq(modalSelector).modal('show');
+                        $('#btnaddvendor').prop('disabled', false);
+
+                    },
+                    error: function () {
+                        Swal.fire('Error', 'Failed to load the Add Voucher form.', 'error');
+                        $('#btnaddvendor').prop('disabled', false);
+
+                    }
+                });
+            });
+            // Handle form submission
+            $(document).on('submit', formSelector, function (e) {
+                e.preventDefault();
+                handleaddvendor(formSelector, modalSelector);
+            });
+            // Ensure the modal is cleaned up on close
+            $('#AddVendorModal').on('hidden.bs.modal', function () {
+                $(this).find('.modal-body').empty();
+                $(this).find('form').off();
+                //$('#VendorCode').focus();
+                //windors.redirectUrl('Accountant/AddPurchaseAsyncVP');
+            });
+        });
+    </script>
+
+
+</body>
+</html>

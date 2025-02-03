@@ -1,0 +1,316 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>GayaEmpower ERP</title>
+
+    <!-- Meta -->
+    <meta name="description" content="Marketplace for Bootstrap Admin Dashboards" />
+    <meta name="author" content="Parker Themes" />
+    <meta property="og:title" content="Admin Templates - Dashboard Templates | Bootstrap Gallery">
+    <meta property="og:description" content="Marketplace for Bootstrap Admin Dashboards">
+    <meta property="og:type" content="Website">
+    <meta property="og:site_name" content="Bootstrap Gallery">
+    <link rel="shortcut icon" href="assets/images/favicon.svg" />
+
+    <!-- *************
+            ************ CSS Files *************
+        ************* -->
+    <link href="~/Content/StudentTemplate/fonts/bootstrap/bootstrap-icons.min.css" rel="stylesheet" />
+    <link href="~/Content/StudentTemplate/css/main.min.css" rel="stylesheet" />
+    <!-- *************
+            ************ Vendor Css Files *************
+        ************ -->
+    <!-- Scrollbar CSS -->
+    @*<link href="~/Content/StudentTemplate/vendor/overlay-scroll/OverlayScrollbars.min.css" rel="stylesheet" />*@
+    <link rel="stylesheet" href="https://cdn.datatables.net/2.0.8/css/dataTables.dataTables.css" />
+
+    <script src="https://cdn.datatables.net/2.0.8/js/dataTables.js"></script>
+
+    <style>
+
+        body {
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .main-footer {
+            text-align: center;
+            background-color: #f1f1f1; /* Adjust background color as needed */
+            padding: 10px;
+            position: fixed;
+            left: 0;
+            bottom: 0;
+            width: 100%;
+            box-shadow: 0 -1px 5px rgba(0, 0, 0, 0.1); /* Optional: adds a slight shadow to the footer */
+            height:0vw;
+        }
+
+
+
+
+        .user-panel .image {
+            margin: 0 auto;
+        }
+
+
+
+        .elevation-2 {
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .user-panel .info a {
+            font-weight: bold;
+        }
+
+        .image {
+            text-align: center; /* Center the image */
+        }
+
+        .img-circle {
+            border-radius: 50%;
+            width: 64px;
+            height: 32px;
+            object-fit: cover;
+        }
+
+        .img-circle {
+            /*border-radius: 50%;*/ /* Make the image circular */
+            width: 64px; /* Set a width for the image */
+            height: 32px; /* Set a height for the image */
+            object-fit: cover; /* Ensure the image covers the circle without distortion */
+        }
+
+        .elevation-2 {
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Add a subtle shadow effect */
+        }
+
+        .small-circle {
+            width: 60px;
+            height: 60px;
+        }
+    </style>
+
+    <style>
+        .image {
+            width: 100px; /* Set the desired width */
+            height: 100px; /* Set the desired height */
+            overflow: hidden; /* Ensure the image fits within the container */
+        }
+
+            .image img {
+                width: 100%; /* Make the image fill the container */
+                height: auto; /* Maintain the aspect ratio */
+            }
+        /* Add this CSS to your stylesheet */
+        .sidebar-menu .active {
+            background-color: #818fb0; /* Change this to your desired color */
+            color: #fff; /* Change text color if needed */
+        }
+
+            .sidebar-menu .active a {
+                color: #fff; /* Change link text color if needed */
+            }
+
+        /*.sidebar-menu .active img {
+                filter: brightness(0) invert(1);*/ /* Optional: Change icon color if needed */
+        /*}*/
+
+        .brand-link {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+        }
+
+        .brand-text {
+            display: inline-block;
+            color: white; /* Ensure the text color is solid */
+            opacity: 1 !important; /* Ensure full visibility */
+            font-weight: 600 !important; /* Force font weight */
+        }
+
+        .brand-link:hover .brand-text {
+            color: #000 !important; /* Ensure text color doesn't change on hover */
+            opacity: 1 !important; /* Ensure no fading effect */
+            font-weight: 600 !important; /* Maintain font weight on hover */
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <!-- Page wrapper starts -->
+    <div class="page-wrapper">
+
+        <!-- Main container starts -->
+        <div class="main-container">
+
+            <!-- Sidebar wrapper starts -->
+            <nav id="sidebar" class="sidebar-wrapper">
+                <br />
+                <!-- Sidebar profile starts -->
+                <a href="index3.html">
+                    <img src="~/Content/Admin/img/Rahitech.png" alt="AdminLTE Logo" class="brand-image img-circle elevation-3" style="margin-left:0px !important;">
+                    <span class="brand-text font-weight-light" style="font-size:15px !important; font-weight:600 !important;">Rahitech It Solution</span>
+                </a>
+                <br />
+                @{
+                    var Photograph = Session["Photograph"] as string;
+                    var FullName = Session["FullName"] as string;
+                }
+
+                <div class="user-panel mt-1 pb-1 mb-1 text-center">
+                    <div class="image">
+                        <img src="@Url.Content(Photograph)" class="img-circle elevation-2" alt="@Photograph">
+                    </div>
+                    <div class="info mt-2" style="color:white; font-size:14.4px;">
+                        <a href="@Url.Action("StudentProfileFSAsync","Student")" class="d-block font-weight-bold" style="color:white;">@FullName</a>
+                    </div>
+                </div>
+
+                <!-- Sidebar profile ends -->
+                <!-- Sidebar menu starts -->
+                <div class="sidebarMenuScroll">
+                    <ul class="sidebar-menu">
+                        <li>
+                            <a href="@Url.Action("DashboardAP","Student")" class="nav-link @(Request.Url.AbsolutePath.Contains("/Student/DashboardAP") ? "active":"")">
+                                <img src="~/Content/StudentTemplate/images/dashboard.png" / style="width: 30px; height: 30px;">
+                                &nbsp; &nbsp;
+                                <span class="menu-text"><b>Dashboard</b></span>
+                            </a>
+                        </li>
+                        <br />
+                        <li @*class="active current-page"*@>
+                            <a href="@Url.Action("ListCandidateCourse","Student")" class="nav-link @(Request.Url.AbsolutePath.Contains("/Student/ListCandidateCourse") ? "active":"")">
+                                <img src="~/Content/StudentTemplate/images/CourseDetails.png" / style="width: 30px; height: 30px;">
+                                &nbsp; &nbsp;
+                                <span class="menu-text"><b>Course Details</b></span>
+                            </a>
+                        </li>
+                        <br />
+                        <li>
+                            <a href="@Url.Action("StudentFeeDetailsViewGJ","Student")" class="nav-link @(Request.Url.AbsolutePath.Contains("/Student/StudentFeeDetailsViewGJ") ? "active":"")">
+
+                                <img src="~/Content/StudentTemplate/images/rupee.png" / style="width: 30px; height: 30px;">
+                                &nbsp; &nbsp;
+                                <span class="menu-text"><b>Fee Details</b></span>
+                            </a>
+                        </li>
+                        <br />
+                        <li>
+                            <a href="@Url.Action("AllScheduleAsyncAPP","Student")" class="nav-link @(Request.Url.AbsolutePath.Contains("/Student/AllScheduleAsyncAPP") ? "active":"")">
+                                <img src="~/Content/StudentTemplate/images/calendar.png" style="width: 30px; height: 30px;">
+                                &nbsp; &nbsp;
+                                <span class="menu-text"><b>Schedule</b></span>
+                            </a>
+                        </li>
+                        <br />
+                        <li>
+                            <a href="@Url.Action("MainTestViewAsyncPA","Student")" class="nav-link @(Request.Url.AbsolutePath.Contains("/Student/MainTestViewAsyncPA") ? "active":"")">
+                                <img src="~/Content/StudentTemplate/images/test (1).png" style="width: 30px; height: 30px;">
+                                &nbsp; &nbsp;
+                                <span class="menu-text"><b>Test</b></span>
+                            </a>
+                        </li>
+                        <br />
+                        <li>
+                            <a href="@Url.Action("EventList","Student")" class="nav-link @(Request.Url.AbsolutePath.Contains("/Student/EventList") ? "active":"")">
+                                <img src="~/Content/StudentTemplate/images/event-list.png" style="width: 30px; height: 30px;">
+                                &nbsp; &nbsp;
+                                <span class="menu-text"><b>Event</b></span>
+                            </a>
+                        </li>
+                        <br />
+
+                        <li>
+                            <a href="@Url.Action("LeaveMainViewAsyncNS","Student")" class="nav-link @(Request.Url.AbsolutePath.Contains("/Student/LeaveMainViewAsyncNS") ? "active":"")">
+                                <img src="~/Content/StudentTemplate/images/Nilofar.png" style="width: 30px; height: 30px;">
+                                &nbsp; &nbsp;
+                                <span class="menu-text"><b>Leave</b></span>
+                            </a>
+                        </li>
+                        <br />
+                        <li>
+                            <a href="@Url.Action("Login", "Account")" class="nav-link @(Request.Url.AbsolutePath.Contains("/Student/Login") ? "active" : "")">
+                                <img src="~/Content/StudentTemplate/images/exit.png" style="width: 30px; height: 30px;">
+                                &nbsp; &nbsp;
+                                <span class="menu-text"><b>Logout</b></span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                <!-- Sidebar menu ends -->
+            </nav>
+            <!-- App container starts -->
+            <div class="app-container">
+                <!-- App header starts -->
+                <div class="app-header d-flex align-items-center">
+
+                    <!-- Toggle buttons starts -->
+                    <div class="toggle-buttons-container">
+                        <button class="toggle-sidebar">
+                            <i class="bi bi-list lh-1"></i>
+                        </button>
+                        <button class="pin-sidebar">
+                            <i class="bi bi-list lh-1"></i>
+                        </button>
+                    </div>
+                    <!-- App header actions ends -->
+                </div>
+            </div>
+            <div class="content-wrapper">
+                <!-- Content Header (Page header) -->
+                <!-- /.content-header -->
+                <!-- Main content -->
+                <section class="content">
+                    <div class="container-fluid">
+                        @RenderBody()
+                        <!-- /.row (main row) -->
+                    </div><!-- /.container-fluid -->
+                </section>
+                <!-- /.content -->
+            </div>
+            <footer class="main-footer" style="text-align: center;Z-INDEX:10;">
+                <strong>Copyright &copy; 2014-2023 <a href="http://rahitech.com/">Rahitech It Solutions</a>.</strong>
+                All rights reserved.
+                <div class="float-right d-none d-sm-inline-block">
+                    <b>Version</b> 3.2.0
+                </div>
+            </footer>
+        </div>       
+    </div>
+</body>
+</html>
+<!-- *************
+            ************ JavaScript Files *************
+************* -->
+<!-- Required jQuery first, then Bootstrap Bundle JS -->
+<script src="~/Content/StudentTemplate/js/jquery.min.js"></script>
+<script src="~/Content/StudentTemplate/js/moment.min.js"></script>
+<script src="~/Content/StudentTemplate/js/bootstrap.bundle.min.js"></script>
+<!-- *************
+    ************ Vendor Js Files *************
+************* -->
+<!-- Overlay Scroll JS -->
+@*<script src="~/Content/StudentTemplate/vendor/overlay-scroll/jquery.overlayScrollbars.min.js"></script>
+<script src="~/Content/StudentTemplate/vendor/overlay-scroll/custom-scrollbar.js"></script>*@
+
+<!-- Apex js -->
+<script src="~/Content/StudentTemplate/vendor/apex/apexcharts.min.js"></script>
+<script src="~/Content/StudentTemplate/vendor/apex/custom/common/custom-topbar-radial.js"></script>
+<script src="~/Content/StudentTemplate/vendor/apex/custom/common/custom-sparkline.js"></script>
+<script src="~/Content/StudentTemplate/vendor/apex/custom/common/custom-sparkline2.js"></script>
+<script src="~/Content/StudentTemplate/vendor/apex/custom/home/audience.js"></script>
+
+<!-- Rating -->
+<script src="~/Content/StudentTemplate/vendor/rating/raty.js"></script>
+<script src="~/Content/StudentTemplate/vendor/rating/raty-custom.js"></script>
+
+
+<!-- Custom JS files -->
+<script src="~/Content/StudentTemplate/js/custom.js"></script>

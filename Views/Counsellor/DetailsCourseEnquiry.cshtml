@@ -1,0 +1,97 @@
+﻿@model GSTEducationERPLibrary.Counsellor.Counsellor
+@{
+    ViewBag.Title = "AddEnquiryPK";
+   
+
+}
+<style>
+    h2 {
+        color: #64bbc9;
+        font-weight: bold;
+        font-size: 30px;
+        margin-left: 17px;
+        margin-bottom: -10px;
+        font-family: sans-serif;
+    }
+
+    h3{
+        color: #64bbc9;
+        font-weight: bold;
+    }
+
+    a {
+        color: #01a6a6;
+    }
+
+    img {
+        color: #64bbc9;
+        font-weight: bold;
+        font-size: 30px;
+        margin-left: 17px;
+        margin-bottom: -10px;
+        font-family: sans-serif;
+    }
+</style>
+<div class="container-fluid">
+    <h3> Candidate Details</h3>
+
+    @*<div class="card mx-md-auto col-md-6">*@
+    <div class="form-control-border">
+        <div class="row">
+            <div class="col-md-6">
+                <label>CandidateCode:</label>
+                <span>@Model.CandidateCode</span>
+            </div>
+            <div class="col-md-6">
+                <label>Full Name:</label>
+                <span>@Model.FullName</span>
+            </div>
+            <div class="col-md-6">
+                <label>Contact Number:</label>
+                <span>@Model.ContactNumber</span>
+            </div>
+            <div class="col-md-6">
+                <label>Present Address:</label>
+                <span>@Model.PresentAddress</span>
+            </div>
+            <div class="col-md-6">
+                <label>Permanent Address:</label>
+                <span>@Model.PermanentAddress</span>
+            </div>
+            <div class="col-md-6">
+                <label>EmailId:</label>
+                <span>@Model.EmailId</span>
+            </div>
+            <div class="col-md-6">
+                <label>TimePreferred:</label>
+                <span>@Model.TimePreferred</span>
+            </div>
+            <div class="col-md-6">
+                <label>Want Demo:</label>
+                <span>@Model.WantDemo</span>
+            </div>
+            @*<div class="col-md-12 text-center">
+                    <input type="button" style="margin-top:50px" value="Close" id="cancelButton" class="btn btn-danger btn-sm" onclick="location.href = '@Url.Action("ListEnquiryCourse", "Counsellor")'" />
+                </div>*@
+            <div>
+                <!--<a href="/Counsellor/ListEnquiryCourse" class="icon" title="Back To List">-->
+                <!-- Embed the video element -->
+                <!--<video width="35" height="35" playsinline="" loop="">
+                        <source src="/Content/Admin/icon/Back.mp4" type="video/mp4">
+                    </video>
+                </a>-->
+            </div>
+        </div>
+    </div>
+    @*</div>*@
+</div>
+
+
+
+
+
+
+    <p>
+        @*@Html.ActionLink("Edit", "UpdateCourseEnquiryPK", new { CandidateCode = Model.CandidateCode }) |*@
+        @*@Html.ActionLink("Back to List", "ListEnquiryCourse")*@
+    </p>

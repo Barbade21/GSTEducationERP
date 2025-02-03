@@ -1,0 +1,565 @@
+﻿@{
+    ViewBag.Title = "ImportExcelFile";
+    Layout = "~/Views/Shared/_LayoutERP.cshtml";
+	@Html.Partial("_LoadingOverlay")
+}
+
+
+<head>
+    <link rel="stylesheet" href="~/Content/plugins/daterangepicker/daterangepicker.css" />
+    <link rel="stylesheet" href="~/Content/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+    <link rel="stylesheet" href="~/Content/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
+    <link rel="stylesheet" href="~/Content/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
+    <link href="~/Content/Trainer/css/bootstrap-duration-picker.css" rel="stylesheet" />
+	<script src="~/Content/Admin/js/overlay.js"></script>
+</head>
+
+<br />
+<div class="card">
+    <div class="card-header">
+        <h2><b>Leads</b></h2>
+    </div>
+
+    <style>
+        .dataTables_wrapper .btn-secondary {
+            color: #235;
+            background-color: transparent !important;
+            border-color: transparent;
+            font-size: x-large;
+            margin: 0px !important;
+        }
+
+        h2 {
+            padding-top: 10px;
+            margin-bottom: 10px;
+            font-family: Verdana;
+            font-weight: bold;
+            font-size: medium;
+            color: #33CCCC;
+        }
+
+        .card-primary.card-outline-tabs > .card-header a.active {
+            border-top: 3px solid #33CCCC;
+        }
+
+        a {
+            color: #33CCCC;
+        }
+
+        .card.card-outline-tabs .card-header a:hover {
+            color: #33CCCC;
+        }
+
+        .card-primary.card-outline-tabs > .card-header a.active, .card-primary.card-outline-tabs > .card-header a.active:hover {
+            border-top: 3px solid #33CCCC;
+        }
+
+        .card-body {
+            font-family: Calibri !important;
+            padding-bottom: 0px !important;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        th {
+            background-color: #33CCCC;
+            color: #000;
+            text-align: center !important;
+        }
+
+        td {
+            text-align: center;
+            color: black !important;
+            border: 2px black;
+        }
+
+        .table td {
+            padding: 0px 0px 0px 0px !important;
+            font-size: 14px !important;
+        }
+
+        .table th {
+            padding: 5px 5px 4px 10px !important;
+            font-size: 14px !important;
+        }
+
+        table.dataTable > thead .sorting:after, table.dataTable > thead .sorting:before {
+            font-size: xx-small !important;
+        }
+
+        div.dataTables_wrapper div.dataTables_filter {
+            margin-top: -10px !important;
+        }
+
+        div.dt-buttons {
+            margin-top: -20px !important;
+        }
+
+        .btn-group > .btn:not(:last-child):not(.dropdown-toggle), .btn-group > .btn-group:not(:last-child) > .btn {
+            padding-left: 5px !important;
+            padding-right: 5px !important;
+        }
+
+        div.dataTables_wrapper div.dataTables_filter label {
+            font-size: small !important;
+        }
+
+        div.dataTables_wrapper div.dataTables_filter input {
+            height: 20px !important;
+        }
+
+        div.dataTables_wrapper div.dataTables_info {
+            padding: 0px !important;
+            font-size: small !important;
+        }
+
+        div.dataTables_wrapper div.dataTables_paginate ul.pagination {
+            margin-top: 0px !important;
+        }
+
+        div.dataTables_wrapper div.dataTables_paginate {
+            font-size: small !important;
+        }
+		
+        #AddLead {
+            align-items: center;
+            justify-content: center;
+            background-color: transparent;
+            border: none;
+        }
+
+        #AddLead img {
+            height: 20px;
+            width: 20px;
+        }
+
+        #file {
+            margin-left: 10px;
+            max-width: 100%;
+        }
+
+        #excelformate {
+            background-color: transparent;
+            border: none;
+        }
+
+        #excelformate img {
+            height: 20px;
+            width: 20px;
+        }
+
+        #excelformate a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #importbutton {
+            height: 39px;
+            width: 100px;
+            background-color: #33CCCC;
+            border-color: #33CCCC;
+        }
+
+    
+        @@media (max-width: 768px) {
+            form {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            #AddLead, #file, #importbutton, #excelformate {
+                width: 100%;
+                margin: 5px 0;
+            }
+
+            #importbutton {
+                width: 100%;
+            }
+        }
+
+     
+        @@media (max-width: 480px) {
+            #importbutton, #excelformate, #file {
+                width: 100%;
+                text-align: center;
+            }
+        }
+    </style>
+
+    <div class="card">
+        <div class="card-header">
+            <div class="card-body" style="padding-top:10px">
+                <div class="container" style="margin-left:-10px">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="card card-primary card-outline card-outline-tabs">
+                                <div class="card-header p-0 border-bottom-0">
+                                    <ul class="nav nav-tabs" id="custom-tabs-four-tab" role="tablist">
+                                      <li class="nav-item">
+                                            <a class="nav-link active" data-toggle="pill" href="@Url.Action("ShowAllLeadListStudentMB","Counsellor")" role="tab" aria-controls="custom-tabs-four-home" aria-selected="true">All Leads  </a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link" data-toggle="pill" href="@Url.Action("ListStudentAsyncSS","Counsellor")" role="tab" aria-controls="custom-tabs-four-home" aria-selected="false">By Reference  </a>
+                                        </li>
+                                        <li class="nav-item2">
+                                            <a class="nav-link" data-toggle="pill" href="@Url.Action("WebListStudentAsyncSS", "Counsellor")" role="tab" aria-controls="custom-tabs-four-profile" aria-selected="false">By Web  </a>
+                                        </li>
+                                        <li class="nav-item3">
+                                            <a class="nav-link" data-toggle="pill" href="@Url.Action("TelephonicListStudentAsyncSS", "Counsellor")" role="tab" aria-controls="custom-tabs-four-messages" aria-selected="false">By Telephonic   </a>
+                                        </li>
+                                        <li class="nav-item4">
+                                            <a class="nav-link" data-toggle="pill" href="@Url.Action("PortalListStudentAsyncSS", "Counsellor")" role="tab" aria-controls="custom-tabs-four-settings" aria-selected="false">By Portal  </a>
+                                        </li>
+                                        <li class="nav-item5">
+                                            <a class="nav-link" data-toggle="pill" href="@Url.Action("AdvertisementListStudentAsyncSS", "Counsellor")" role="tab" aria-controls="custom-tabs-four-messages" aria-selected="false">By Advertisement  </a>
+                                        </li>
+                                        <li class="nav-item6">
+                                            <a class="nav-link" data-toggle="pill" href="@Url.Action("OtherListStudentAsyncSS", "Counsellor")" role="tab" aria-controls="custom-tabs-four-settings" aria-selected="false">By Other</a>
+                                        </li>
+                                        <li class="nav-item7">
+                                            <a class="nav-link" data-toggle="pill" href="@Url.Action("WalkinReferenceStudentListAsyncSS", "Counsellor")" role="tab" aria-controls="custom-tabs-four-settings" aria-selected="false">By Walk-In</a>
+                                        </li>
+										 <li class="nav-item8">
+     <a class="nav-link" data-toggle="pill" href="@Url.Action("ShowAllLostLeadListStudentMB", "Counsellor")" role="tab" aria-controls="custom-tabs-four-settings" aria-selected="false">Lost Lead</a>
+ </li>
+                                        <li class="nav-item8">
+                                            <select id="statusFilter" name="enquiryfor" class="form-control" style="width:170px;">
+                                                <option value="">---Select---</option>
+                                                <option value="Course">Course</option>
+                                                <option value="Placement">Placement</option>
+                                            </select>
+                                        </li>
+                                    </ul>
+                                    <br />
+                                    <div class="form-group form-inline">
+                                        <div class="col-md-1" style="padding-right:0px !important">
+                                            <label> From Date </label>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <input type="date" class="form-control" id="startDate" name="startDate">
+                                        </div>
+                                        <div class="col-md-1" style="padding-right:0px !important">
+                                            <label>  To Date</label>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <input type="date" class="form-control" id="endDate" name="endDate">
+                                        </div>
+                                        @using (Html.BeginForm("ImportExcelFile", "Counsellor", FormMethod.Post, new { enctype = "multipart/form-data" }))
+                                        {
+                                            @Html.ValidationSummary(true)
+                                            <form>
+                                                   <button type="button" class="btn btn-outline-info" id="AddLead" title="New Lead">
+                                                    <img src="~/Content/Admin/img/add-button.png" alt="Image Icon" style="height: 20px; width: 20px; " />
+                                                </button>
+                                                <input type="file" name="file" id="file" accept=".xlsx" />
+
+                                                <button type="submit" id="importbutton" class="btn btn-outline-dark" onclick="ImportSuccessfull()">
+                                                    Import
+                                                </button>
+
+                                                <button type="button" class="btn btn-outline-success" id="excelformate"
+                                                        title="Download Excel Format">
+                                                    <a href="~/Content/Counseller/Excel/Gaya Empower ERP.xlsx">
+                                                        <img src="~/Content/Admin/img/Excel.png" alt="Image Icon"/>
+                                                    </a>
+                                                </button>
+                                            </form>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="ExamList"></div>
+        </div>
+    </div>
+</div>
+
+<div id="resultContainer"></div>
+<div class="modal fade" id="SectionModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document" style="margin: 0 auto; display: flex; justify-content: center; align-items: center;">
+        <div class="modal-content" style="height:45vw; width:65vw;">
+            <div class="modal-header" style="text-align: left;">
+                <div style="height:2vw; width:55vw;">
+                    <h2><b>Lead Registration</b></h2>
+                </div>
+            </div>
+            <div class="modal-body" style="margin-top:-3vw">
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="ImportValidationModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+     <div class="modal-dialog" role="document" style="margin: 0 auto; display: flex; justify-content: center; align-items: center;">
+         <div class="modal-content" style="height: 35vw; width: 95vw;">
+             <div class="modal-header">
+                 <h2><b>Lead Errors</b></h2>
+                 <button id="exportPdfButton" class="btn btn-outline-dark btn-sm" style="margin-left: auto;">
+                     Export Errors to PDF
+                 </button>
+             </div>
+             <div class="modal-body card-body">
+                 <!-- Errors table will be dynamically added here -->
+             </div>
+         </div>
+     </div>
+ </div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+<!-- Bootstrap 4 -->
+<script src="~/Content/plugins/bootstrap/js/bootstrap.bundle.min.js" type="text/javascript"></script>
+<!-- DataTables  & Plugins -->
+<script src="~/Content/plugins/datatables/jquery.dataTables.min.js" type="text/javascript"></script>
+<script src="~/Content/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js" type="text/javascript"></script>
+<script src="~/Content/plugins/datatables-responsive/js/dataTables.responsive.min.js" type="text/javascript"></script>
+<script src="~/Content/plugins/datatables-responsive/js/responsive.bootstrap4.min.js" type="text/javascript"></script>
+<script src="~/Content/plugins/datatables-buttons/js/dataTables.buttons.min.js" type="text/javascript"></script>
+<script src="~/Content/plugins/datatables-buttons/js/buttons.bootstrap4.min.js" type="text/javascript"></script>
+<script src="~/Content/plugins/jszip/jszip.min.js" type="text/javascript"></script>
+<script src="~/Content/plugins/pdfmake/pdfmake.min.js" type="text/javascript"></script>
+<script src="~/Content/plugins/pdfmake/vfs_fonts.js" type="text/javascript"></script>
+<script src="~/Content/plugins/datatables-buttons/js/buttons.html5.min.js" type="text/javascript"></script>
+<script src="~/Content/plugins/datatables-buttons/js/buttons.print.min.js" type="text/javascript"></script>
+<script src="~/Content/plugins/datatables-buttons/js/buttons.colVis.min.js" type="text/javascript"></script>
+<script>
+    jQuery(document).ready(function ($) {
+        var enquiryFor;
+        var tabContentUrl;
+        var startDate;
+        var endDate;
+
+        function loadTabContent(tabContentUrl, startDate, endDate, enquiryFor) {
+		showLoadingOverlay();
+            $.ajax({
+                url: tabContentUrl,
+                type: 'GET',
+                data: {
+                    startDate: startDate,
+                    endDate: endDate,
+                    enquiryfor: enquiryFor
+                },
+                success: function (data) {
+                    $('#ExamList').html(data);
+                    var table = $('#ExamList table').DataTable({
+                        "responsive": true, "lengthChange": false, "autoWidth": false, "stateSave": true,
+                        "buttons": [
+                            {
+                                extend: 'copy',
+                                text: '<img src="/Content/Admin/icon/copy.png" title="Copy" alt="Copy" height="20" width="20" />',
+                                titleAttr: 'Copy',
+								exportOptions: {
+                            columns: ':not(:last-child):not(:nth-last-child(2))' // Exclude last two columns
+                        }
+                            },
+                            {
+                                extend: 'csv',
+                                text: '<img src="/Content/Admin/icon/csv.jpg" title="CSV" alt="CSV" height="25" width="25" />',
+                                titleAttr: 'CSV',
+								exportOptions: {
+                            columns: ':not(:last-child):not(:nth-last-child(2))' // Exclude last two columns
+                        }
+                            },
+                            {
+                                extend: 'excel',
+                                text: '<img src="/Content/Admin/icon/xls-file.png" title="xls" alt="xls" height="20" width="20" />',
+                                titleAttr: 'Excel',
+								exportOptions: {
+                            columns: ':not(:last-child):not(:nth-last-child(2))' // Exclude last two columns
+                        }
+                            },
+                            {
+                                extend: 'pdf',
+                                text: '<img src="/Content/Admin/icon/pdf-file.png" title="pdf" alt="pdf" height="20" width="20" />',
+                                title: 'Student Source List',
+                                orientation: 'landscape',
+								exportOptions: {
+                            columns: ':not(:last-child):not(:nth-last-child(2))' // Exclude last two columns
+                        }
+                            },
+                            {
+                                extend: 'print',
+                                text: '<img src="/Content/Admin/icon/printer.png" title="printer" alt="printer" height="20" width="20" />',
+                                titleAttr: 'Print',
+								exportOptions: {
+                            columns: ':not(:last-child):not(:nth-last-child(2))' // Exclude last two columns
+                        }
+                            },
+                            {
+                                extend: 'colvis',
+                                text: '<img src="/Content/Admin/icon/column.jpg" title="column" alt="column" height="20" width="20" />',
+                                titleAttr: 'Columns',
+								exportOptions: {
+                            columns: ':not(:last-child):not(:nth-last-child(2))' // Exclude last two columns
+                        }
+                            }
+                        ]
+                    });
+                    table.buttons().container().appendTo('#ExamList .col-md-6:eq(0)');
+                },
+                complete: function () {
+
+                    hideLoadingOverlay();
+                }
+            });
+        }
+
+        $('#custom-tabs-four-tab').on('click', '.nav-link', function (e) {
+            e.preventDefault();
+            tabContentUrl = $(this).attr('href');
+            startDate = $('#startDate').val();
+            endDate = $('#endDate').val();
+            enquiryFor = $('#statusFilter').val();
+            loadTabContent(tabContentUrl, startDate, endDate, enquiryFor);
+        });
+
+        function updateData(startDate, endDate, enquiryFor) {
+            var tabContentUrl = $('#custom-tabs-four-tab .nav-link.active').attr('href');
+            loadTabContent(tabContentUrl, startDate, endDate, enquiryFor);
+        }
+
+        // Initialize date pickers with default values
+        var defaultStartDate = new Date();
+        defaultStartDate.setMonth(defaultStartDate.getMonth() - 1);
+        var defaultEndDate = new Date();
+        defaultEndDate.setMonth(defaultEndDate.getMonth());
+
+        $('#startDate').val(defaultStartDate.toISOString().slice(0, 10));
+        $('#endDate').val(defaultEndDate.toISOString().slice(0, 10));
+
+        // Load default tab content
+        updateData(defaultStartDate.toISOString().slice(0, 10), defaultEndDate.toISOString().slice(0, 10), $('#statusFilter').val());
+
+        // Handle change event for date pickers
+        $('#startDate, #endDate').change(function () {
+            var startDate = $('#startDate').val();
+            var endDate = $('#endDate').val();
+            updateData(startDate, endDate, $('#statusFilter').val());
+        });
+
+        // Apply filter on change of status dropdown
+        $('#statusFilter').change(function () {
+            var startDate = $('#startDate').val();
+            var endDate = $('#endDate').val();
+            enquiryFor = $(this).val();
+            updateData(startDate, endDate, enquiryFor);
+        });
+
+  $('#importbutton').on('click', function (e) {
+    e.preventDefault(); // Prevent default form submission
+    var fileInput = $('#file')[0];
+
+    if (fileInput.files.length === 0) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Error!',
+            text: 'Please select a file to import.'
+        });
+        return;
+    }
+
+    var formData = new FormData($('form')[0]);
+
+    $.ajax({
+        type: 'POST',
+        url: '@Url.Action("ImportExcelFile", "Counsellor")',
+        data: formData,
+        contentType: false,
+        processData: false,
+        beforeSend: function () {
+            Swal.fire({
+                icon: 'info',
+                title: 'Loading...',
+                text: 'Please wait while the file is being imported.',
+                allowOutsideClick: false,
+                showConfirmButton: false
+            });
+        },
+        success: function (data) {
+            if (data.success) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Imported Successfully!',
+                    text: data.message,
+                    timer: 5000,
+                    timerProgressBar: true
+                });
+            } else {
+			document.getElementById('file').value = '';
+                // Populate the modal with errors in a table
+                let errorHtml = `
+            <table class="table table-bordered table-striped error-table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Row Number</th>
+                        <th>Column Name</th>
+                        <th>Error Message</th>
+                    </tr>
+                </thead>
+                <tbody>
+        `;
+
+                data.errors.forEach((error, index) => {
+                    const rowNumber = error.rowNumber || 'N/A';
+                    const columnName = error.columnName || 'N/A';
+                    const message = error.message || 'Unknown Error';
+
+                    errorHtml += `
+                <tr>
+                    <td>${index + 1}</td>
+                    <td>${rowNumber}</td>
+                    <td>${columnName}</td>
+                    <td>${message}</td>
+                </tr>
+            `;
+                });
+
+                errorHtml += `
+                </tbody>
+            </table>
+        `;
+
+                $('#ImportValidationModal .modal-body').html(errorHtml); // Add the table to the modal
+                $('#ImportValidationModal').modal('show'); // Show the modal
+            }
+        },
+        error: function () {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error!',
+                text: 'An error occurred while importing the file.'
+            });
+        },
+        complete: function () {
+            Swal.close();
+        }
+    });
+
+
+    });
+	});
+</script>
+
+
+<script>
+      jQuery.noConflict();
+     jQuery(document).ready(function ($) {
+         $("#AddLead").click(function () {
+             $.ajax({
+                 url: '@Url.Action("RegisterNewLeadsSS", "Counsellor")',
+                 type: 'GET',
+                 success: function (result) {
+                     $("#SectionModal").find(".modal-body").html(result);
+                     $("#SectionModal").modal('show');
+                 }
+             });
+         });
+     });
+</script>

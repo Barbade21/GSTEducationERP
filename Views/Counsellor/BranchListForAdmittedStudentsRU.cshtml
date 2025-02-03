@@ -1,0 +1,84 @@
+﻿@model GSTEducationERPLibrary.Counsellor.Counsellor
+
+<table class="table table-bordered table-striped">
+    <thead>
+        <tr>
+            <th>
+                Sr.No
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CandidateCode)
+            </th>
+
+            <th>
+                @Html.DisplayNameFor(model => model.FullName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ContactNumber)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.EmailId)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.EnquiryFor)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Qualification)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.MonthYear)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.EnquiryDate)
+            </th>
+
+
+
+
+        </tr>
+
+    </thead>
+    <tbody>
+        @foreach (var item in Model.lstforBranchadmsn)
+
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.SerialNo)
+                </td>
+
+                <td>
+                    @Html.DisplayFor(modelItem => item.CandidateCode)
+                </td>
+
+                <td>
+                    @Html.DisplayFor(modelItem => item.FullName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ContactNumber)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.EmailId)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.EnquiryFor)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Qualification)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.MonthYear)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.EnquiryDate)
+                </td>
+
+
+
+
+
+            </tr>
+        }
+    </tbody>
+
+</table>
