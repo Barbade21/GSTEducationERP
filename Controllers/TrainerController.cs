@@ -142,7 +142,7 @@ namespace GSTEducationERP.Controllers
             objT.CourseCode = CourseCode;
            
             BALTrainer objC = new BALTrainer();
-            DataSet ds = await objC.AllBatches(objT.CourseCode);
+            DataSet ds = await objC.CourseWiseBatches(objT.CourseCode);
 
             List<SelectListItem> BatchesList = new List<SelectListItem>();
 
@@ -158,6 +158,60 @@ namespace GSTEducationERP.Controllers
             return Json(BatchesList, JsonRequestBehavior.AllowGet);
 
         }
+
+
+        public async Task<ActionResult> ProjectAttendance()
+        {
+            DataSet ds = await objTrainer.GetBatchAttendance();
+            if (ds != null && ds.Tables.Count > 0)
+            {
+                List<Trainer> batchAtt = ds.Tables[0].AsEnumerable().Select(row => new Trainer
+                {
+                    BatchCode = row.Field<string>("BatchCode"),
+                    BatchName = row.Field<string>("BatchName"),
+                    BatchTime = row.Field<string>("BatchTime"),
+                    TotalCandidate = row.Field<int?>("Total Candidates").ToString() ?? "",
+
+                }).ToList();
+
+                DataSet ds1 = new DataSet();
+                ds1 = await objTrainer.AllCourse();
+                List<SelectListItem> AllCourseBind = new List<SelectListItem>();
+                if (ds1.Tables[0].Rows.Count > 0)
+                {
+                    foreach (DataRow dr in ds1.Tables[0].Rows)
+                    {
+                        AllCourseBind.Add(new SelectListItem
+                        {
+                            Text = dr["CourseName"].ToString(),
+                            Value = dr["Coursecode"].ToString()
+                        });
+                    }
+                }
+
+                DataSet ds2 = new DataSet();
+                ds2 = await objTrainer.StatusListAB();
+                List<SelectListItem> AllStatusBind = new List<SelectListItem>();
+                if (ds2.Tables[0].Rows.Count > 0)
+                {
+                    foreach (DataRow dr in ds2.Tables[0].Rows)
+                    {
+                        AllStatusBind.Add(new SelectListItem
+                        {
+                            Text = dr["Status"].ToString(),
+                            Value = dr["StatusId"].ToString()
+                        });
+                    }
+                }
+
+                ViewBag.AllCourse = AllCourseBind;
+                ViewBag.AllStatus = AllStatusBind;
+                return View(batchAtt);
+            }
+
+            return View(new List<Trainer>());
+        }
+
 
     }
 

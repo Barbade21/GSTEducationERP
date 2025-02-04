@@ -1,6 +1,7 @@
 ﻿@model List<GSTEducationERPLibrary.Trainer.Trainer>
+
 @{
-    ViewBag.Title = "BatchAttendance";
+    ViewBag.Title = "ProjectAttendance";
     Layout = "~/Views/Shared/_LayoutERP.cshtml";
 }
 
@@ -35,7 +36,7 @@
             width: 10px;
         }
 
-       
+
         #datatable td:nth-child(2),
         #datatable td:nth-child(3) {
             width: 120px;
@@ -50,7 +51,7 @@
             width: 100px;
         }
     </style>
- 
+
     <style>
         .dataTables_wrapper .btn-secondary {
             color: #235;
@@ -83,7 +84,7 @@
 
         .card-primary.card-outline-tabs > .card-header a.active, .card-primary.card-outline-tabs > .card-header a.active:hover {
             border-top: 3px solid #33CCCC;
-            width:fit-content;
+            width: fit-content;
         }
 
         .card-body {
@@ -156,7 +157,7 @@
 
         div.dataTables_wrapper div.dataTables_paginate ul.pagination {
             margin-top: 3px !important;
-            margin-bottom:2px;
+            margin-bottom: 2px;
         }
 
         div.dataTables_wrapper div.dataTables_paginate {
@@ -166,8 +167,6 @@
         .container, .container-lg, .container-md, .container-sm, .container-xl {
             max-width: none !important;
         }
-
-        
     </style>
 </head>
 <body style="margin: 0; padding: 0;">
@@ -180,19 +179,19 @@
             <div class="container">
                 <div class="row d-flex align-items-center flex-wrap">
                     <!-- Expense Tabs -->
-                    <div class="col-md-4">
+                    <div class="col-md-5">
                         <div class="card card-primary card-outline card-outline-tabs">
                             <div class="card-header p-0 border-bottom-0">
                                 <ul class="nav nav-tabs" id="custom-tabs-four-tab" role="tablist">
                                     <li class="nav-item">
                                         <a class="nav-link active" data-toggle="pill"
                                            href="@Url.Action("BatchAttendance","Trainer")"
-                                           id="BatchAttendanceTab" role="tab">Batch Attendance</a>
+                                           id="RegularExpenseTab" role="tab">Batch Attendance</a>
                                     </li>
                                     <li class="nav-item">
                                         <a class="nav-link" data-toggle="pill"
                                            href="@Url.Action("ProjectAttendance","Trainer")"
-                                           id="ProjectAttendanceTab" role="tab">Project Attendance</a>
+                                           id="ReferenceExpenseTab" role="tab">Project Attendance</a>
                                     </li>
                                     <li class="nav-item">
                                         <a class="nav-link" data-toggle="pill"
@@ -217,7 +216,7 @@
                         </select>
 
                         <!-- Batch Name -->
-                        <label for="Batch" class="me-2">Batch Name:</label>
+                        <label for="Batch" class="me-2">Project Name:</label>
                         <select class="form-control me-3" id="Batch" style="width: 150px;">
                             <option value="">Select Batch</option>
                             @if (ViewBag.AllBatches != null && ViewBag.AllBatches.Any())
@@ -381,6 +380,30 @@
                 }
             });
         });
+
+            jQuery.noConflict();
+
+            jQuery(document).ready(function ($) {
+                 // Load initial tab content
+
+@*loadTabContent('@Url.Action("BatchAttendance", "Trainer")', 1);*@
+
+
+// Initialize and refresh filters
+
+//refreshFilter();
+                $("#BatchAttendance").click(function () {
+
+                    loadTabContent('@Url.Action("BatchAttendance", "Trainer")', 2);
+                    //refreshFilter();
+
+                    $("#BatchAttendance").click(function () {
+
+                        loadTabContent('@Url.Action("BatchAttendance", "Trainer")', 2);
+                        //refreshFilter();
+
+                    });
+                }
         </script>
 
 </body>

@@ -1,0 +1,139 @@
+﻿@model GSTEducationERPLibrary.Trainer.Trainer
+
+@{
+    ViewBag.Title = "_ProjectAttendance";
+    Layout = "~/Views/Shared/_LayoutERP.cshtml";
+}
+
+<h2>_ProjectAttendance</h2>
+
+<div>
+    <h4>Trainer</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.BatchCode)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.BatchCode)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.BatchName)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.BatchName)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.CourseName)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.CourseName)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.CourseCode)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.CourseCode)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.BranchCode)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.BranchCode)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.BatchId)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.BatchId)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.TotalCandidate)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.TotalCandidate)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.AllowLateTime)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.AllowLateTime)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.PresentCandidate)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.PresentCandidate)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.AbsentCandidate)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.AbsentCandidate)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.LateCandidate)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.LateCandidate)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.LeaveCandidate)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.LeaveCandidate)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.BatchTime)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.BatchTime)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.OutTime)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.OutTime)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.staffCode)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.staffCode)
+        </dd>
+
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { /* id = Model.PrimaryKey */ }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>
